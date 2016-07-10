@@ -10,10 +10,17 @@ Cite
 
 http://mirtop.github.io
 
+Installation
+------------
+
+`git clone http://github.com/miRTop/mirtop`
+`python setup.py develop`
+
 Quick start
 -----------
 
-`mirtop annotate --sps hsa --hairpin data/examples/annotate/hairpin.fa --mirna data/examples/annotate/miRNA.str -o test_out_mirs_fasta data/examples/annotate/sim_isomir.fa`
+`cd data`
+`mirtop annotate --sps hsa --hairpin examples/annotate/hairpin.fa --mirna examples/annotate/miRNA.str -o test_out_mirs_fasta examples/annotate/sim_isomir.fa`
 
 Contributors
 ------------
