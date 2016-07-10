@@ -13,7 +13,7 @@ http://mirtop.github.io
 Quick start
 -----------
 
-`mirtop annotate --sps hsa --hairpin ../../data/examples/annotate/hairpin.fa --mirna ../../data/examples/annotate/miRNA.str -o test_out_mirs_fasta ../../data/examples/annotate/sim_isomir.fa`
+`mirtop annotate --sps hsa --hairpin data/examples/annotate/hairpin.fa --mirna data/examples/annotate/miRNA.str -o test_out_mirs_fasta data/examples/annotate/sim_isomir.fa`
 
 Contributors
 ------------
