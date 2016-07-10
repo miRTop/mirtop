@@ -3,7 +3,7 @@ mirtop
 
 Command line tool to annotate with a standard naming miRNAs e isomiRs.
 
-See more at: `isomiRs naming discussion <https://github.com/miRTop/incubator/blob/master/isomirs/isomir_naming.md>`
+See more at: [isomiRs naming discussion](https://github.com/miRTop/incubator/blob/master/isomirs/isomir_naming.md)
 
 Cite
 ---------
@@ -18,5 +18,5 @@ Quick start
 Contributors
 ------------
 
-* `Lorena Pantano  <https://github.com/lpantano>`_ (Bioinformatic Core, Harvard Chan School, Boston, USA)
+* [Lorena Pantano](https://github.com/lpantano) (Bioinformatic Core, Harvard Chan School, Boston, USA)
 
