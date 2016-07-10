@@ -1,6 +1,6 @@
 import sys
 
-import seqcluster.libs.logger as mylog
+import mirtop.libs.logger as mylog
 
 STDOUT = sys.stdout
 logger = mylog.getLogger(__name__)

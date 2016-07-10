@@ -12,7 +12,7 @@ from mirtop.libs import do
 import mirtop.libs.logger as mylog
 from mirtop.install import _get_miraligner
 from mirtop.mirna.snps import create_vcf
-from realign import *
+from mirtop.realign import *
 
 logger = mylog.getLogger(__name__)
 
