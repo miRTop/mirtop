@@ -12,7 +12,7 @@ from mirtop.libs import do
 import mirtop.libs.logger as mylog
 from mirtop.install import _get_miraligner
 from mirtop.mirna.snps import create_vcf
-from mirtop.realign import *
+from mirtop.mirna.realign import *
 
 logger = mylog.getLogger(__name__)
 
@@ -262,16 +262,25 @@ def _read_bam(bam_fn, precursors):
     handle = pysam.Samfile(bam_fn, mode)
     reads = defaultdict(realign)
     for line in handle:
-        chrom = handle.getrname(line.reference_id)
-        # print "%s %s %s %s" % (line.query_name, line.reference_start, line.query_sequence, chrom)
+        if line.reference_id < 0:
+            logger.debug("Sequence not mapped: %s" % line.reference_id)
+            continue
         query_name = line.query_name
         if query_name not in reads:
             reads[query_name].sequence = line.query_sequence
+        if line.is_reverse:
+            logger.debug("Sequence is reverse: %s" % line.query_name)
+            continue
+        chrom = handle.getrname(line.reference_id)
+        #  print "%s %s %s %s" % (line.query_name, line.reference_start, line.query_sequence, chrom)
         iso = isomir()
         iso.align = line
         iso.start = line.reference_start
+        if len(precursors[chrom]) < line.reference_start + len(reads[query_name].sequence):
+            continue
         iso.subs, iso.add = _realign(reads[query_name].sequence, precursors[chrom], line.reference_start)
-        reads[query_name].set_precursor(chrom, iso)
+        if len(iso.subs) < 2:
+            reads[query_name].set_precursor(chrom, iso)
 
     reads = _clean_hits(reads)
     return reads
@@ -357,7 +366,7 @@ def _tab_output(reads, out_file, sample):
                     annotation = "%s:%s" % (chrom, iso.format(":"))
                     res = ("{seq}\t{r}\t{count}\t{chrom}\tNA\tNA\t{format}\tNA\tNA\tmiRNA\t{p}\t{hits}").format(format=iso.format().replace("NA", "0"), **locals())
                     if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:
-                        raise ValueError("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, res, seen_ann[annotation]))
+                        logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, res, seen_ann[annotation]))
                     seen_ann[annotation] = res
                     lines.append([annotation, chrom, count, sample, hits])
                     lines_pre.append([annotation, chrom, p, count, sample, hits])
