@@ -11,7 +11,7 @@ set -x
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 
 readlinkf(){ perl -MCwd -e 'print Cwd::abs_path shift' $1; }
-SC_DIR=$(dirname "$(readlinkf `which seqcluster`)")
+SC_DIR=$(dirname "$(readlinkf `which mirtop`)")
 unset PYTHONHOME
 unset PYTHONPATH
 export PYTHONNOUSERSITE=1
