@@ -49,7 +49,7 @@ Naming of isomiRs follow these rules:
 There are two different outputs right now: 1) tab limited format, where each column will refer to the previous 4 points, or 2) a merged format, where these 4 points (mirna, substitution, addition, 5 trimming, 3 trimming) are separated by ``:``. For instance: ``hsa-let-7a-5p:0:0:GT:t`` means ``hsa-let-7a-5p`` has a 5' trimming event (starts 2 nts before the reference miRNA) and a 3' trimming event (ends 1 nt before the reference miRNA).
 
 
-Use [isomiRs R package for the analysi](http://bioconductor.org/packages/3.5/bioc/html/isomiRs.html)
+Use [isomiRs R package for the analysis](http://bioconductor.org/packages/3.5/bioc/html/isomiRs.html)
 
 Contributors
 ------------
