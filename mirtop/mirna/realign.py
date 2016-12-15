@@ -33,6 +33,15 @@ class isomir:
         return "%s%s%s%s%s%s%s" % (subs, sep, add, sep,
                                    self.t5, sep, self.t3)
 
+    def format_id(self, sep="\t"):
+        subs = "".join(["".join(map(str, mism)) for mism in self.subs])
+        if not subs:
+            subs = "0"
+        add = "0" if not self.add else self.add
+        return "%s%s%s%s%s%s%s" % (subs, sep, add, sep,
+                                   self.t5, sep, self.t3)
+
+
     def get_score(self, sc):
         for a in self.add:
             if a in ['A', 'T']:

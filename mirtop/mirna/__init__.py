@@ -344,7 +344,7 @@ def _tab_output(reads, out_file, sample):
     seen_ann = {}
     dt = None
     with open(out_file, 'w') as out_handle:
-        print >>out_handle, "name\tseq\tfreq\tchrom\tstart\tend\tsubs\tadd\tt5\tt3\ts5\ts3\tDB\tprecursor\thits"
+        print >>out_handle, "name\tseq\tfreq\tchrom\tstart\tend\tsubs\tadd\tt5\tt3\ts5\ts3\tDB\tprecursor\thits\tName"
         for r, read in reads.iteritems():
             hits = set()
             [hits.add(mature.mirna) for mature in read.precursors.values() if mature.mirna]
@@ -364,7 +364,8 @@ def _tab_output(reads, out_file, sample):
                     if iso.subs:
                         iso.subs = [] if "N" in iso.subs[0] else iso.subs
                     annotation = "%s:%s" % (chrom, iso.format(":"))
-                    res = ("{seq}\t{r}\t{count}\t{chrom}\tNA\tNA\t{format}\tNA\tNA\tmiRNA\t{p}\t{hits}").format(format=iso.format().replace("NA", "0"), **locals())
+                    idname = ("{0}.{1}").format(chrom, iso.format(sep=":"))
+                    res = ("{seq}\t{r}\t{count}\t{chrom}\tNA\tNA\t{format}\tNA\tNA\tmiRNA\t{p}\t{hits}\t{idname}").format(format=iso.format().replace("NA", "0"), **locals())
                     if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:
                         logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, res, seen_ann[annotation]))
                     seen_ann[annotation] = res
