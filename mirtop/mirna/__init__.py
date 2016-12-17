@@ -1,6 +1,7 @@
 # Re-aligner small RNA sequence from SAM/BAM file (miRBase annotation)
 import traceback
 import os.path as op
+import os
 import re
 import shutil
 import pandas as pd
@@ -247,12 +248,18 @@ def _sort_by_name(bam_fn):
     """
 
 def _sam_to_bam(bam_fn):
-    if bam_fn.endswith("bam"):
+    if not bam_fn.endswith("bam"):
         bam_out = "%s.bam" % os.path.splitext(bam_fn)[0]
         cmd = "samtools view -Sbh {bam_fn} -o {bam_out}"
-        do.run(cmd)
+        do.run(cmd.format(**locals()))
         return bam_out
     return bam_fn
+
+def _bam_sort(bam_fn):
+    bam_sort_by_n = op.splitext(bam_fn)[0] + "_sort"
+    if file_exists(bam_sort_by_n):
+        do.cmd(("samtools sort -n -o {bam_sort_by_n} {bam_fn}").format(**locals()))
+    return bam_sort_by_n
 
 def _read_bam(bam_fn, precursors):
     """
@@ -425,8 +432,7 @@ def miraligner(args):
         if bam_fn.endswith("bam") or bam_fn.endswith("sam"):
             logger.info("Reading %s" % bam_fn)
             bam_fn = _sam_to_bam(bam_fn)
-            bam_sort_by_n = op.splitext(bam_fn)[0] + "_sort"
-            pysam.sort("-n", bam_fn, bam_sort_by_n)
+            bam_sort_by_n = _bam_sort(bam_fn)
             reads = _read_bam(bam_sort_by_n + ".bam", precursors)
         elif bam_fn.endswith("fasta") or bam_fn.endswith("fa") or bam_fn.endswith("fastq"):
             out_file = op.join(args.out, sample + ".premirna")
