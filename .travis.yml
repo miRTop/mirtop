@@ -16,6 +16,7 @@ install:
   - conda install --yes ncurses -c r
   - conda install --yes -c bioconda bedtools samtools pip nose pysam pandas pyyaml -q
 script: 
+  - python setup.py develop
   - nosetests
 branches:
     only:
