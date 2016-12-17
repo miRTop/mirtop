@@ -1,6 +1,9 @@
 mirtop
 ---------
 
+![](https://travis-ci.org/lpantano/seqcluster.png?branch=master)
+   
+
 Command line tool to annotate with a standard naming miRNAs e isomiRs.
 
 See more at: [isomiRs naming discussion](https://github.com/miRTop/incubator/blob/master/isomirs/isomir_naming.md)
