@@ -1,0 +1,23 @@
+sudo: required
+dist: trusty
+language: generic
+notifications:
+    email:
+        recipients:
+            - lorena.pantano@gmail.com
+        on_failure: always
+before_install:
+  # - echo "127.0.1.1 "`hostname` | sudo tee /etc/hosts
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
+  - bash Miniconda-latest-Linux-x86_64.sh -b -p ~/install
+install:
+  - export PATH=~/install/bin/:$PATH
+  - conda config --add channels r
+  - conda install --yes ncurses -c r
+  - conda install --yes -c bioconda bedtools samtools pip nose pysam pandas pyyaml -q
+script: 
+  - nosetests
+branches:
+    only:
+        - master
+        - devel
