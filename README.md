@@ -2,7 +2,6 @@ mirtop
 ---------
 
 ![](https://travis-ci.org/lpantano/seqcluster.png?branch=master)
-   
 
 Command line tool to annotate with a standard naming miRNAs e isomiRs.
 
@@ -12,6 +11,13 @@ Cite
 ---------
 
 http://mirtop.github.io
+
+About
+-----
+
+Join the team: https://orgmanager.miguelpiedrafita.com/join/15463928
+
+Read more: http://mirtop.github.io
 
 Installation
 ------------
