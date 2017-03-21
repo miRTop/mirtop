@@ -369,7 +369,7 @@ def _tab_output(reads, out_file, sample):
                         continue
                     if iso.subs:
                         iso.subs = [] if "N" in iso.subs[0] else iso.subs
-                    annotation = "%s:%s" % (chrom, iso.format(":"))
+                    annotation = "%s.%s" % (chrom, iso.format_id(sep="."))
                     idname = ("{0}.{1}").format(chrom, iso.format_id(sep="."))
                     res = ("{seq}\t{r}\t{count}\t{chrom}\tNA\tNA\t{format}\tNA\tNA\tmiRNA\t{p}\t{hits}\t{idname}").format(format=iso.format().replace("NA", "0"), **locals())
                     if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:

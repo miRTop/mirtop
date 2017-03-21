@@ -17,8 +17,8 @@ class realign:
 class isomir:
 
     def __init__(self):
-        self.t5 = "0"
-        self.t3 = "0"
+        self.t5 = []
+        self.t3 = []
         self.add = []
         self.subs = []
         self.align = None
@@ -38,9 +38,10 @@ class isomir:
         if not subs:
             subs = []
         add = [] if not self.add else ["e%s" % self.add]
-        t5 = [] if not self.t5 else ["s%s" % self.t5]
-        t3 = [] if not self.t3 else ["%s" % self.t3]
-        return sep.join(t5 + subs + t3 + add)
+        t5 = ["s%s" % self.t5] if self.t5 and self.t5 != "NA" else []
+        t3 = ["%s" % self.t3] if self.t3 and self.t3 != "NA" else []
+        full = t5 + subs + t3 + add
+        return sep.join([f for f in full if f])
 
     def get_score(self, sc):
         for a in self.add:
