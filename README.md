@@ -55,8 +55,9 @@ Naming of isomiRs follow these rules:
 * Additions at 3' end: ``0/NA`` means no modification. ``UPPER CASE LETTER`` means addition at the end. Note these nucleotides don't match the precursor. So they are post-transcriptional modification.
 * Nucleotide substitution: ``NUMBER|NUCLEOTIDE_ISOMIR|NUCLEOTIDE_REFERENCE`` means at the position giving by the number the nucleotide in the sequence has substituted the nucleotide in the reference. This, as well, is a post-transcriptional modification.
 
-There are two different outputs right now: 1) tab limited format, where each column will refer to the previous 4 points, or 2) a merged format, where these 4 points (mirna, substitution, addition, 5 trimming, 3 trimming) are separated by ``:``. For instance: ``hsa-let-7a-5p:0:0:GT:t`` means ``hsa-let-7a-5p`` has a 5' trimming event (starts 2 nts before the reference miRNA) and a 3' trimming event (ends 1 nt before the reference miRNA).
+There are two different outputs right now: 1) tab limited format, where each column will refer to the previous 4 points and the last one will have the ID name for the isomiR, or 2) a merged format, where these 4 points (mirna, substitution, addition, 5 trimming, 3 trimming) are separated by ".". For instance: ``hsa-let-7a-5p.sGT.t`` means ``hsa-let-7a-5p`` has a 5' trimming event (starts 2 nts before the reference miRNA) and a 3' trimming event (ends 1 nt before the reference miRNA).
 
+See [here](https://github.com/miRTop/incubator/blob/master/isomirs/isomir_naming.md#examples) for more examples.
 
 Use [isomiRs R package for the analysis](http://bioconductor.org/packages/3.5/bioc/html/isomiRs.html)
 
