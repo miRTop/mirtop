@@ -69,14 +69,13 @@ class AutomatedAnalysisTest(unittest.TestCase):
     def test_srnaseq_annotation(self):
         """Run miraligner analysis
         """
-        with make_workdir() as workdir:
-            cl = ["mirtop",
-                  "annotate",
-                  "--sps", "hsa",
-                  "--hairpin", "../../data/examples/annotate/hairpin.fa",
-                  "--mirna", "../../data/examples/annotate/miRNA.str",
-                  "-o", "test_out_mirs_fasta",
-                  "../../data/examples/annotate/sim_isomir.sam"]
-            print " ".join(cl)
-            subprocess.check_call(cl)
-
+        with make_workdir():
+            clcode = ["mirtop",
+                      "annotate",
+                      "--sps", "hsa",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--mirna", "../../data/examples/annotate/miRNA.str",
+                      "-o", "test_out_mirs_fasta",
+                      "../../data/examples/annotate/sim_isomir.sam"]
+            print " ".join(clcode)
+            subprocess.check_call(clcode)

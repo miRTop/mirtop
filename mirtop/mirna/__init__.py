@@ -9,7 +9,6 @@ import pysam
 
 from mirtop.libs import do
 from mirtop.libs.utils import file_exists
-from mirtop.libs import do
 import mirtop.libs.logger as mylog
 from mirtop.install import _get_miraligner
 from mirtop.mirna.snps import create_vcf
@@ -351,7 +350,7 @@ def _tab_output(reads, out_file, sample):
     seen_ann = {}
     dt = None
     with open(out_file, 'w') as out_handle:
-        print >>out_handle, "name\tseq\tfreq\tchrom\tstart\tend\tsubs\tadd\tt5\tt3\ts5\ts3\tDB\tprecursor\thits\tName"
+        print >>out_handle, "seq\tname\tfreq\tchrom\tstart\tend\tsubs\tadd\tt5\tt3\ts5\ts3\tDB\tprecursor\thits\tName"
         for r, read in reads.iteritems():
             hits = set()
             [hits.add(mature.mirna) for mature in read.precursors.values() if mature.mirna]
