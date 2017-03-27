@@ -136,8 +136,8 @@ library(dplyr)</code></pre>
 <pre class="r"><code>read_tsv(&quot;~/repos/mirtop/test/test_automated_output/test_out_mirs_fasta/sim_isomir.mirna&quot;) %&gt;% knitr::kable()</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
-##   name = col_character(),
 ##   seq = col_character(),
+##   name = col_character(),
 ##   freq = col_integer(),
 ##   chrom = col_character(),
 ##   start = col_character(),
@@ -156,8 +156,8 @@ library(dplyr)</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">name</th>
 <th align="left">seq</th>
+<th align="left">name</th>
 <th align="right">freq</th>
 <th align="left">chrom</th>
 <th align="left">start</th>
@@ -227,7 +227,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-1</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sA..NA</td>
+<td align="left">hsa-let-7a-5p.sA</td>
 </tr>
 <tr class="even">
 <td align="left">TGAGGTAGTAGGTTGTATAGT</td>
@@ -245,7 +245,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sNA..t</td>
+<td align="left">hsa-let-7a-5p.t</td>
 </tr>
 <tr class="odd">
 <td align="left">GGTAGTAGGTTGTATAGT</td>
@@ -263,7 +263,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.stga..t</td>
+<td align="left">hsa-let-7a-5p.stga.t</td>
 </tr>
 <tr class="even">
 <td align="left">GGTGAGGTAGTAGGTTGTATAGTTTT</td>
@@ -281,7 +281,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-3</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sGG..T.eT</td>
+<td align="left">hsa-let-7a-5p.sGG.T.eT</td>
 </tr>
 <tr class="odd">
 <td align="left">AGAGGTAGTAGGTTGTATAGT</td>
@@ -299,7 +299,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sNA.T0A.t</td>
+<td align="left">hsa-let-7a-5p.T0A.t</td>
 </tr>
 <tr class="even">
 <td align="left">GAGGTAGTAGGTTGTATAGTATA</td>
@@ -335,7 +335,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sT..NA</td>
+<td align="left">hsa-let-7a-5p.sT</td>
 </tr>
 <tr class="even">
 <td align="left">GTTGAGGTAGTAGGTTGTATAGT</td>
@@ -353,7 +353,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sGT..t</td>
+<td align="left">hsa-let-7a-5p.sGT.t</td>
 </tr>
 <tr class="odd">
 <td align="left">GTAGTAGGTTGTATAGTTAA</td>
@@ -371,7 +371,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.stgag..NA.eAA</td>
+<td align="left">hsa-let-7a-5p.stgag.eAA</td>
 </tr>
 <tr class="even">
 <td align="left">GGTAGTAGGTTGTATAGTATT</td>
@@ -389,7 +389,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.stga..t.eATT</td>
+<td align="left">hsa-let-7a-5p.stga.t.eATT</td>
 </tr>
 <tr class="odd">
 <td align="left">GAGGTAGTAGGTTGTATAGTTAT</td>
@@ -407,7 +407,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.st..NA.eAT</td>
+<td align="left">hsa-let-7a-5p.st.eAT</td>
 </tr>
 <tr class="even">
 <td align="left">GAGGTAGTAGGTTGTATAGTT</td>
@@ -425,7 +425,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.st..NA</td>
+<td align="left">hsa-let-7a-5p.st</td>
 </tr>
 <tr class="odd">
 <td align="left">GGTAGTAGGTTGTATAGTTTT</td>
@@ -443,7 +443,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-1</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.stga..TT</td>
+<td align="left">hsa-let-7a-5p.stga.TT</td>
 </tr>
 <tr class="even">
 <td align="left">AGGTAGTAGGTTGTATAGTT</td>
@@ -461,7 +461,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.stg..NA</td>
+<td align="left">hsa-let-7a-5p.stg</td>
 </tr>
 <tr class="odd">
 <td align="left">GGTGAGGTAGTAGGTTGTATAGT</td>
@@ -479,7 +479,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-3</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sGG..t</td>
+<td align="left">hsa-let-7a-5p.sGG.t</td>
 </tr>
 <tr class="even">
 <td align="left">TGAGGTAGTAGGTTGTATAG</td>
@@ -497,7 +497,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sNA..tt</td>
+<td align="left">hsa-let-7a-5p.tt</td>
 </tr>
 <tr class="odd">
 <td align="left">AGGTAGTAGGTTGGATAGTTTA</td>
@@ -533,7 +533,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-3</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sG..t</td>
+<td align="left">hsa-let-7a-5p.sG.t</td>
 </tr>
 <tr class="odd">
 <td align="left">TGAGGTAGTAGGTTGTATAGAT</td>
@@ -551,7 +551,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sNA..tt.eAT</td>
+<td align="left">hsa-let-7a-5p.tt.eAT</td>
 </tr>
 <tr class="even">
 <td align="left">AGGTAGTAGGTTGTATAGT</td>
@@ -569,7 +569,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-2</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.stg..t</td>
+<td align="left">hsa-let-7a-5p.stg.t</td>
 </tr>
 <tr class="odd">
 <td align="left">GATGAGGTAGTAGGTTGTATAGTA</td>
@@ -587,7 +587,7 @@ library(dplyr)</code></pre>
 <td align="left">miRNA</td>
 <td align="left">hsa-let-7a-1</td>
 <td align="right">1</td>
-<td align="left">hsa-let-7a-5p.sGA..t.eA</td>
+<td align="left">hsa-let-7a-5p.sGA.t.eA</td>
 </tr>
 </tbody>
 </table>
