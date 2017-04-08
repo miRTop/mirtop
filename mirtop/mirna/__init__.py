@@ -241,11 +241,6 @@ def _clean_hits(reads):
 
     return new_reads
 
-def _sort_by_name(bam_fn):
-    """
-    sort bam file by name sequence
-    """
-
 def _sam_to_bam(bam_fn):
     if not bam_fn.endswith("bam"):
         bam_out = "%s.bam" % os.path.splitext(bam_fn)[0]
@@ -255,9 +250,9 @@ def _sam_to_bam(bam_fn):
     return bam_fn
 
 def _bam_sort(bam_fn):
-    bam_sort_by_n = op.splitext(bam_fn)[0] + "_sort"
-    if file_exists(bam_sort_by_n):
-        do.cmd(("samtools sort -n -o {bam_sort_by_n} {bam_fn}").format(**locals()))
+    bam_sort_by_n = op.splitext(bam_fn)[0] + "_sort.bam"
+    if not file_exists(bam_sort_by_n):
+        do.run(("samtools sort -n -o {bam_sort_by_n} {bam_fn}").format(**locals()))
     return bam_sort_by_n
 
 def _read_bam(bam_fn, precursors):
@@ -350,7 +345,7 @@ def _tab_output(reads, out_file, sample):
     seen_ann = {}
     dt = None
     with open(out_file, 'w') as out_handle:
-        print >>out_handle, "seq\tname\tfreq\tchrom\tstart\tend\tsubs\tadd\tt5\tt3\ts5\ts3\tDB\tprecursor\thits\tName"
+        print >>out_handle, "seq\tname\tfreq\tchrom\tstart\tend\tmism\tadd\tt5\tt3\ts5\ts3\tDB\tprecursor\tambiguity\tName"
         for r, read in reads.iteritems():
             hits = set()
             [hits.add(mature.mirna) for mature in read.precursors.values() if mature.mirna]
@@ -432,7 +427,7 @@ def miraligner(args):
             logger.info("Reading %s" % bam_fn)
             bam_fn = _sam_to_bam(bam_fn)
             bam_sort_by_n = _bam_sort(bam_fn)
-            reads = _read_bam(bam_sort_by_n + ".bam", precursors)
+            reads = _read_bam(bam_sort_by_n, precursors)
         elif bam_fn.endswith("fasta") or bam_fn.endswith("fa") or bam_fn.endswith("fastq"):
             out_file = op.join(args.out, sample + ".premirna")
             bam_fn = _filter_seqs(bam_fn)

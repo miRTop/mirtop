@@ -11,7 +11,7 @@ def readme():
 
 
 setup(name='mirtop',
-      version='0.1.3a',
+      version='0.1.4a',
       description='Small RNA-seq annotation',
       long_description=readme(),
       classifiers=[
@@ -20,9 +20,9 @@ setup(name='mirtop',
         'Topic :: Scientific/Engineering :: Bio-Informatics'
       ],
       keywords='RNA-seq miRNA isomiRs annotation',
-      url='http://github.com/lpantano/mirtop',
+      url='http://github.com/mirtop/mirtop',
       author='Lorena Pantano',
-      author_email='lpantano@iscb.org',
+      author_email='lorena.pantano@gmail.com',
       license='MIT',
       packages=find_packages(),
       test_suite='nose',
