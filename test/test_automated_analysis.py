@@ -64,6 +64,16 @@ class AutomatedAnalysisTest(unittest.TestCase):
         shutil.move(os.path.basename(dirname), dirname)
         os.remove(os.path.basename(url))
 
+    @attr(cigar=True)
+    def test_cigar(self):
+        """testing cigar correction function"""
+        cigar = [[0, 14], [1, 1], [0, 5]]
+        from mirtop.mirna.realign import cigar_correction
+        fixed = cigar_correction(cigar, "AAAAGCTGGGTTGAGGAGGA", "AAAAGCTGGGTTGAGAGGA")
+        print "\n testing cigar correction"
+        print fixed[0]
+        print fixed[1]
+
     @attr(complete=True)
     @attr(annotate=True)
     def test_srnaseq_annotation(self):

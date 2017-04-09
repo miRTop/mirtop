@@ -52,3 +52,25 @@ class isomir:
         for e in self.subs:
             sc -= 1
         return sc
+
+def cigar_correction(cigarLine, query, target):
+    """Read from cigar in BAM file to define mismatches"""
+    query_pos = 0
+    target_pos = 0
+    query_fixed = []
+    target_fixed = []
+    for (cigarType, cigarLength) in cigarLine:
+        if cigarType == 0: #match 
+            query_fixed.append(query[query_pos:query_pos+cigarLength])
+            target_fixed.append(target[target_pos:target_pos+cigarLength])
+            query_pos = query_pos + cigarLength
+            target_pos = target_pos + cigarLength
+        elif cigarType == 1: #insertions
+            query_fixed.append(query[query_pos:query_pos+cigarLength])
+            target_fixed.append("".join(["-"] * cigarLength))
+            query_pos = query_pos + cigarLength
+        elif cigarType == 2: #deletion
+            target_fixed.append(target[target_pos:target_pos+cigarLength])
+            query_fixed.append("".join(["-"] * cigarLength))
+            target_pos = target_pos + cigarLength
+    return ["".join(query_fixed), "".join(target_fixed)]
