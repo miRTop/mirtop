@@ -22,6 +22,7 @@ class isomir:
         self.add = []
         self.subs = []
         self.align = None
+        self.end = 0
         self.start = 0
         self.mirna = None
 

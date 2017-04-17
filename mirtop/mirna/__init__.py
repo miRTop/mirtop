@@ -1,4 +1,5 @@
-# Re-aligner small RNA sequence from SAM/BAM file (miRBase annotation)
+""" Re-aligner small RNA sequence from SAM/BAM file (miRBase annotation)"""
+
 import traceback
 import os.path as op
 import os
@@ -35,8 +36,8 @@ def _download_mirbase(args, version="CURRENT"):
 
 def _make_unique(name, idx):
     """Make name unique in case only counts there"""
-    p = re.compile(".[aA-zZ]+_x[0-9]+")
-    if p.match(name):
+    seqname = re.compile(".[aA-zZ]+_x[0-9]+")
+    if seqname.match(name):
         tags = name[1:].split("_x")
         return ">%s_%s_x%s" % (tags[0], idx, tags[1])
     return name.replace("@", ">")
@@ -142,6 +143,11 @@ def _coord(sequence, start, mirna, precursor, iso):
     """
     Define t5 and t3 isomirs
     """
+    insertion = 0
+    if iso.subs:
+        insertion = 1 if iso.subs[0][-1] == "-" else 0
+    end = start + (iso.end - len(iso.add) - insertion) - 1
+    logger.debug("coor:s:%s len:%s flen:%s end:%s mirna:%s iso:%s" % (start, len(sequence), iso.end, end, mirna, iso.format()))
     dif = abs(mirna[0] - start)
     if start < mirna[0]:
         iso.t5 = sequence[:dif].upper()
@@ -153,9 +159,9 @@ def _coord(sequence, start, mirna, precursor, iso):
         logger.debug("start > 3 %s %s %s %s %s" % (start, len(sequence), dif, mirna, iso.format()))
         return None
 
-    end = start + (len(sequence) - len(iso.add)) - 1
     dif = abs(mirna[1] - end)
     if iso.add:
+        iso.add = iso.add.replace("-", "")
         sequence = sequence[:-len(iso.add)]
     # if dif > 3:
     #    return None
@@ -168,7 +174,7 @@ def _coord(sequence, start, mirna, precursor, iso):
     if dif > 4:
         logger.debug("end > 3 %s %s %s %s %s" % (len(sequence), end, dif, mirna, iso.format()))
         return None
-    logger.debug("%s %s %s %s %s %s" % (start, len(sequence), end, dif, mirna, iso.format()))
+    # logger.debug("coor end:%s %s %s %s %s iso:%s" % (start, len(sequence), end, dif, mirna, iso.format()))
     return True
 
 def _annotate(reads, mirbase_ref, precursors):
@@ -182,26 +188,32 @@ def _annotate(reads, mirbase_ref, precursors):
             for mature in mirbase_ref[p]:
                 mi = mirbase_ref[p][mature]
                 is_iso = _coord(reads[r].sequence, start, mi, precursors[p], reads[r].precursors[p])
-                logger.debug(("{r} {p} {start} {is_iso} {mature} {mi} {mature_s}").format(s=reads[r].sequence, mature_s=precursors[p][mi[0]-1:mi[1]], **locals()))
+                logger.debug(("read:{s} pre:{p} start:{start} is_iso:{is_iso} mir:{mature} mir_p:{mi} mir_s:{mature_s}").format(s=reads[r].sequence, mature_s=precursors[p][mi[0]-1:mi[1]], **locals()))
+                logger.debug("annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
                 if is_iso:
                     reads[r].precursors[p].mirna = mature
                     break
     return reads
 
-def _realign(seq, precursor, start):
+def _realign(seq, precursor, start, cigar):
     """
     The actual fn that will realign the sequence
     """
+    seq, mature = cigar_correction(cigar, seq, precursor[start:])
+    if seq.startswith("-"):
+        seq = seq[1:]
+    # print [cigar, seq, mature]
+    logger.debug("Alignment: %s %s %s" % (cigar, seq, mature))
     error = set()
     pattern_addition = [[1, 1, 0], [1, 0, 1], [0, 1, 0], [0, 1, 1], [0, 0, 1], [1, 1, 1]]
     for pos in range(0, len(seq)):
-        if seq[pos] != precursor[(start + pos)]:
+        if seq[pos] != mature[pos]:
             error.add(pos)
 
     subs, add = [], []
     for e in error:
         if e < len(seq) - 3:
-            subs.append([e, seq[e], precursor[start + e]])
+            subs.append([e, seq[e], mature[e]])
 
     pattern, error_add = [], []
     for e in range(len(seq) - 3, len(seq)):
@@ -216,9 +228,9 @@ def _realign(seq, precursor, start):
             break
     if not add and error_add:
         for e in error_add:
-            subs.append([e, seq[e], precursor[start + e]])
+            subs.append([e, seq[e], mature[e]])
 
-    return subs, add
+    return subs, add, len(mature)
 
 def _clean_hits(reads):
     """
@@ -274,12 +286,13 @@ def _read_bam(bam_fn, precursors):
             continue
         chrom = handle.getrname(line.reference_id)
         #  print "%s %s %s %s" % (line.query_name, line.reference_start, line.query_sequence, chrom)
+        cigar = line.cigartuples
         iso = isomir()
         iso.align = line
         iso.start = line.reference_start
         if len(precursors[chrom]) < line.reference_start + len(reads[query_name].sequence):
             continue
-        iso.subs, iso.add = _realign(reads[query_name].sequence, precursors[chrom], line.reference_start)
+        iso.subs, iso.add, iso.end = _realign(reads[query_name].sequence, precursors[chrom], line.reference_start, cigar)
         if len(iso.subs) < 2:
             reads[query_name].set_precursor(chrom, iso)
 
@@ -339,6 +352,7 @@ def _get_freq(name):
     return counts
 
 def _tab_output(reads, out_file, sample):
+    """Create info matrix"""
     seen = set()
     lines = []
     lines_pre = []

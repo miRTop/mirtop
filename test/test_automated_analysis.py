@@ -74,6 +74,40 @@ class AutomatedAnalysisTest(unittest.TestCase):
         print fixed[0]
         print fixed[1]
 
+    @attr(alignment=True)
+    def test_alignment(self):
+        """testing alignments function"""
+        import mirtop
+        mirtop.libs.logger.initialize_logger("test", True, True)
+        logger = mirtop.libs.logger.getLogger(__name__)
+        precursors = mirtop.mirna._read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mirtop.mirna._read_mature("data/examples/annotate/miRNA.str", "hsa")
+        def annotate(fn, precursors, matures):
+            reads = mirtop.mirna._read_bam(fn, precursors)
+            ann = mirtop.mirna._annotate(reads, matures, precursors)
+        print "\nlast1D\n"
+        annotate("data/aligments/let7-last1D.sam", precursors, matures)
+        #mirna TGAGGTAGTAGGTTGTATAGTT
+        #seq   AGAGGTAGTAGGTTGTA
+        print "\n1D\n"
+        annotate("data/aligments/let7-1D.sam", precursors, matures)
+        #mirna TGAGGTAG-TAGGTTGTATAGTT
+        #seq   TGAGGTAGGTAGGTTGTATAGTTA
+        print "\nlast7M1I\n"
+        annotate("data/aligments/let7-last7M1I.sam", precursors, matures)
+        #mirna TGAGGTAGTAGGTTGTATAGTT
+        #seq   TGAGGTAGTAGGTTGTA-AGT
+        print "\nmiddle1D\n"
+        annotate("data/aligments/let7-middle1D.sam", precursors, matures)
+        #mirna TGAGGTAGTAGGTTGTATAGTT
+        #seq   TGAGGTAGTAGGTTGTATAGTT
+        print "\nperfect\n"
+        annotate("data/aligments/let7-perfect.sam", precursors, matures)
+        #mirna TGAGGTAGTAGGTTGTATAGTT
+        #seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
+        print "\ntriming\n"
+        annotate("data/aligments/let7-triming.sam", precursors, matures)
+
     @attr(complete=True)
     @attr(annotate=True)
     def test_srnaseq_annotation(self):
