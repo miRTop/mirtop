@@ -82,7 +82,7 @@ def add_subparser_target(subparsers):
 
 
 def add_subparser_simulator(subparsers):
-    parser = subparsers.add_parser("simulator", help="simulate small RNA  from bed file")
+    parser = subparsers.add_parser("simulator", help="simulate small RNAfrom fasta/bed file")
     parser.add_argument("--bed",
                         help="bed file with position of precursors <=200 nt")
     parser.add_argument("--fasta", help = "fasta with precursors.")
