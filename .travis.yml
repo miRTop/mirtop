@@ -13,7 +13,7 @@ install:
 - export PATH=~/install/bin/:$PATH
 - conda config --add channels r
 - conda install --yes ncurses -c r
-- conda install --yes -c bioconda bedtools samtools pip nose pysam pandas pyyaml -q
+- conda install --yes -c bioconda bedtools samtools pip nose pysam pandas pyyaml pybedtools -q
 - conda install --yes -c bioconda htslib=1.3
 script:
 - python setup.py develop
