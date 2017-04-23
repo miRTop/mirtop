@@ -1,5 +1,6 @@
 - 0.1.5a
 
+ * add test data for SAM parsing
  * add script to simulate isomiRs
  * parse indels from bam file
  
