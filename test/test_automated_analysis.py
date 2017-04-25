@@ -120,7 +120,6 @@ class AutomatedAnalysisTest(unittest.TestCase):
                 cols = line.strip().split()
                 mut, add, t5, t3 = cols[6:10]
                 seq = cols[0]
-                # print [cols[0]] + cols[6:10]
                 if mut!="0":
                     pos = int(mut[:-2])
                     nt1 = mut[-2]
@@ -128,7 +127,6 @@ class AutomatedAnalysisTest(unittest.TestCase):
                     seql = list(seq)
                     seql[pos] = nt2
                     seq = "".join(seql)
-                    # print [pos, nt1, nt2, cols[0][pos], seq]
                 if t5!="0" and t5.islower():
                     seq = "%s%s" % (t5.upper(), seq)
                 elif t5!="0" and t5.isupper():
