@@ -1,5 +1,7 @@
 # data
 *test_out_mirs_fasta*
+*bam
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
