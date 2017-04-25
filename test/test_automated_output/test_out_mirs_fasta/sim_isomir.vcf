@@ -1,8 +1,0 @@
-##fileformat=VCFv4.2
-##source=seqbuster2.3
-##reference=mirbase
-##INFO=<ID=ID,Number=1,Type=String,Description="miRNA name">
-##FORMAT=<ID=GT,Number=1,Type=Integer,Description="Genotype">
-##FORMAT=<ID=NR,Number=A,Type=Integer,Description="Total reads supporting the variant">
-##FORMAT=<ID=NS,Number=A,Type=Float,Description="Total number of different sequences supporting the variant">
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMP001

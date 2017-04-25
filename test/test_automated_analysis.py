@@ -106,8 +106,45 @@ class AutomatedAnalysisTest(unittest.TestCase):
         #mirna TGAGGTAGTAGGTTGTATAGTT
         #seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
         print "\ntriming\n"
-        annotate("data/aligments/let7-triming.sam", precursors, matures)
+        annotate ("data/aligments/let7-triming.sam", precursors, matures)
 
+    @attr(simulate=True)
+    def test_simulate(self):
+        """Check simulated data"""
+        mirna = "TGAGGTAGTAGGTTGTATAGTT"
+        correct = 0
+        n = 0
+        with open("data/examples/simulation/res/reads.mirna") as inh:
+            header = inh.readline()
+            for line in inh:
+                cols = line.strip().split()
+                mut, add, t5, t3 = cols[6:10]
+                seq = cols[0]
+                # print [cols[0]] + cols[6:10]
+                if mut!="0":
+                    pos = int(mut[:-2])
+                    nt1 = mut[-2]
+                    nt2 = mut[-1]
+                    seql = list(seq)
+                    seql[pos] = nt2
+                    seq = "".join(seql)
+                    # print [pos, nt1, nt2, cols[0][pos], seq]
+                if t5!="0" and t5.islower():
+                    seq = "%s%s" % (t5.upper(), seq)
+                elif t5!="0" and t5.isupper():
+                    seq = seq[len(t5):]
+                if add!="0":
+                    seq = seq[:-len(add)]
+                if t3!="0" and t3.islower():
+                    seq = "%s%s" % (seq, t3.upper())
+                elif t3!="0" and t3.isupper():
+                    seq = seq[:-len(t3)]
+                if seq == mirna:
+                    correct += 1
+                else:
+                    print "\nerror:\n%s\n%s" % (seq, mirna)
+                n += 1
+        print "rate %s/%s" % (correct, n)
     @attr(complete=True)
     @attr(annotate=True)
     def test_srnaseq_annotation(self):
