@@ -7,13 +7,11 @@ function run {
     python $SCRIPT/prepare.py --bed ${B} --precursor30 ${F}
 }
 
-echo HSA
 run hsa hg38
-echo MMU
 run mmu mm10
-# run rno rn6
-# run cpo cavPor3
-# run ocu oryCun2
-# run dno dasNov3
-# run gga galGal4
-# run dre danRer10
+run rno rn6
+run cpo cavPor3
+run ocu oryCun2
+run dno dasNov3
+run gga galGal4
+run dre danRer10
