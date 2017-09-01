@@ -27,8 +27,8 @@
 * data/examples/: example data would be in `data/examples`
  * check gff files: example of correct, invalid, warning GFF files
  * check BAM file
- * check mapping from genome position to precursor position, example of +/- strand
- * check clean option: sequence mapping to multiple precursors/mirna, get the best score
+ * check mapping from genome position to precursor position, example of +/- strand. Using `mirtop/mirna/map.read_gtf`.
+ * check clean option: sequence mapping to multiple precursors/mirna, get the best score. Using `mirtop/bam/filter.clean_hits`.
 
 To add new sub-commands, modify the following:
 
