@@ -4,7 +4,7 @@ import sys
 
 def parse_cl(in_args):
     print in_args
-    sub_cmds = {"annotate": add_subparser_mirbuster,
+    sub_cmds = {"gff": add_subparser_gff,
                 "target": add_subparser_target,
                 "collapse": add_subparser_collapse,
                 "simulator": add_subparser_simulator
@@ -12,7 +12,7 @@ def parse_cl(in_args):
     parser = argparse.ArgumentParser(description="small RNA analysis")
     sub_cmd = None
     if len(in_args) > 0 and in_args[0] in sub_cmds:
-        subparsers = parser.add_subparsers(help="seqcluster supplemental commands")
+        subparsers = parser.add_subparsers(help="mirtop supplemental commands")
         sub_cmds[in_args[0]](subparsers)
         sub_cmd = in_args[0]
     else:
@@ -33,18 +33,15 @@ def _add_debug_option(parser):
     return parser
 
 
-def add_subparser_mirbuster(subparsers):
-    parser = subparsers.add_parser("annotate", help="realign miRNA BAM file")
+def add_subparser_gffr(subparsers):
+    parser = subparsers.add_parser("gff", help="realign miRNA BAM file")
     parser.add_argument("files", nargs="*", help="Bam files.")
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
     parser.add_argument("--sps", required=1,
                         help="species")
     parser.add_argument("--hairpin", help="hairpin.fa")
-    parser.add_argument("--gtf", help="gtf file with precursor position to genome.")
-    parser.add_argument("--mirna", help="miRNA.str")
-    parser.add_argument("--miraligner", action="store_true",
-                        help="align with JAVA version.", default=False)
+    parser.add_argument("--gtf", help="gtf file with precursor and mature position to genome.")
     parser = _add_debug_option(parser)
     return parser
 

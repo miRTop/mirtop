@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-class realign:
+class hits:
 
     def __init__(self):
         self.sequence = ""
