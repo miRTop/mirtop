@@ -87,7 +87,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
         def annotate(fn, precursors, matures):
             from mirtop.bam import bam
             reads = bam.read_bam(fn, precursors)
-            # ann = mirtop.bam.filter.annotate(reads, matures, precursors)
+            # ann = mirtop.bam.bam.annotate(reads, matures, precursors)
             return True
         print "\nlast1D\n"
         annotate("data/aligments/let7-last1D.sam", precursors, matures)
@@ -149,6 +149,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
         print "rate %s/%s" % (correct, n)
     @attr(complete=True)
     @attr(annotate=True)
+
     def test_srnaseq_annotation(self):
         """Run miraligner analysis
         """

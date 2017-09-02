@@ -1,5 +1,4 @@
-from mirtop.bam.bam import read_bam
-from mirtop.bam.filter import annotate
+from mirtop.bam.bam import read_bam, annotate
 
 def reader(args):
     """
