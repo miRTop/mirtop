@@ -1,9 +1,9 @@
 * mirtop/bam
   * __bam.py__ 
     * `read_bam`: read BAM file with pysamtools and store in a key - value object
-  * __filter.py__
-    * `cleaner`: if option --clean is on, filter according generic rules
     * `annotate`: get isomiRs and CIGAR option
+  * __filter.py__
+    * `tune`: if option --clean is on, filter according generic rules
     * `clean_hits`: get the top socred hits
 * mirtop/gff
   * __body.py__ create entris with gff python package
