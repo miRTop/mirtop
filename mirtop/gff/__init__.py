@@ -1,5 +1,5 @@
 from mirtop.bam.bam import read_bam, annotate
-
+from mirtop.gff import body
 def reader(args):
     """
     Realign BAM hits to miRBAse to get better accuracy and annotation
@@ -18,6 +18,7 @@ def reader(args):
         else:
             raise ValueError("Format not recognized. Only working with BAM/SAM files.")
 
-        out_dts[bam_fn] = annotate(reads, matures, precursors)
+        ann = annotate(reads, matures, precursors)
+        out_dts[bam_fn] = body.create(reads)
     # merge all reads for all samples into one dicts
     # from dict with all samples convert each in a gff line

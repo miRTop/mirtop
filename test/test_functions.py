@@ -73,3 +73,21 @@ class FunctionsTest(unittest.TestCase):
         print "\ntriming\n"
         annotate ("data/aligments/let7-triming.sam", precursors, matures)
 
+    @attr(gff=True)
+    def test_gff(self):
+        """testing GFF function"""
+        from mirtop.libs import logger
+        logger.initialize_logger("test", True, True)
+        logger = logger.getLogger(__name__)
+        from mirtop.mirna import fasta
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        # depend on https://github.com/miRTop/mirtop/issues/6
+        matures = {}
+        # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
+        from mirtop.bam import bam
+        reads = bam.read_bam("data/aligments/let7-perfect.sam", precursors)
+        # ann = mirtop.bam.bam.annotate(reads, matures, precursors)
+        # gff = mirtop.gff.body.create(ann)
+        return True
+
+

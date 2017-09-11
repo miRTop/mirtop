@@ -106,6 +106,10 @@ def _coord(sequence, start, mirna, precursor, iso):
 def annotate(reads, mirbase_ref, precursors):
     """
     Using SAM/BAM coordinates, mismatches and realign to annotate isomiRs
+
+    reads: dict object that comes from read_bam fn
+    mirbase_ref: dict object that comers from mirtop.mirna.read_mature
+    precursors: dict object (key : fasta) that comes from mirtop.mirna.fasta.read_precursor
     """
     for r in reads:
         for p in reads[r].precursors:
