@@ -6,7 +6,7 @@
     * `tune`: if option --clean is on, filter according generic rules
     * `clean_hits`: get the top socred hits
 * mirtop/gff
-  * __body.py__ create entris with gff python package
+  * __body.py__ `create` fn will create the line according GFF format established.
   * __header.py__ generate header
   * __check.py__ check header and single lines to be valid according GFF format   
   * __query.py__ accept SQlite queries after option -q ""
