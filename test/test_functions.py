@@ -20,12 +20,11 @@ class FunctionsTest(unittest.TestCase):
     """
     @attr(read=True)
     def test_read(self):
-        from mirtop.mirna import map
+        from mirtop.mirna import map, fasta
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = map.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
-        # read data/examples/annotate/hsa.gff3
-        # read data/examples/annotate/hairpin.fa
+        fasta_precursor = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
         # read data/aligments/let7-perfect.bam
         return True
 

@@ -18,10 +18,12 @@ def read_precursor(precursor, sps):
     with open(precursor) as in_handle:
         for line in in_handle:
             if line.startswith(">"):
-                if hairpin[name]:
+                if name in hairpin:
                     hairpin[name] = hairpin[name] + "NNNNNNNNNNNN"
                 name = line.strip().replace(">", " ").split()[0]
+                logger.debug(name)
             else:
                 hairpin[name] += line.strip()
+                logger.debug(hairpin[name])
         hairpin[name] = hairpin[name] + "NNNNNNNNNNNN"
     return hairpin
