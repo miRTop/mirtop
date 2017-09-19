@@ -65,5 +65,5 @@ def read_gtf_to_precursor(gtf):
         db_mir[mir][1] = start
         db_mir[mir][2] = end
         logger.debug("%s %s %s" % (mir[1], start, end))
-        map_dict[id_dict[parent]][mir[1]] = db_mir[mir]
+        map_dict[id_dict[parent]][mir[1]] = db_mir[mir][1:3]
     return map_dict

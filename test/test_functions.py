@@ -24,6 +24,8 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = map.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 4:
+            raise ValueError("GFF is not loaded correctly.")
         fasta_precursor = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
         # read data/aligments/let7-perfect.bam
         return True
@@ -80,16 +82,16 @@ class FunctionsTest(unittest.TestCase):
     def test_gff(self):
         """testing GFF function"""
         from mirtop.libs import logger
+        from mirtop.mirna import map, fasta
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
-        from mirtop.mirna import fasta
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
         # depend on https://github.com/miRTop/mirtop/issues/6
-        matures = {}
+        matures = map.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
         # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
         from mirtop.bam import bam
         reads = bam.read_bam("data/aligments/let7-perfect.sam", precursors)
-        # ann = mirtop.bam.bam.annotate(reads, matures, precursors)
+        ann = bam.annotate(reads, matures, precursors)
         # gff = mirtop.gff.body.create(ann)
         return True
 

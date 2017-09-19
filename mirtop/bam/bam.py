@@ -73,7 +73,7 @@ def _coord(sequence, start, mirna, precursor, iso):
     if iso.subs:
         insertion = 1 if iso.subs[0][-1] == "-" else 0
     end = start + (iso.end - len(iso.add) - insertion) - 1
-    logger.debug("coor:s:%s len:%s flen:%s end:%s mirna:%s iso:%s" % (start, len(sequence), iso.end, end, mirna, iso.format()))
+    logger.debug("coor:: s:%s len:%s flen:%s end:%s mirna:%s iso:%s" % (start, len(sequence), iso.end, end, mirna, iso.format()))
     dif = abs(mirna[0] - start)
     if start < mirna[0]:
         iso.t5 = sequence[:dif].upper()
@@ -103,7 +103,7 @@ def _coord(sequence, start, mirna, precursor, iso):
     # logger.debug("coor end:%s %s %s %s %s iso:%s" % (start, len(sequence), end, dif, mirna, iso.format()))
     return True
 
-def annotate(reads, mirbase_ref, precursors):
+def annotate(reads, mature_ref, precursors):
     """
     Using SAM/BAM coordinates, mismatches and realign to annotate isomiRs
 
@@ -115,8 +115,9 @@ def annotate(reads, mirbase_ref, precursors):
         for p in reads[r].precursors:
             start = reads[r].precursors[p].start + 1  # convert to 1base
             end = start + len(reads[r].sequence)
-            for mature in mirbase_ref[p]:
-                mi = mirbase_ref[p][mature]
+            for mature in mature_ref[p]:
+                mi = mature_ref[p][mature]
+                logger.debug(("mi:{0} {1}").format(mi[0], mi[1]))
                 is_iso = _coord(reads[r].sequence, start, mi, precursors[p], reads[r].precursors[p])
                 logger.debug(("read:{s} pre:{p} start:{start} is_iso:{is_iso} mir:{mature} mir_p:{mi} mir_s:{mature_s}").format(s=reads[r].sequence, mature_s=precursors[p][mi[0]-1:mi[1]], **locals()))
                 logger.debug("annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
