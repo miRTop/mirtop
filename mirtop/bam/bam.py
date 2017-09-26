@@ -58,7 +58,7 @@ def read_bam(bam_fn, precursors):
         iso.start = line.reference_start
         if len(precursors[chrom]) < line.reference_start + len(reads[query_name].sequence):
             continue
-        iso.subs, iso.add, iso.end = filter.tune(reads[query_name].sequence, precursors[chrom], line.reference_start, cigar)
+        iso.subs, iso.add, iso.end, iso.cigar = filter.tune(reads[query_name].sequence, precursors[chrom], line.reference_start, cigar)
         if len(iso.subs) < 2:
             reads[query_name].set_precursor(chrom, iso)
 
@@ -117,10 +117,16 @@ def annotate(reads, mature_ref, precursors):
             end = start + len(reads[r].sequence)
             for mature in mature_ref[p]:
                 mi = mature_ref[p][mature]
-                logger.debug(("mi:{0} {1}").format(mi[0], mi[1]))
+                logger.debug(("ANN::mi:{0} {1}").format(mi[0], mi[1]))
                 is_iso = _coord(reads[r].sequence, start, mi, precursors[p], reads[r].precursors[p])
-                logger.debug(("read:{s} pre:{p} start:{start} is_iso:{is_iso} mir:{mature} mir_p:{mi} mir_s:{mature_s}").format(s=reads[r].sequence, mature_s=precursors[p][mi[0]-1:mi[1]], **locals()))
-                logger.debug("annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
+                logger.debug(("ANN::read:{s}\n pre:{p} start:{start}\n is_iso:{is_iso} "
+                              "cigar: {cigar} "
+                              "\n mir:{mature} mir_pos:{mi}\n mir_seqs:{mature_s}"
+                              ).format(s=reads[r].sequence,
+                                       mature_s=precursors[p][mi[0]-1:mi[1]],
+                                       cigar = reads[r].precursors[p].cigar,
+                                       **locals()))
+                logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
                 if is_iso:
                     reads[r].precursors[p].mirna = mature
                     break

@@ -1,3 +1,4 @@
+from Bio import pairwise2
 from collections import defaultdict
 
 class hits:
@@ -22,6 +23,7 @@ class isomir:
         self.add = []
         self.subs = []
         self.align = None
+        self.cigar = None
         self.end = 0
         self.start = 0
         self.mirna = None
@@ -53,6 +55,29 @@ class isomir:
         for e in self.subs:
             sc -= 1
         return sc
+
+def align(x, y):
+    """
+    https://medium.com/towards-data-science/pairwise-sequence-alignment-using-biopython-d1a9d0ba861f
+    """
+    return pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
+
+def make_cigar(seq, mature):
+    """
+    Function that will create CIGAR string from aligment
+    between read and reference sequence.
+    """
+    cigar = ""
+    for pos in range(0,len(seq)):
+        if seq[pos] == mature[pos]:
+            cigar += "M"
+        elif seq[pos] != mature[pos] and seq[pos] != "-" and mature[pos] != "-":
+            cigar += seq[pos]
+        elif seq[pos] == "-":
+            cigar += "D"
+        elif mature[pos] == "-":
+            cigar += "I"
+    return cigar
 
 def cigar_correction(cigarLine, query, target):
     """Read from cigar in BAM file to define mismatches"""

@@ -24,6 +24,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = map.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        print map_mir
         if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 4:
             raise ValueError("GFF is not loaded correctly.")
         fasta_precursor = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
@@ -34,11 +35,23 @@ class FunctionsTest(unittest.TestCase):
     def test_cigar(self):
         """testing cigar correction function"""
         cigar = [[0, 14], [1, 1], [0, 5]]
-        from mirtop.mirna.realign import cigar_correction
+        from mirtop.mirna.realign import cigar_correction, make_cigar
         fixed = cigar_correction(cigar, "AAAAGCTGGGTTGAGGAGGA", "AAAAGCTGGGTTGAGAGGA")
-        print "\n testing cigar correction"
-        print fixed[0]
-        print fixed[1]
+        if not fixed[0] == "AAAAGCTGGGTTGAGGAGGA":
+            raise ValueError("Sequence 1 is not right.")
+        if not fixed[1] == "AAAAGCTGGGTTGA-GAGGA":
+            raise ValueError("Sequence 2 is not right.")
+        if not make_cigar("AAA-AAATAAA", "AGACAAA-AAA") == "MAMDMMMIMMM":
+            raise ValueError("Cigar not eq to MAMDMMMIMMM: %s" % make_cigar("AAA-AAATAAA", "AGACAAA-AAA"))
+
+    @attr(locala=True)
+    def test_locala(self):
+        """testing pairwise alignment"""
+        from mirtop.mirna.realign import align
+        print "\nExamples of perfect match, deletion, mutation"
+        print align("TGAGGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
+        print align("TGAGGTGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
+        print align("TGAGGTAGTAGGCTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
 
     @attr(alignment=True)
     def test_alignment(self):

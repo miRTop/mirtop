@@ -41,13 +41,13 @@ def read_gtf_to_precursor(gtf):
             if cols[2] == "miRNA":
                 parent = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("Derives_from")]
                 db_mir[(parent[0], name[0])] = [chrom, int(start), int(end), strand, parent[0]]
-                logger.debug(name[0])
-                logger.debug(db_mir[(parent[0], name[0])])
+                logger.debug("MAP:: mirna:%s" % name[0])
+                logger.debug("MAP:: pos %s" % db_mir[(parent[0], name[0])])
     for mir in db_mir:
         parent = db_mir[mir][4]
         precursor = db[id_dict[parent]]
-        logger.debug("%s %s %s" % (id_dict[parent], precursor[1], precursor[2]))
-        logger.debug("%s %s %s" % (mir, db_mir[mir][1], db_mir[mir][2]))
+        logger.debug("MAP::%s %s %s" % (id_dict[parent], precursor[1], precursor[2]))
+        logger.debug("MAP::%s %s %s" % (mir, db_mir[mir][1], db_mir[mir][2]))
         if precursor[3] != db_mir[mir][3]:
             logger.warning("%s -> %s" % (id_dict[parent], mir))
             logger.warning("miRNA strand doesn't match with precursor strand: %s - %s" % (db_mir[mir][3], precursor[3]))
@@ -58,12 +58,12 @@ def read_gtf_to_precursor(gtf):
             next
         if precursor[3] == "+":
             start = db_mir[mir][1] - precursor[1]
-            end = precursor[2] - db_mir[mir][2]
+            end = db_mir[mir][2] - precursor[1]
         if precursor[3] == "-":
-            end = db_mir[mir][1] - precursor[1]
+            end = precursor[2] - db_mir[mir][1]
             start = precursor[2] - db_mir[mir][2]
         db_mir[mir][1] = start
         db_mir[mir][2] = end
-        logger.debug("%s %s %s" % (mir[1], start, end))
+        logger.debug("MAP:: final:%s %s %s" % (mir[1], start, end))
         map_dict[id_dict[parent]][mir[1]] = db_mir[mir][1:3]
     return map_dict

@@ -6,7 +6,7 @@ import shutil
 import pandas as pd
 import pysam
 from collections import defaultdict
-from mirtop.mirna.realign import hits, cigar_correction
+from mirtop.mirna.realign import hits, cigar_correction, make_cigar
 from mirtop.libs import do
 from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
@@ -49,7 +49,7 @@ def tune(seq, precursor, start, cigar):
         for e in error_add:
             subs.append([e, seq[e], mature[e]])
 
-    return subs, add, len(mature)
+    return subs, add, len(mature), make_cigar(seq, mature)
 
 def clean_hits(reads):
     """
