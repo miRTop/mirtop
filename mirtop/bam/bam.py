@@ -31,7 +31,7 @@ def _bam_sort(bam_fn):
         do.run(("samtools sort -n -o {bam_sort_by_n} {bam_fn}").format(**locals()))
     return bam_sort_by_n
 
-def read_bam(bam_fn, precursors):
+def read_bam(bam_fn, precursors, clean = True):
     """
     read bam file and perform realignment of hits
     """
@@ -46,7 +46,8 @@ def read_bam(bam_fn, precursors):
             continue
         query_name = line.query_name
         if query_name not in reads:
-            reads[query_name].sequence = line.query_sequence
+            reads[query_name].set_sequence(line.query_sequence)
+            reads[query_name].counts = _get_freq(query_name)
         if line.is_reverse:
             logger.debug("Sequence is reverse: %s" % line.query_name)
             continue
@@ -55,15 +56,27 @@ def read_bam(bam_fn, precursors):
         cigar = line.cigartuples
         iso = isomir()
         iso.align = line
-        iso.start = line.reference_start
+        iso.set_pos(line.reference_start, len(reads[query_name].sequence))
+        logger.debug("READ::From BAM start %s end %s" % (iso.start, iso.end))
         if len(precursors[chrom]) < line.reference_start + len(reads[query_name].sequence):
             continue
-        iso.subs, iso.add, iso.end, iso.cigar = filter.tune(reads[query_name].sequence, precursors[chrom], line.reference_start, cigar)
+        iso.subs, iso.add, iso.cigar = filter.tune(reads[query_name].sequence, precursors[chrom], line.reference_start, cigar)
+        logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
         if len(iso.subs) < 2:
             reads[query_name].set_precursor(chrom, iso)
-
-    reads = filter.clean_hits(reads)
+    if clean:
+        reads = filter.clean_hits(reads)
     return reads
+
+def _get_freq(name):
+    """
+    Check if name read contains counts (_xNumber)
+    """
+    try:
+        counts = int(name.split("_x")[1])
+    except:
+        return 0
+    return counts
 
 def _coord(sequence, start, mirna, precursor, iso):
     """
@@ -72,17 +85,17 @@ def _coord(sequence, start, mirna, precursor, iso):
     insertion = 0
     if iso.subs:
         insertion = 1 if iso.subs[0][-1] == "-" else 0
-    end = start + (iso.end - len(iso.add) - insertion) - 1
-    logger.debug("coor:: s:%s len:%s flen:%s end:%s mirna:%s iso:%s" % (start, len(sequence), iso.end, end, mirna, iso.format()))
+    end = (iso.end - len(iso.add) - insertion)
+    logger.debug("COOR:: s:%s len:%s end:%s fixedEnd:%s mirna:%s iso:%s" % (start, len(sequence), iso.end, end, mirna, iso.format()))
     dif = abs(mirna[0] - start)
     if start < mirna[0]:
         iso.t5 = sequence[:dif].upper()
     elif start > mirna[0]:
         iso.t5 = precursor[mirna[0] - 1:mirna[0] - 1 + dif].lower()
     elif start == mirna[0]:
-        iso.t5 = "NA"
+        iso.t5 = 0
     if dif > 4:
-        logger.debug("start > 3 %s %s %s %s %s" % (start, len(sequence), dif, mirna, iso.format()))
+        logger.debug("COOR::start > 3 %s %s %s %s %s" % (start, len(sequence), dif, mirna, iso.format()))
         return None
 
     dif = abs(mirna[1] - end)
@@ -96,9 +109,9 @@ def _coord(sequence, start, mirna, precursor, iso):
     elif end < mirna[1]:
         iso.t3 = precursor[mirna[1] - dif:mirna[1]].lower()
     elif end == mirna[1]:
-        iso.t3 = "NA"
+        iso.t3 = 0
     if dif > 4:
-        logger.debug("end > 3 %s %s %s %s %s" % (len(sequence), end, dif, mirna, iso.format()))
+        logger.debug("COOR::end > 3 %s %s %s %s %s" % (len(sequence), end, dif, mirna, iso.format()))
         return None
     # logger.debug("coor end:%s %s %s %s %s iso:%s" % (start, len(sequence), end, dif, mirna, iso.format()))
     return True
@@ -110,16 +123,18 @@ def annotate(reads, mature_ref, precursors):
     reads: dict object that comes from read_bam fn
     mirbase_ref: dict object that comers from mirtop.mirna.read_mature
     precursors: dict object (key : fasta) that comes from mirtop.mirna.fasta.read_precursor
+
+    Return: dict object with reasd as Keys and...
     """
     for r in reads:
         for p in reads[r].precursors:
-            start = reads[r].precursors[p].start + 1  # convert to 1base
-            end = start + len(reads[r].sequence)
+            start = reads[r].precursors[p].start
+            end = reads[r].precursors[p].end
             for mature in mature_ref[p]:
                 mi = mature_ref[p][mature]
                 logger.debug(("ANN::mi:{0} {1}").format(mi[0], mi[1]))
                 is_iso = _coord(reads[r].sequence, start, mi, precursors[p], reads[r].precursors[p])
-                logger.debug(("ANN::read:{s}\n pre:{p} start:{start}\n is_iso:{is_iso} "
+                logger.debug(("ANN::read:{s}\n pre:{p} start:{start} end: {end}\n is_iso:{is_iso} "
                               "cigar: {cigar} "
                               "\n mir:{mature} mir_pos:{mi}\n mir_seqs:{mature_s}"
                               ).format(s=reads[r].sequence,

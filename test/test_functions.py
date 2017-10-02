@@ -20,16 +20,24 @@ class FunctionsTest(unittest.TestCase):
     """
     @attr(read=True)
     def test_read(self):
-        from mirtop.mirna import map, fasta
+        from mirtop.mirna import mapper, fasta
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
-        map_mir = map.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        map_mir = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
         print map_mir
         if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 4:
             raise ValueError("GFF is not loaded correctly.")
         fasta_precursor = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
         # read data/aligments/let7-perfect.bam
         return True
+
+    @attr(code=True)
+    def test_code(self):
+        """testing code correction function"""
+        from mirtop.mirna.realign import make_id
+        print make_id("AAACCCTTTGGG")
+        print make_id("AAACCCTTTGGGA")
+        print make_id("AAACCCTTTGGGAT")
 
     @attr(cigar=True)
     def test_cigar(self):
@@ -41,7 +49,7 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Sequence 1 is not right.")
         if not fixed[1] == "AAAAGCTGGGTTGA-GAGGA":
             raise ValueError("Sequence 2 is not right.")
-        if not make_cigar("AAA-AAATAAA", "AGACAAA-AAA") == "MAMDMMMIMMM":
+        if not make_cigar("AAA-AAATAAA", "AGACAAA-AAA") == "MAMD3MI3M":
             raise ValueError("Cigar not eq to MAMDMMMIMMM: %s" % make_cigar("AAA-AAATAAA", "AGACAAA-AAA"))
 
     @attr(locala=True)
@@ -95,7 +103,8 @@ class FunctionsTest(unittest.TestCase):
     def test_gff(self):
         """testing GFF function"""
         from mirtop.libs import logger
-        from mirtop.mirna import map, fasta
+        from mirtop.mirna import mapper, fasta
+        from mirtop.gff import body
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
@@ -105,7 +114,8 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.bam import bam
         reads = bam.read_bam("data/aligments/let7-perfect.sam", precursors)
         ann = bam.annotate(reads, matures, precursors)
-        # gff = mirtop.gff.body.create(ann)
+        fn = "data/aligments/let7-perfect.sam" + ".gff"
+        gff = body.create(ann, "mirBase21", "example", fn)
         return True
 
 

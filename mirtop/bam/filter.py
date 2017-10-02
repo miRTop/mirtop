@@ -22,7 +22,7 @@ def tune(seq, precursor, start, cigar):
     if seq.startswith("-"):
         seq = seq[1:]
     # print [cigar, seq, mature]
-    logger.debug("Alignment: %s %s %s" % (cigar, seq, mature))
+    logger.debug("TUNE:: %s %s %s" % (cigar, seq, mature))
     error = set()
     pattern_addition = [[1, 1, 0], [1, 0, 1], [0, 1, 0], [0, 1, 1], [0, 0, 1], [1, 1, 1]]
     for pos in range(0, len(seq)):
@@ -49,7 +49,7 @@ def tune(seq, precursor, start, cigar):
         for e in error_add:
             subs.append([e, seq[e], mature[e]])
 
-    return subs, add, len(mature), make_cigar(seq, mature)
+    return subs, add, make_cigar(seq, mature)
 
 def clean_hits(reads):
     """
@@ -65,9 +65,9 @@ def clean_hits(reads):
                 sc = world[p]
         new_reads[r] = reads[r]
         for p in world:
-            logger.debug("score %s %s %s" % (r, p, world[p]))
+            logger.debug("CLEAN::score %s %s %s" % (r, p, world[p]))
             if sc != world[p]:
-                logger.debug("remove %s %s %s" % (r, p, world[p]))
+                logger.debug("CLEAN::remove %s %s %s" % (r, p, world[p]))
                 new_reads[r].remove_precursor(p)
 
     return new_reads

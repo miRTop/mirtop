@@ -33,7 +33,7 @@ def _add_debug_option(parser):
     return parser
 
 
-def add_subparser_gffr(subparsers):
+def add_subparser_gff(subparsers):
     parser = subparsers.add_parser("gff", help="realign miRNA BAM file")
     parser.add_argument("files", nargs="*", help="Bam files.")
     parser.add_argument("-o", "--out", dest="out", required=1,

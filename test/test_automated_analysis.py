@@ -99,19 +99,20 @@ class AutomatedAnalysisTest(unittest.TestCase):
                     print "\nerror:\n%s\n%s" % (seq, mirna)
                 n += 1
         print "rate %s/%s" % (correct, n)
+
     @attr(complete=True)
     @attr(annotate=True)
-
     def test_srnaseq_annotation(self):
         """Run miraligner analysis
         """
         with make_workdir():
             clcode = ["mirtop",
-                      "annotate",
+                      "gff",
                       "--sps", "hsa",
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
-                      "--mirna", "../../data/examples/annotate/miRNA.str",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "-o", "test_out_mirs_fasta",
                       "../../data/examples/annotate/sim_isomir.sam"]
+            print ""
             print " ".join(clcode)
-            # subprocess.check_call(clcode)
+            subprocess.check_call(clcode)
