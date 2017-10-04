@@ -45,6 +45,10 @@ def read_bam(bam_fn, precursors, clean = True):
             logger.debug("Sequence not mapped: %s" % line.reference_id)
             continue
         query_name = line.query_name
+        if query_name not in reads and line.query_sequence == None:
+            continue
+        if line.query_sequence and line.query_sequence.find("N") > -1:
+            continue
         if query_name not in reads:
             reads[query_name].set_sequence(line.query_sequence)
             reads[query_name].counts = _get_freq(query_name)
@@ -64,8 +68,10 @@ def read_bam(bam_fn, precursors, clean = True):
         logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
         if len(iso.subs) < 2:
             reads[query_name].set_precursor(chrom, iso)
+    logger.info("Hits: %s" % len(reads))
     if clean:
         reads = filter.clean_hits(reads)
+        logger.info("Hits after clean: %s" % len(reads))
     return reads
 
 def _get_freq(name):
@@ -138,11 +144,12 @@ def annotate(reads, mature_ref, precursors):
                               "cigar: {cigar} "
                               "\n mir:{mature} mir_pos:{mi}\n mir_seqs:{mature_s}"
                               ).format(s=reads[r].sequence,
-                                       mature_s=precursors[p][mi[0]-1:mi[1]],
+                                       mature_s=precursors[p][mi[0]:mi[1]],
                                        cigar = reads[r].precursors[p].cigar,
                                        **locals()))
                 logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
                 if is_iso:
                     reads[r].precursors[p].mirna = mature
                     break
+    logger.info("Annotated: %s" % len(reads))
     return reads

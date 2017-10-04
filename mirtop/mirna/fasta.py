@@ -23,7 +23,7 @@ def read_precursor(precursor, sps):
                 name = line.strip().replace(">", " ").split()[0]
                 logger.debug(name)
             else:
-                hairpin[name] += line.strip()
+                hairpin[name] += line.strip().replace("U", "T")
                 logger.debug(hairpin[name])
         hairpin[name] = hairpin[name] + "NNNNNNNNNNNN"
     return hairpin

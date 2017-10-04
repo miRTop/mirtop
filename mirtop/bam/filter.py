@@ -21,6 +21,8 @@ def tune(seq, precursor, start, cigar):
     seq, mature = cigar_correction(cigar, seq, precursor[start:])
     if seq.startswith("-"):
         seq = seq[1:]
+    if seq.endswith("-"):
+        seq = seq[:-1]
     # print [cigar, seq, mature]
     logger.debug("TUNE:: %s %s %s" % (cigar, seq, mature))
     error = set()

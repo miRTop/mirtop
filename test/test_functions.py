@@ -104,18 +104,43 @@ class FunctionsTest(unittest.TestCase):
         """testing GFF function"""
         from mirtop.libs import logger
         from mirtop.mirna import mapper, fasta
-        from mirtop.gff import body
+        from mirtop.gff import body, header
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
         # depend on https://github.com/miRTop/mirtop/issues/6
-        matures = map.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
         # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
         from mirtop.bam import bam
-        reads = bam.read_bam("data/aligments/let7-perfect.sam", precursors)
+        bam_fn = "data/aligments/let7-perfect.sam"
+        reads = bam.read_bam(bam_fn, precursors)
         ann = bam.annotate(reads, matures, precursors)
-        fn = "data/aligments/let7-perfect.sam" + ".gff"
-        gff = body.create(ann, "mirBase21", "example", fn)
+        fn = bam_fn + ".gff"
+        h = header.create(bam_fn, ["example"], "miRBase21")
+        print h
+        gff = body.create(ann, "miRBase21", "example", fn, header)
+        return True
+
+    @attr(collapse=True)
+    def test_collapse(self):
+        """testing GFF function"""
+        from mirtop.libs import logger
+        from mirtop.mirna import mapper, fasta
+        from mirtop.gff import body, header
+        logger.initialize_logger("test", True, True)
+        logger = logger.getLogger(__name__)
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        # depend on https://github.com/miRTop/mirtop/issues/6
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
+        from mirtop.bam import bam
+        bam_fn = "data/aligments/collapsing-isomirs.sam"
+        reads = bam.read_bam(bam_fn, precursors)
+        ann = bam.annotate(reads, matures, precursors)
+        fn = bam_fn + ".gff"
+        h = header.create(bam_fn, ["example"], "miRBase21")
+        gff = body.create(ann, "miRBase21", "example", fn, header)
+        print gff
         return True
 
 

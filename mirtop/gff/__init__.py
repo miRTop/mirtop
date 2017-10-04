@@ -2,7 +2,7 @@ import os.path as op
 
 from mirtop.mirna import fasta, mapper
 from mirtop.bam.bam import read_bam, annotate
-from mirtop.gff import body
+from mirtop.gff import body, header
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
@@ -27,6 +27,7 @@ def reader(args):
             raise ValueError("Format not recognized. Only working with BAM/SAM files.")
 
         ann = annotate(reads, matures, precursors)
-        out_dts[bam_fn] = body.create(ann, database, sample, fn_out)
+        h = header.create(bam_fn, [sample], database)
+        out_dts[bam_fn] = body.create(ann, database, sample, fn_out, h)
     # merge all reads for all samples into one dicts
     # from dict with all samples convert each in a gff line

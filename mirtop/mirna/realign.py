@@ -51,10 +51,14 @@ class isomir:
         value = ""
         subs = self.subs
         if subs:
-            if subs[0] > 1 and subs[0] < 9:
+            if subs[0] > 1 and subs[0] < 8:
                 value += "iso_snp_seed,"
+            elif subs[0] == 8:
+                value += "iso_snp_central_offset,"
             elif subs[0] > 8 and subs[0] < 13:
-                value += "iso_snp_central,"
+                value += "iso_snp+central,"
+            elif subs[0] > 12 and subs[0] < 18:
+                value += "iso_snp_central_supp,"
             else:
                 value += "iso_snp,"
         if self.add:
@@ -106,11 +110,13 @@ def make_id(seq):
     for i in range(0, len(seq) + 1, 3):
         if i == 0:
             continue
-        idName += NT2CODE[seq[start:i]]
+        trint = seq[start:i]
+        idName += NT2CODE[trint]
         start = i
     if len(seq) > i:
         dummy = "A" * (3 - (len(seq) - i))
-        idName += NT2CODE["%s%s" % (seq[i:len(seq)], dummy)]
+        trint = seq[i:len(seq)]
+        idName += NT2CODE["%s%s" % (trint, dummy)]
         idName += str(len(dummy))
     return idName
 
@@ -136,7 +142,7 @@ def make_cigar(seq, mature):
         if seq[pos] == mature[pos]:
             cigar += "M"
         elif seq[pos] != mature[pos] and seq[pos] != "-" and mature[pos] != "-":
-            cigar += seq[pos]
+            cigar += mature[pos]
         elif seq[pos] == "-":
             cigar += "D"
         elif mature[pos] == "-":
