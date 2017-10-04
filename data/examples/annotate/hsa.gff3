@@ -7,3 +7,5 @@ chr22	.	miRNA	46112800	46112820	.	+	.	ID=MIMAT0004481;Alias=MIMAT0004481;Name=hs
 chr9	.	miRNA_primary_transcript	94175957	94176036	.	+	.	ID=MI0000060;Alias=MI0000060;Name=hsa-let-7a-1
 chr9	.	miRNA	94175962	94175983	.	+	.	ID=MIMAT0000062_2;Alias=MIMAT0000062;Name=hsa-let-7a-5p;Derives_from=MI0000060
 chr9	.	miRNA	94176013	94176033	.	+	.	ID=MIMAT0004481_1;Alias=MIMAT0004481;Name=hsa-let-7a-3p;Derives_from=MI0000060
+chr9	.	miRNA_primary_transcript	94176347	94176433	.	+	.	ID=MI0000067;Alias=MI0000067;Name=hsa-let-7f-1
+chr9	.	miRNA	94176409	94176430	.	+	.	ID=MIMAT0004486;Alias=MIMAT0004486;Name=hsa-let-7f-1-3p;Derives_from=MI0000067
