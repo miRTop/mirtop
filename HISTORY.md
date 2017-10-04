@@ -1,3 +1,7 @@
+- 0.1.6a
+
+ * Adapt output format to https://github.com/miRTop/incubator/blob/master/format/definition.md
+
 - 0.1.5a
  
  * add function to check correct annotation
