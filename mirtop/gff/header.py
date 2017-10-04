@@ -10,7 +10,7 @@ def create(bam_file, samples, database, filter = None):
 
 
 def _get_gff_version():
-    return "# GFF3 adapted for miRNA sequencing data\n## VERSION 0.0.1\n"
+    return "## GFF3 adapted for miRNA sequencing data\n## VERSION 0.0.1\n"
 
 def _get_samples(samples):
     return "## COLDATA: %s" % ";".join(samples)

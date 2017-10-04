@@ -18,6 +18,14 @@ import yaml
 class FunctionsTest(unittest.TestCase):
     """Setup a full automated analysis and run the pipeline.
     """
+    @attr(database=True)
+    def test_database(self):
+        from mirtop.mirna import mapper
+        db = mapper.guess_database("data/examples/annotate/hsa.gff3")
+        print "Database is %s" % db
+        if db != "miRBasev21":
+            raise ValueError("%s not eq to miRBasev21" % db)
+
     @attr(read=True)
     def test_read(self):
         from mirtop.mirna import mapper, fasta

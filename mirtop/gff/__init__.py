@@ -10,7 +10,7 @@ def reader(args):
     """
     Realign BAM hits to miRBAse to get better accuracy and annotation
     """
-    database = "miRBase21" # read from GTF mirna file
+    database = mapper.guess_databse(args.gtf)
     # hairpin, mirna = download_mirbase(args)
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     matures = mapper.read_gtf_to_precursor(args.gtf)

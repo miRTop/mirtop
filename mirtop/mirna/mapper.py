@@ -14,6 +14,20 @@ import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
 
+def guess_database(gtf):
+    database = None
+    with open(gtf) as in_handle:
+        for line in in_handle:
+            if not line.startswith("#"):
+                break
+            if line.find("miRBase") > 0:
+                database = line[line.find("miRBase"):].strip().replace(" ", "")
+    if not database:
+        logger.error("Database not found in --mirna %s. "
+                     "Use --database argument to add a custom source." % gtf)
+        raise ValueError("Database not found in %s header" % gtf)
+    return database
+
 def read_gtf_to_precursor(gtf):
     """
     Load GTF file with precursor positions on genome
