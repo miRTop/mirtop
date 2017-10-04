@@ -11,7 +11,7 @@ def readme():
 
 
 setup(name='mirtop',
-      version='0.1.5a',
+      version='0.1.6',
       description='Small RNA-seq annotation',
       long_description=readme(),
       classifiers=[
