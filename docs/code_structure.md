@@ -22,7 +22,7 @@
     * `hits`: class that defines hits
     * `isomir`: class that defines each sequence
     * `cigar_correction`: function that use CIGAR to make sequence to miRNA alignemt
-  * __map.py__: 
+  * __mapper.py__: 
     * `read_gtf` file: map genomic miRNA position to precursos position, then it needs genomic position for the miRNA and the precursor. Return would be like {mirna: [start, end]}
  * data/examples/
    * check gff files: example of correct, invalid, warning GFF files
