@@ -1,12 +1,21 @@
+from Bio import pairwise2
 from collections import defaultdict
 
-class realign:
+from mirtop.mirna.keys import *
+
+class hits:
 
     def __init__(self):
         self.sequence = ""
+        self.idseq = ""
         self.precursors = defaultdict(isomir)
         self.score = []
         self.best_hits = [] # maybe sam object?
+        self.counts = 0
+
+    def set_sequence(self, seq):
+        self.sequence = seq
+        self.idseq = make_id(seq)
 
     def set_precursor(self, precursor, isomir):
         self.precursors[precursor] = isomir
@@ -22,9 +31,45 @@ class isomir:
         self.add = []
         self.subs = []
         self.align = None
-        self.end = 0
-        self.start = 0
+        self.cigar = None
+        self.filter = "Pass"
+        self.map_score = 0
+        self.end = None
+        self.start = None
         self.mirna = None
+        self.strand = "+"
+
+    def set_pos(self, start, l, strand = "+"):
+        self.strand = strand
+        self.start = start
+        self.end = start + l - 1
+        if strand == "-":
+            self.start = start + l - 1
+            self.end = start
+
+    def formatGFF(self):
+        value = ""
+        subs = self.subs
+        if subs:
+            if subs[0] > 1 and subs[0] < 8:
+                value += "iso_snp_seed,"
+            elif subs[0] == 8:
+                value += "iso_snp_central_offset,"
+            elif subs[0] > 8 and subs[0] < 13:
+                value += "iso_snp+central,"
+            elif subs[0] > 12 and subs[0] < 18:
+                value += "iso_snp_central_supp,"
+            else:
+                value += "iso_snp,"
+        if self.add:
+            value += "iso_add,"
+        if self.t5:
+            value += "iso_5p,"
+        if self.t3:
+            value += "iso_3p,"
+        if not value:
+            value += "NA,"
+        return value[:-1]
 
     def format(self, sep="\t"):
         subs = "".join(["".join(map(str, mism)) for mism in self.subs])
@@ -53,6 +98,73 @@ class isomir:
         for e in self.subs:
             sc -= 1
         return sc
+
+    def is_iso(self):
+        if self.t5 or self.t3 or self.add or self.subs:
+            return True
+        return False
+
+def make_id(seq):
+    start = 0
+    idName = ""
+    for i in range(0, len(seq) + 1, 3):
+        if i == 0:
+            continue
+        trint = seq[start:i]
+        idName += NT2CODE[trint]
+        start = i
+    if len(seq) > i:
+        dummy = "A" * (3 - (len(seq) - i))
+        trint = seq[i:len(seq)]
+        idName += NT2CODE["%s%s" % (trint, dummy)]
+        idName += str(len(dummy))
+    return idName
+
+def align(x, y):
+    """
+    https://medium.com/towards-data-science/pairwise-sequence-alignment-using-biopython-d1a9d0ba861f
+    """
+    return pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
+
+def _add_cigar_char(counter, cache):
+    if counter == 1:
+        return cache
+    else:
+        return str(counter) + cache
+
+def make_cigar(seq, mature):
+    """
+    Function that will create CIGAR string from aligment
+    between read and reference sequence.
+    """
+    cigar = ""
+    for pos in range(0,len(seq)):
+        if seq[pos] == mature[pos]:
+            cigar += "M"
+        elif seq[pos] != mature[pos] and seq[pos] != "-" and mature[pos] != "-":
+            cigar += mature[pos]
+        elif seq[pos] == "-":
+            cigar += "D"
+        elif mature[pos] == "-":
+            cigar += "I"
+
+    cache = ""
+    counter = 1
+    short = ""
+    for c in cigar:
+        if c != cache and cache != "" and cache == "M":
+            short += _add_cigar_char(counter, cache)
+            counter = 1
+            cache = c
+        if c != "M":
+            short += c
+        if c == cache and c == "M":
+            counter += 1
+        cache = c
+
+    if cache == "M":
+        short += _add_cigar_char(counter, cache)
+    return short
 
 def cigar_correction(cigarLine, query, target):
     """Read from cigar in BAM file to define mismatches"""
