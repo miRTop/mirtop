@@ -6,7 +6,7 @@ import shutil
 import pandas as pd
 import pysam
 from collections import defaultdict
-from mirtop.mirna.realign import hits, cigar_correction, make_cigar
+from mirtop.mirna.realign import hits, cigar_correction, make_cigar, align
 from mirtop.libs import do
 from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
@@ -18,12 +18,15 @@ def tune(seq, precursor, start, cigar):
     """
     The actual fn that will realign the sequence
     """
-    seq, mature = cigar_correction(cigar, seq, precursor[start:])
+    if cigar:
+        seq, mature = cigar_correction(cigar, seq, precursor[start:])
+    else:
+        seq, mature, score, p, size = align(seq, precursor[start:start + len(seq)])
+        cigar = make_cigar(seq, mature)
     if seq.startswith("-"):
         seq = seq[1:]
     if seq.endswith("-"):
         seq = seq[:-1]
-    # print [cigar, seq, mature]
     logger.debug("TUNE:: %s %s %s" % (cigar, seq, mature))
     error = set()
     pattern_addition = [[1, 1, 0], [1, 0, 1], [0, 1, 0], [0, 1, 1], [0, 0, 1], [1, 1, 1]]

@@ -107,6 +107,24 @@ class FunctionsTest(unittest.TestCase):
         print "\ntriming\n"
         annotate ("data/aligments/let7-triming.sam", precursors, matures)
 
+    @attr(seqbuster=True)
+    def test_seqbuster(self):
+        """testing reading seqbuster files function"""
+        from mirtop.libs import logger
+        logger.initialize_logger("test", True, True)
+        logger = logger.getLogger(__name__)
+        from mirtop.mirna import fasta, mapper
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        def annotate(fn, precursors, matures):
+            from mirtop.importer import seqbuster
+            from mirtop.bam import bam
+            reads = seqbuster.read_file(fn, precursors)
+            ann = bam.annotate(reads, matures, precursors)
+            return True
+        print "\nlast1D\n"
+        annotate("data/examples/simulation/reads20.mirna", precursors, matures)
+
     @attr(gff=True)
     def test_gff(self):
         """testing GFF function"""

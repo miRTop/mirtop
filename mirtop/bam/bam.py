@@ -144,7 +144,7 @@ def annotate(reads, mature_ref, precursors):
                               "cigar: {cigar} "
                               "\n mir:{mature} mir_pos:{mi}\n mir_seqs:{mature_s}"
                               ).format(s=reads[r].sequence,
-                                       mature_s=precursors[p][mi[0]:mi[1]],
+                                       mature_s = precursors[p][mi[0]:mi[1] + 1],
                                        cigar = reads[r].precursors[p].cigar,
                                        **locals()))
                 logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
