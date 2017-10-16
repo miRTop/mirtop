@@ -123,7 +123,26 @@ class FunctionsTest(unittest.TestCase):
             ann = bam.annotate(reads, matures, precursors)
             return True
         print "\nlast1D\n"
-        annotate("data/examples/simulation/reads20.mirna", precursors, matures)
+        annotate("data/examples/seqbuster/reads20.mirna", precursors, matures)
+
+    @attr(srnabench=True)
+    def test_srnabench(self):
+        """testing reading seqbuster files function"""
+        from mirtop.libs import logger
+        logger.initialize_logger("test", True, True)
+        logger = logger.getLogger(__name__)
+        from mirtop.mirna import fasta, mapper
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        def annotate(fn, precursors, matures):
+            from mirtop.importer import srnabench
+            from mirtop.bam import bam
+            reads = srnabench.read_file(fn, precursors)
+            ann = bam.annotate(reads, matures, precursors)
+            return True
+        print "\nsRNAbench\n"
+        annotate("data/examples/srnabench/reads.annotation", precursors, matures)
+
 
     @attr(gff=True)
     def test_gff(self):

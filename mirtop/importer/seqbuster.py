@@ -1,4 +1,4 @@
-""" Read bam files"""
+""" Read seqbuster files"""
 
 import traceback
 import os.path as op

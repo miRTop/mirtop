@@ -1,5 +1,6 @@
 - 0.1.7a
 
+ * Fix bug mixing up source column
  * Support Seqbuster output
  * Functin to guess database used from GTF file through --mirna parameter
  * Adapt output format to https://github.com/miRTop/incubator/blob/master/format/definition.md

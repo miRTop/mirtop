@@ -113,7 +113,7 @@ def _coord(sequence, start, mirna, precursor, iso):
     if end > mirna[1]:
         iso.t3 = sequence[-dif:].upper()
     elif end < mirna[1]:
-        iso.t3 = precursor[mirna[1] - dif:mirna[1]].lower()
+        iso.t3 = precursor[mirna[1] + 1 - dif:(mirna[1] + 1)].lower()
     elif end == mirna[1]:
         iso.t3 = 0
     if dif > 4:
