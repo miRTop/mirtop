@@ -75,15 +75,16 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.libs import logger
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
-        from mirtop.mirna import fasta
+        from mirtop.mirna import fasta, mapper
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
-        matures = {}
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
         # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
         def annotate(fn, precursors, matures):
             from mirtop.bam import bam
+            from mirtop.gff import body
             reads = bam.read_bam(fn, precursors)
-            # ann = mirtop.bam.bam.annotate(reads, matures, precursors)
-            return True
+            ann = bam.annotate(reads, matures, precursors)
+            gff = body.create(ann, "miRBase21", "example", fn + ".gff3", "#")
         print "\nlast1D\n"
         annotate("data/aligments/let7-last1D.sam", precursors, matures)
         #mirna TGAGGTAGTAGGTTGTATAGTT
@@ -122,8 +123,10 @@ class FunctionsTest(unittest.TestCase):
             reads = seqbuster.read_file(fn, precursors)
             ann = bam.annotate(reads, matures, precursors)
             return True
-        print "\nlast1D\n"
+        print "\nperfect\n"
         annotate("data/examples/seqbuster/reads20.mirna", precursors, matures)
+        print "\naddition\n"
+        annotate("data/examples/seqbuster/readsAdd.mirna", precursors, matures)
 
     @attr(srnabench=True)
     def test_srnabench(self):
@@ -142,7 +145,6 @@ class FunctionsTest(unittest.TestCase):
             return True
         print "\nsRNAbench\n"
         annotate("data/examples/srnabench/reads.annotation", precursors, matures)
-
 
     @attr(gff=True)
     def test_gff(self):

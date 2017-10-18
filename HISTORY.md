@@ -1,5 +1,7 @@
 - 0.1.7a
-
+ 
+ * Remove deletion from addition isomiRs
+ * Support for srnabench output
  * Fix bug mixing up source column
  * Support Seqbuster output
  * Functin to guess database used from GTF file through --mirna parameter

@@ -17,6 +17,10 @@ from mirtop.bam import filter
 
 logger = mylog.getLogger(__name__)
 
+def header():
+    h = ("## CMD: seqbuster: http://seqcluster.readthedocs.io/mirna_annotation.html#mirna-isomir-annotation-with-java\n"
+        "# iso_snp are not filtered yet. Use isomiRs R pacakge to correct for error sequencing\n")
+    return h
 
 def read_file(fn, precursors):
     """
@@ -39,9 +43,7 @@ def read_file(fn, precursors):
                 reads[query_name].set_sequence(query_sequence)
                 reads[query_name].counts = _get_freq(query_name)
             chrom = cols[13]
-            # reference_end = reference_start + len(query_sequence)
-            # target_sequence = precursors[chrom][reference_start:reference_end]
-            logger.debug("SEQBUSTER::query: {query_sequence}\n"
+            logger.debug("\nSEQBUSTER::NEW::query: {query_sequence}\n"
                          "  precursor {chrom}\n"
                          "  name:  {query_name}\n"
                          "  start: {reference_start}\n"

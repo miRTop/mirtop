@@ -2,7 +2,7 @@ import os.path as op
 
 from mirtop.mirna import fasta, mapper
 from mirtop.bam.bam import read_bam, annotate
-from mirtop.importer import seqbuster
+from mirtop.importer import seqbuster, srnabench
 from mirtop.gff import body, header
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
@@ -25,8 +25,11 @@ def reader(args):
             reads = _read_bam(fn, precursors)
         elif args.format == "seqbuster":
             reads = seqbuster.read_file(fn, precursors)
+            custom = seqbuster.header()
+        elif args.format == "srnabench":
+            reads = srnabench.read_gile(fn, precursors)
+        h = header.create([sample], database, custom)
         ann = annotate(reads, matures, precursors)
-        h = header.create(fn, [sample], database)
         out_dts[fn] = body.create(ann, database, sample, fn_out, h)
     # merge all reads for all samples into one dicts
     # from dict with all samples convert each in a gff line

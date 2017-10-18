@@ -48,7 +48,7 @@ def tune(seq, precursor, start, cigar):
             pattern.append(0)
     for p in pattern_addition:
         if pattern == p:
-            add = seq[error_add[0]:]
+            add = seq[error_add[0]:].replace("-", "")
             break
     if not add and error_add:
         for e in error_add:
