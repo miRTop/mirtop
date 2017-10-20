@@ -69,6 +69,14 @@ class FunctionsTest(unittest.TestCase):
         print align("TGAGGTGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
         print align("TGAGGTAGTAGGCTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
 
+    @attr(reverse=True)
+    def test_reverse(self):
+        """Test reverse complement function"""
+        from mirtop.mirna.realign import reverse_complement
+        print "Testing ATGC complement"
+        if "GCAT" != reverse_complement("ATGC"):
+            logger.error("ATGC complement is not: %s" % reverse_complement("ATGC"))
+
     @attr(alignment=True)
     def test_alignment(self):
         """testing alignments function"""
