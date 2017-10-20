@@ -18,6 +18,14 @@ import yaml
 class FunctionsTest(unittest.TestCase):
     """Setup a full automated analysis and run the pipeline.
     """
+    @attr(database=True)
+    def test_database(self):
+        from mirtop.mirna import mapper
+        db = mapper.guess_database("data/examples/annotate/hsa.gff3")
+        print "Database is %s" % db
+        if db != "miRBasev21":
+            raise ValueError("%s not eq to miRBasev21" % db)
+
     @attr(read=True)
     def test_read(self):
         from mirtop.mirna import mapper, fasta
@@ -61,21 +69,30 @@ class FunctionsTest(unittest.TestCase):
         print align("TGAGGTGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
         print align("TGAGGTAGTAGGCTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
 
+    @attr(reverse=True)
+    def test_reverse(self):
+        """Test reverse complement function"""
+        from mirtop.mirna.realign import reverse_complement
+        print "Testing ATGC complement"
+        if "GCAT" != reverse_complement("ATGC"):
+            logger.error("ATGC complement is not: %s" % reverse_complement("ATGC"))
+
     @attr(alignment=True)
     def test_alignment(self):
         """testing alignments function"""
         from mirtop.libs import logger
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
-        from mirtop.mirna import fasta
+        from mirtop.mirna import fasta, mapper
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
-        matures = {}
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
         # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
         def annotate(fn, precursors, matures):
             from mirtop.bam import bam
+            from mirtop.gff import body
             reads = bam.read_bam(fn, precursors)
-            # ann = mirtop.bam.bam.annotate(reads, matures, precursors)
-            return True
+            ann = bam.annotate(reads, matures, precursors)
+            gff = body.create(ann, "miRBase21", "example", fn + ".gff3", "#")
         print "\nlast1D\n"
         annotate("data/aligments/let7-last1D.sam", precursors, matures)
         #mirna TGAGGTAGTAGGTTGTATAGTT
@@ -98,6 +115,44 @@ class FunctionsTest(unittest.TestCase):
         #seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
         print "\ntriming\n"
         annotate ("data/aligments/let7-triming.sam", precursors, matures)
+
+    @attr(seqbuster=True)
+    def test_seqbuster(self):
+        """testing reading seqbuster files function"""
+        from mirtop.libs import logger
+        logger.initialize_logger("test", True, True)
+        logger = logger.getLogger(__name__)
+        from mirtop.mirna import fasta, mapper
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        def annotate(fn, precursors, matures):
+            from mirtop.importer import seqbuster
+            from mirtop.bam import bam
+            reads = seqbuster.read_file(fn, precursors)
+            ann = bam.annotate(reads, matures, precursors)
+            return True
+        print "\nperfect\n"
+        annotate("data/examples/seqbuster/reads20.mirna", precursors, matures)
+        print "\naddition\n"
+        annotate("data/examples/seqbuster/readsAdd.mirna", precursors, matures)
+
+    @attr(srnabench=True)
+    def test_srnabench(self):
+        """testing reading seqbuster files function"""
+        from mirtop.libs import logger
+        logger.initialize_logger("test", True, True)
+        logger = logger.getLogger(__name__)
+        from mirtop.mirna import fasta, mapper
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        def annotate(fn, precursors, matures):
+            from mirtop.importer import srnabench
+            from mirtop.bam import bam
+            reads = srnabench.read_file(fn, precursors)
+            ann = bam.annotate(reads, matures, precursors)
+            return True
+        print "\nsRNAbench\n"
+        annotate("data/examples/srnabench/reads.annotation", precursors, matures)
 
     @attr(gff=True)
     def test_gff(self):

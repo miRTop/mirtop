@@ -33,7 +33,7 @@ def create(reads, database, sample, fn, header):
                     iso.subs = [] if "N" in iso.subs[0] else iso.subs
                 annotation = "%s.%s" % (chrom, iso.format_id(sep="."))
                 idseq = reads[r].idseq
-                source = "ref_miRNA" if iso.is_iso() else "isomiR"
+                source = "ref_miRNA" if not iso.is_iso() else "isomiR"
                 strand = iso.strand
                 start, end = iso.start, iso.end
                 score = iso.map_score

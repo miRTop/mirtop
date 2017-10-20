@@ -1,5 +1,10 @@
-- 0.1.6a
-
+- 0.1.7a
+ 
+ * Remove deletion from addition isomiRs
+ * Support for srnabench output
+ * Fix bug mixing up source column
+ * Support Seqbuster output
+ * Functin to guess database used from GTF file through --mirna parameter
  * Adapt output format to https://github.com/miRTop/incubator/blob/master/format/definition.md
 
 - 0.1.5a

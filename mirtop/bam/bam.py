@@ -89,15 +89,18 @@ def _coord(sequence, start, mirna, precursor, iso):
     Define t5 and t3 isomirs
     """
     insertion = 0
+    deletion = 0
     if iso.subs:
         insertion = 1 if iso.subs[0][-1] == "-" else 0
-    end = (iso.end - len(iso.add) - insertion)
+    if iso.subs:
+        deletion = 1 if iso.subs[0][1] == "-" else 0
+    end = (iso.end - len(iso.add) - insertion + deletion)
     logger.debug("COOR:: s:%s len:%s end:%s fixedEnd:%s mirna:%s iso:%s" % (start, len(sequence), iso.end, end, mirna, iso.format()))
     dif = abs(mirna[0] - start)
     if start < mirna[0]:
         iso.t5 = sequence[:dif].upper()
     elif start > mirna[0]:
-        iso.t5 = precursor[mirna[0] - 1:mirna[0] - 1 + dif].lower()
+        iso.t5 = precursor[mirna[0]:mirna[0] + dif].lower()
     elif start == mirna[0]:
         iso.t5 = 0
     if dif > 4:
@@ -113,7 +116,7 @@ def _coord(sequence, start, mirna, precursor, iso):
     if end > mirna[1]:
         iso.t3 = sequence[-dif:].upper()
     elif end < mirna[1]:
-        iso.t3 = precursor[mirna[1] - dif:mirna[1]].lower()
+        iso.t3 = precursor[mirna[1] + 1 - dif:(mirna[1] + 1)].lower()
     elif end == mirna[1]:
         iso.t3 = 0
     if dif > 4:
@@ -138,15 +141,16 @@ def annotate(reads, mature_ref, precursors):
             end = reads[r].precursors[p].end
             for mature in mature_ref[p]:
                 mi = mature_ref[p][mature]
-                logger.debug(("ANN::mi:{0} {1}").format(mi[0], mi[1]))
-                is_iso = _coord(reads[r].sequence, start, mi, precursors[p], reads[r].precursors[p])
-                logger.debug(("ANN::read:{s}\n pre:{p} start:{start} end: {end}\n is_iso:{is_iso} "
+                # logger.debug(("ANN::mi:{0} {1}").format(mi[0], mi[1]))
+                logger.debug(("\nANN::NEW::read:{s}\n pre:{p} start:{start} end: {end} "
                               "cigar: {cigar} "
                               "\n mir:{mature} mir_pos:{mi}\n mir_seqs:{mature_s}"
                               ).format(s=reads[r].sequence,
-                                       mature_s=precursors[p][mi[0]:mi[1]],
+                                       mature_s = precursors[p][mi[0]:mi[1] + 1],
                                        cigar = reads[r].precursors[p].cigar,
                                        **locals()))
+                is_iso = _coord(reads[r].sequence, start, mi, precursors[p], reads[r].precursors[p])
+                logger.debug(("ANN::is_iso:{is_iso}").format(**locals()))
                 logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
                 if is_iso:
                     reads[r].precursors[p].mirna = mature

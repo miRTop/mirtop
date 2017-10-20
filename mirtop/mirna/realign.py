@@ -1,4 +1,5 @@
 from Bio import pairwise2
+from Bio.Seq import Seq
 from collections import defaultdict
 
 from mirtop.mirna.keys import *
@@ -187,3 +188,6 @@ def cigar_correction(cigarLine, query, target):
             query_fixed.append("".join(["-"] * cigarLength))
             target_pos = target_pos + cigarLength
     return ["".join(query_fixed), "".join(target_fixed)]
+
+def reverse_complement(seq):
+    return Seq(seq).reverse_complement()
