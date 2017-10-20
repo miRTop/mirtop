@@ -28,7 +28,7 @@ def reader(args):
             custom = seqbuster.header()
         elif args.format == "srnabench":
             reads = srnabench.read_gile(fn, precursors)
-        h = header.create([sample], database, custom)
+        h = header.create([sample], database, "")
         ann = annotate(reads, matures, precursors)
         out_dts[fn] = body.create(ann, database, sample, fn_out, h)
     # merge all reads for all samples into one dicts
