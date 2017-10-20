@@ -1,3 +1,4 @@
 pysam
 pybedtools
 pandas
+biopython
