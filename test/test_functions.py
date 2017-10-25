@@ -39,6 +39,17 @@ class FunctionsTest(unittest.TestCase):
         # read data/aligments/let7-perfect.bam
         return True
 
+    @attr(read_genomic=True)
+    def test_read_genomic(self):
+        from mirtop.mirna import mapper, fasta
+        from mirtop.libs import logger
+        logger.initialize_logger("test_read_files", True, True)
+        map_mir = mapper.read_gtf_to_mirna("data/examples/annotate/hsa.gff3")
+        print map_mir
+        # if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 5:
+        #    raise ValueError("GFF is not loaded correctly.")
+        return True
+
     @attr(code=True)
     def test_code(self):
         """testing code correction function"""
