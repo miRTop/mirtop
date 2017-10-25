@@ -21,7 +21,7 @@ script:
 branches:
   only:
   - master
-  - devel
+  - dev
 deploy:
   provider: pypi
   user: lpantano
