@@ -173,6 +173,24 @@ class FunctionsTest(unittest.TestCase):
         print "\nsRNAbench\n"
         annotate("data/examples/srnabench/reads.annotation", precursors, matures)
 
+    @attr(prost=True)
+    def test_prost(self):
+        """testing reading prost files function"""
+        from mirtop.libs import logger
+        logger.initialize_logger("test", True, True)
+        logger = logger.getLogger(__name__)
+        from mirtop.mirna import fasta, mapper
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        def annotate(fn, precursors, matures):
+            from mirtop.importer import prost
+            from mirtop.bam import bam
+            reads = prost.read_file(fn, precursors, "data/examples/annotate/hsa.gff3")
+            ann = bam.annotate(reads, matures, precursors)
+            return True
+        print "\nPROST\n"
+        annotate("data/examples/prost/example.mincount3.txt", precursors, matures)
+
     @attr(gff=True)
     def test_gff(self):
         """testing GFF function"""

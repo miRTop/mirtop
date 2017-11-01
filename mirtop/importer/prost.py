@@ -1,4 +1,4 @@
-""" Read seqbuster files"""
+""" Read prost files"""
 
 import traceback
 import os.path as op
@@ -9,6 +9,7 @@ import pandas as pd
 import pysam
 from collections import defaultdict
 
+from mirtop.mirna import mapper
 from mirtop.libs import do
 from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
@@ -18,15 +19,14 @@ from mirtop.bam import filter
 logger = mylog.getLogger(__name__)
 
 def header():
-    h = ("## CMD: seqbuster: http://seqcluster.readthedocs.io/mirna_annotation.html#mirna-isomir-annotation-with-java\n"
-        "# iso_snp are not filtered yet. Use isomiRs R pacakge to correct for error sequencing\n")
-    return h
+    return ""
 
-def read_file(fn, precursors):
+def read_file(fn, precursors, mirna_gtf):
     """
     read bam file and perform realignment of hits
     """
     reads = defaultdict(hits)
+    map_mir = mapper.read_gtf_to_mirna(mirna_gtf)
     with open(fn) as handle:
         handle.readline()
         for line in handle:
@@ -39,19 +39,19 @@ def read_file(fn, precursors):
                 continue
             if query_name not in reads:
                 reads[query_name].set_sequence(query_sequence)
-                reads[query_name].counts = int(col[9])
+                reads[query_name].counts = int(cols[9])
             for loc in cols[5].split(";"):
                 chrom = loc.split(":")[0]
                 start, end = loc.split(":")[1].split("-")
-                # map start to reference start
                 miRNA = cols[11]
-                reference_start = int(cols[4]) - 1
-                seqbuster_iso = ":".join(cols[6:10])
+                chrom, reference_start =  _genomic2transcript(map_mir[miRNA], chrom, int(start))
+                # reference_start = int(cols[4]) - 1
                 logger.debug("\nPROST::NEW::query: {query_sequence}\n"
                              "  precursor {chrom}\n"
                              "  name:  {query_name}\n"
-                             "  start: {reference_start}\n"
-                             "  iso: {seqbuster_iso}".format(**locals()))
+                             "  start: {start}\n"
+                             "  reference_start: {reference_start}\n"
+                             "  mirna: {miRNA}".format(**locals()))
                 # logger.debug("PROST:: cigar {cigar}".format(**locals()))
                 iso = isomir()
                 iso.align = line
@@ -67,3 +67,32 @@ def read_file(fn, precursors):
                     reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))
     return reads
+
+
+def _genomic2transcript(code, chrom, pos):
+    for ref in code:
+        if _is_chrom(chrom, code[ref][0]):
+            if _is_inside(pos, code[ref][1:3]):
+                return [ref, _transcript(pos, code[ref][1:4])]
+
+def _is_chrom(chrom, annotated):
+    logger.debug("TRANSCRIPT::CHROM::read position %s and db position %s" % (chrom, annotated))
+    if chrom == annotated:
+        return True
+    if chrom == annotated.replace("chr", ""):
+        return True
+    return False
+
+def _is_inside(pos, annotated):
+    logger.debug("TRANSCRIPT::INSIDE::read position %s and db position %s" % (pos, annotated))
+    if pos > annotated[0] and pos < annotated[1]:
+        return True
+    return False
+
+def _transcript(pos, annotated):
+    logger.debug("TRANSCRIPT::TRANSCRIPT::read position %s and db position %s" % (pos, annotated))
+    if annotated[2] == "+":
+        return pos - annotated[0]
+    elif annotated[2] == "-":
+        return annotated[1] - pos
+    raise ValueError("Strand information is incorrect %s" % annotated[3])
