@@ -105,7 +105,24 @@ class isomir:
             return True
         return False
 
+def read_id(idu):
+    """
+    Inspared in MINTplate: https://cm.jefferson.edu/MINTbase
+    https://github.com/TJU-CMC-Org/MINTmap/tree/master/MINTplates
+    """
+    seq = ""
+    for i in idu:
+        if i == "1" or i == "2":
+            return seq[:-int(i)]
+        else:
+            seq += CODE2NT[i]
+    return seq
+
 def make_id(seq):
+    """
+    Inspared in MINTplate: https://cm.jefferson.edu/MINTbase
+    https://github.com/TJU-CMC-Org/MINTmap/tree/master/MINTplates
+    """
     start = 0
     idName = ""
     for i in range(0, len(seq) + 1, 3):

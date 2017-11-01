@@ -53,10 +53,18 @@ class FunctionsTest(unittest.TestCase):
     @attr(code=True)
     def test_code(self):
         """testing code correction function"""
-        from mirtop.mirna.realign import make_id
-        print make_id("AAACCCTTTGGG")
-        print make_id("AAACCCTTTGGGA")
-        print make_id("AAACCCTTTGGGAT")
+        from mirtop.mirna.realign import make_id, read_id
+        def _convert(s, test, reverse = False):
+            code = read_id(s) if reverse else make_id(s)
+            if code != test:
+                raise ValueError("%s didn't result on %s but in %s" % (s, test, code))
+
+        _convert("AAACCCTTTGGG", "@#%$")
+        _convert("AAACCCTTTGGGA", "@#%$@2")
+        _convert("AAACCCTTTGGGAT", "@#%$g1")
+        _convert("@#%$", "AAACCCTTTGGG", True)
+        _convert("@#%$@2", "AAACCCTTTGGGA", True)
+        _convert("@#%$g1", "AAACCCTTTGGGAT", True)
 
     @attr(cigar=True)
     def test_cigar(self):
