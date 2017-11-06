@@ -33,7 +33,7 @@ def reader(args):
             reads = prost.read_file(fn, precursors, args.gtf)
         h = header.create([sample], database, "")
         ann = annotate(reads, matures, precursors)
-        out_dts[fn] = body.create(ann, database, sample, fn_out, h)
+        out_dts[fn] = body.create(ann, database, sample)
         _write(out_dts[fn], h, fn_out)
     # merge all reads for all samples into one dicts
     # from dict with all samples convert each in a gff line
