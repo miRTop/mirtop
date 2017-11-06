@@ -1,14 +1,14 @@
+from collections import defaultdict
+
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
-def create(reads, database, sample, fn, header):
+def create(reads, database, sample):
     """Read https://github.com/miRTop/mirtop/issues/9"""
     seen = set()
-    lines = []
+    lines = defaultdict(list)
     seen_ann = {}
     # print >>out_handle, "seq\tname\tfreq\tchrom\tstart\tend\tmism\tadd\tt5\tt3\ts5\ts3\tDB\tprecursor\tambiguity\tName"
-    out_handle = open(fn, 'w')
-    print >>out_handle, header
     filter_precursor = 0
     filter_score = 0
     for r, read in reads.iteritems():
@@ -49,11 +49,10 @@ def create(reads, database, sample, fn, header):
                 if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:
                     logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, res, seen_ann[annotation]))
                 seen_ann[annotation] = res
-                lines.append([annotation, chrom, counts, sample])
+                lines[chrom].append([annotation, chrom, counts, sample, res])
                 logger.debug("GFF::%s" % res)
                 # lines_pre.append([annotation, chrom, p, count, sample, hits])
-                print >>out_handle, res
-    out_handle.close()
+                # print >>out_handle, res
     logger.info("GFF lines: %s" % len(lines))
     logger.info("Filter by being outside mirna size: %s" % filter_precursor)
     logger.info("Filter by being low score: %s" % filter_score)

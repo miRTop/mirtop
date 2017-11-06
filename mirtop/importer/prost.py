@@ -68,7 +68,6 @@ def read_file(fn, precursors, mirna_gtf):
     logger.info("Hits: %s" % len(reads))
     return reads
 
-
 def _genomic2transcript(code, chrom, pos):
     for ref in code:
         if _is_chrom(chrom, code[ref][0]):

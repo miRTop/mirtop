@@ -109,9 +109,10 @@ class FunctionsTest(unittest.TestCase):
         def annotate(fn, precursors, matures):
             from mirtop.bam import bam
             from mirtop.gff import body
+            from mirtop.mirna import annotate
             reads = bam.read_bam(fn, precursors)
-            ann = bam.annotate(reads, matures, precursors)
-            gff = body.create(ann, "miRBase21", "example", fn + ".gff3", "#")
+            ann = annotate.annotate(reads, matures, precursors)
+            gff = body.create(ann, "miRBase21", "example")
         print "\nlast1D\n"
         annotate("data/aligments/let7-last1D.sam", precursors, matures)
         #mirna TGAGGTAGTAGGTTGTATAGTT
@@ -147,8 +148,9 @@ class FunctionsTest(unittest.TestCase):
         def annotate(fn, precursors, matures):
             from mirtop.importer import seqbuster
             from mirtop.bam import bam
+            from mirtop.mirna import annotate
             reads = seqbuster.read_file(fn, precursors)
-            ann = bam.annotate(reads, matures, precursors)
+            ann = annotate.annotate(reads, matures, precursors)
             return True
         print "\nperfect\n"
         annotate("data/examples/seqbuster/reads20.mirna", precursors, matures)
@@ -167,8 +169,9 @@ class FunctionsTest(unittest.TestCase):
         def annotate(fn, precursors, matures):
             from mirtop.importer import srnabench
             from mirtop.bam import bam
+            from mirtop.mirna import annotate
             reads = srnabench.read_file(fn, precursors)
-            ann = bam.annotate(reads, matures, precursors)
+            ann = annotate.annotate(reads, matures, precursors)
             return True
         print "\nsRNAbench\n"
         annotate("data/examples/srnabench/reads.annotation", precursors, matures)
@@ -185,8 +188,9 @@ class FunctionsTest(unittest.TestCase):
         def annotate(fn, precursors, matures):
             from mirtop.importer import prost
             from mirtop.bam import bam
+            from mirtop.mirna import annotate
             reads = prost.read_file(fn, precursors, "data/examples/annotate/hsa.gff3")
-            ann = bam.annotate(reads, matures, precursors)
+            ann = annotate.annotate(reads, matures, precursors)
             return True
         print "\nPROST\n"
         annotate("data/examples/prost/example.mincount3.txt", precursors, matures)
@@ -204,13 +208,12 @@ class FunctionsTest(unittest.TestCase):
         matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
         # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
         from mirtop.bam import bam
+        from mirtop.mirna import annotate
         bam_fn = "data/aligments/let7-perfect.sam"
         reads = bam.read_bam(bam_fn, precursors)
-        ann = bam.annotate(reads, matures, precursors)
-        fn = bam_fn + ".gff"
+        ann = annotate.annotate(reads, matures, precursors)
         h = header.create(bam_fn, ["example"], "miRBase21")
-        print h
-        gff = body.create(ann, "miRBase21", "example", fn, header)
+        gff = body.create(ann, "miRBase21", "example")
         return True
 
     @attr(collapse=True)
@@ -226,12 +229,13 @@ class FunctionsTest(unittest.TestCase):
         matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
         # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
         from mirtop.bam import bam
+        from mirtop.mirna import annotate
         bam_fn = "data/aligments/collapsing-isomirs.sam"
         reads = bam.read_bam(bam_fn, precursors)
-        ann = bam.annotate(reads, matures, precursors)
+        ann = annotate.annotate(reads, matures, precursors)
         fn = bam_fn + ".gff"
         h = header.create(bam_fn, ["example"], "miRBase21")
-        gff = body.create(ann, "miRBase21", "example", fn, header)
+        gff = body.create(ann, "miRBase21", "example")
         print gff
         return True
 
