@@ -28,8 +28,8 @@
     * `align`: uses biopython to align two sequences of the same size
   * __mapper.py__: 
     * `read_gtf` file: map genomic miRNA position to precursos position, then it needs genomic position for the miRNA and the precursor. Return would be like {mirna: [start, end]}
-  * __annotate.pu__:
-    * `annotate`: get isomiRs and CIGAR option
+  * __annotate.py__:
+    * `annotate`: read isomiRs and populate all attributes related to isomiRs
  * mirtop/importer:
     * seqbuster.py
     * prost.py
