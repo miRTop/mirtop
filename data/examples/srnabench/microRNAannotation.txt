@@ -1,0 +1,3 @@
+sequence	matureName	hairpinName	isoLabel	sequenceVariant	readCount	RPMlib	RPMtotal
+TGAGGTAGTAGGTTGTATAG	hsa-let-7a-5p	hsa-let-7a-1$hsa-let-7a-2$hsa-let-7a-3	lv3p|lv3pT|lv3p#-2	-	101	38.18486540969147	37.36092764593974
+TGAGGTAGTAGGTTGTGTAGTT	hsa-let-7a-5p$hsa-let-7b-5p	hsa-let-7a-1$hsa-let-7a-2$hsa-let-7a-3$hsa-let-7b	exactNucVar	18:G>A	4	1.5122718974135236	1.4796406988490984
