@@ -174,7 +174,7 @@ class FunctionsTest(unittest.TestCase):
             ann = annotate.annotate(reads, matures, precursors)
             return True
         print "\nsRNAbench\n"
-        annotate("data/examples/srnabench/reads.annotation", precursors, matures)
+        annotate("data/examples/srnabench", precursors, matures)
 
     @attr(prost=True)
     def test_prost(self):

@@ -18,12 +18,15 @@ from mirtop.bam import filter
 logger = mylog.getLogger(__name__)
 
 
-def read_file(fn, precursors):
+def read_file(folder,  precursors):
     """
     read srnabench file and perform realignment of hits
     """
+    reads_anno = os.path.join(folder, "reads.annotation")
+    reads_iso = os.path.join(folder, "microRNAannotation.txt")
     reads = defaultdict(hits)
-    with open(fn) as handle:
+    source_iso = _read_iso(reads_iso)
+    with open(reads_anno) as handle:
         for line in handle:
             cols = line.strip().split("\t")
             query_name = cols[0]
@@ -51,6 +54,8 @@ def read_file(fn, precursors):
                              "  hit: {hit}".format(**locals()))
                 iso = isomir()
                 iso.align = line
+                if (query_sequence, hit_info[1]) in source_iso:
+                    iso.external = source_iso[(query_sequence, hit_info[1])]
                 iso.set_pos(reference_start, len(reads[query_name].sequence))
                 logger.debug("SRNABENCH:: start %s end %s" % (iso.start, iso.end))
                 if len(precursors[chrom]) < reference_start + len(reads[query_name].sequence):
@@ -63,6 +68,54 @@ def read_file(fn, precursors):
                     reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))
     return reads
+
+def _read_iso(fn):
+    """
+    Read definitions of isomiRs by srnabench
+    """
+    iso = dict()
+    with open(fn) as inh:
+        h = inh.readline()
+        for line in inh:
+            cols = line.strip().split("\t")
+            label = cols[3].split("$")
+            mirnas = cols[1].split("$")
+            if len(mirnas) != len(label):
+                label.extend([label[-1]] * (len(mirnas) - len(label)))
+            anno = dict(zip(mirnas, label))
+            logger.debug("TRANSLATE::%s with %s" % (mirnas, label))
+            for m in anno:
+                iso[(cols[0], m)] = _translate(anno[m], cols[4])
+    return iso
+
+def _translate(label, description):
+    iso = []
+    if label == "exact":
+        return "exact"
+    if label == "mv":
+        return "notsure"
+    if label.find("lv3p") > 0:
+        iso.append("iso_3p")
+    if label.find("lv5p") > 0:
+        iso.append("iso_5p")
+    if label.find("nta") > 0:
+        iso.append("iso_add")
+    if label.find("NucVar") > 0:
+        for nt in description.split(","):
+            iso.extend(_iso_snp(int(nt.split(":")[0])))
+    return ",".join(iso)
+
+def _iso_snp(pos):
+    iso = []
+    if pos > 1 and pos < 8:
+        iso.append("iso_snp_seed")
+    elif pos == 8:
+        iso.append("iso_snp_central_offset")
+    elif pos > 8 and pos < 13:
+        iso.append("iso_snp+central")
+    elif pos > 12 and pos < 18:
+        iso.append("iso_snp_central_supp")
+    return iso
 
 def _get_freq(name):
     """

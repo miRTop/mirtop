@@ -1,3 +1,8 @@
+- 0.1.8a
+
+ * Improve isomiR reading from srnabench tool
+ * Add PROST to supported tools
+
 - 0.1.7a
  
  * Remove deletion from addition isomiRs

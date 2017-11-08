@@ -31,6 +31,7 @@ class isomir:
         self.t3 = []
         self.add = []
         self.subs = []
+        self.external = ""
         self.align = None
         self.cigar = None
         self.filter = "Pass"
@@ -51,6 +52,8 @@ class isomir:
     def formatGFF(self):
         value = ""
         subs = self.subs
+        if self.external != "notsure":
+            return self.external
         if subs:
             if subs[0] > 1 and subs[0] < 8:
                 value += "iso_snp_seed,"
@@ -69,7 +72,7 @@ class isomir:
         if self.t3:
             value += "iso_3p,"
         if not value:
-            value += "NA,"
+            value = "NA"
         return value[:-1]
 
     def format(self, sep="\t"):
