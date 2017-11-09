@@ -42,7 +42,8 @@ def _write(lines, headder, fn):
     out_handle = open(fn, 'w')
     print >>out_handle, header
     for m in lines:
-        print >>out_handle, lines[m][4]
+        for hit in lines[m]:
+            print >>out_handle, hit[4]
     out_handle.close()
 
 def _read_bam(bam_fn, precursors):

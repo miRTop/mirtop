@@ -8,9 +8,9 @@ def create(reads, database, sample):
     seen = set()
     lines = defaultdict(list)
     seen_ann = {}
-    # print >>out_handle, "seq\tname\tfreq\tchrom\tstart\tend\tmism\tadd\tt5\tt3\ts5\ts3\tDB\tprecursor\tambiguity\tName"
     filter_precursor = 0
     filter_score = 0
+    n_hits = 0
     for r, read in reads.iteritems():
         hits = set()
         [hits.add(mature.mirna) for mature in read.precursors.values() if mature.mirna]
@@ -49,11 +49,14 @@ def create(reads, database, sample):
                 if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:
                     logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, res, seen_ann[annotation]))
                 seen_ann[annotation] = res
+                logger.debug("GFF::external %s" % iso.external)
                 lines[chrom].append([annotation, chrom, counts, sample, res])
                 logger.debug("GFF::%s" % res)
+                n_hits += 1
                 # lines_pre.append([annotation, chrom, p, count, sample, hits])
                 # print >>out_handle, res
-    logger.info("GFF lines: %s" % len(lines))
+    logger.info("GFF miRNAs: %s" % len(lines))
+    logger.info("GFF hits: %s" % n_hits)
     logger.info("Filter by being outside mirna size: %s" % filter_precursor)
     logger.info("Filter by being low score: %s" % filter_score)
     return lines

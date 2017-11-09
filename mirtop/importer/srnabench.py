@@ -39,7 +39,7 @@ def read_file(folder,  precursors):
                 continue
             if query_name not in reads:
                 reads[query_name].set_sequence(query_sequence)
-                reads[query_name].counts = _get_freq(int(cols[1]))
+                reads[query_name].counts = int(cols[1])
 
             for hit in cols[4].split("$"):
                 logger.debug("SRNABENCH::line hit: %s" % hit)
@@ -47,15 +47,17 @@ def read_file(folder,  precursors):
                 pos_info = hit_info[3].split(",")
                 reference_start = int(pos_info[1]) - 1
                 chrom = pos_info[0]
-                logger.debug("SRNABENCH::query: {query_sequence}\n"
-                             "  precursor {chrom}\n"
-                             "  name:  {query_name}\n"
-                             "  start: {reference_start}\n"
-                             "  hit: {hit}".format(**locals()))
                 iso = isomir()
                 iso.align = line
                 if (query_sequence, hit_info[1]) in source_iso:
                     iso.external = source_iso[(query_sequence, hit_info[1])]
+                external = iso.external
+                logger.debug("SRNABENCH::query: {query_sequence}\n"
+                             "  precursor {chrom}\n"
+                             "  name:  {query_name}\n"
+                             "  start: {reference_start}\n"
+                             "  external: {external}\n"
+                             "  hit: {hit}".format(**locals()))
                 iso.set_pos(reference_start, len(reads[query_name].sequence))
                 logger.debug("SRNABENCH:: start %s end %s" % (iso.start, iso.end))
                 if len(precursors[chrom]) < reference_start + len(reads[query_name].sequence):
@@ -86,6 +88,7 @@ def _read_iso(fn):
             logger.debug("TRANSLATE::%s with %s" % (mirnas, label))
             for m in anno:
                 iso[(cols[0], m)] = _translate(anno[m], cols[4])
+                logger.debug("TRANSLATE::code %s" % iso[(cols[0], m)])
     return iso
 
 def _translate(label, description):
@@ -94,14 +97,17 @@ def _translate(label, description):
         return "exact"
     if label == "mv":
         return "notsure"
-    if label.find("lv3p") > 0:
+    if label.find("lv3p") > -1:
         iso.append("iso_3p")
-    if label.find("lv5p") > 0:
+    if label.find("lv5p") > -1:
         iso.append("iso_5p")
-    if label.find("nta") > 0:
+    if label.find("nta") > -1:
         iso.append("iso_add")
-    if label.find("NucVar") > 0:
+    if label.find("NucVar") > -1:
         for nt in description.split(","):
+            logger.debug("TRANSLATE::change:%s" % description)
+            if nt == "-":
+                return "notsure"
             iso.extend(_iso_snp(int(nt.split(":")[0])))
     return ",".join(iso)
 
@@ -115,6 +121,8 @@ def _iso_snp(pos):
         iso.append("iso_snp+central")
     elif pos > 12 and pos < 18:
         iso.append("iso_snp_central_supp")
+    else:
+        iso.append("iso_snp")
     return iso
 
 def _get_freq(name):

@@ -43,7 +43,7 @@ def add_subparser_gff(subparsers):
     parser.add_argument("--hairpin", help="hairpin.fa")
     parser.add_argument("--gtf", help="gtf file with precursor and mature position to genome.")
     parser.add_argument("--format", help="Input format, default BAM file.",
-                        choices=['BAM', 'seqbuster'], default="BAM")
+                        choices=['BAM', 'seqbuster', 'srnabench', 'prost'], default="BAM")
     parser = _add_debug_option(parser)
     return parser
 

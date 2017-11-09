@@ -170,8 +170,10 @@ class FunctionsTest(unittest.TestCase):
             from mirtop.importer import srnabench
             from mirtop.bam import bam
             from mirtop.mirna import annotate
+            from mirtop.gff import body
             reads = srnabench.read_file(fn, precursors)
             ann = annotate.annotate(reads, matures, precursors)
+            body = body.create(ann, "miRBase21", "Example")
             return True
         print "\nsRNAbench\n"
         annotate("data/examples/srnabench", precursors, matures)
