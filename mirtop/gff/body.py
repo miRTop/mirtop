@@ -11,24 +11,27 @@ def create(reads, database, sample):
     filter_precursor = 0
     filter_score = 0
     n_hits = 0
+    n_reads = 0
+    n_seen = 0
     for r, read in reads.iteritems():
         hits = set()
         [hits.add(mature.mirna) for mature in read.precursors.values() if mature.mirna]
         hits = len(hits)
+        if len(read.precursors) > 0:
+            n_reads += 1
         for p, iso in read.precursors.iteritems():
-            if len(iso.subs) > 3 or not iso.mirna:
-                continue
+            if not iso.mirna:
                 filter_precursor += 1
+                continue
             if (r, iso.mirna) not in seen:
                 seen.add((r, iso.mirna))
                 chrom = iso.mirna
                 if not chrom:
                     chrom = p
-                # count = _get_freq(r)
                 seq = reads[r].sequence
                 if iso.get_score(len(seq)) < 1:
-                    continue
                     filter_score += 1
+                    continue
                 if iso.subs:
                     iso.subs = [] if "N" in iso.subs[0] else iso.subs
                 annotation = "%s.%s" % (chrom, iso.format_id(sep="."))
@@ -53,12 +56,14 @@ def create(reads, database, sample):
                 lines[chrom].append([annotation, chrom, counts, sample, res])
                 logger.debug("GFF::%s" % res)
                 n_hits += 1
-                # lines_pre.append([annotation, chrom, p, count, sample, hits])
-                # print >>out_handle, res
+            else:
+                n_seen += 1
+
     logger.info("GFF miRNAs: %s" % len(lines))
-    logger.info("GFF hits: %s" % n_hits)
-    logger.info("Filter by being outside mirna size: %s" % filter_precursor)
-    logger.info("Filter by being low score: %s" % filter_score)
+    logger.info("GFF hits %s by %s reads" % (n_hits, n_reads))
+    logger.info("Filtered by being duplicated: %s" % n_seen)
+    logger.info("Filtered by being outside miRNA positions: %s" % filter_precursor)
+    logger.info("Filtered by being low score: %s" % filter_score)
     return lines
 
 def _merge(lines):

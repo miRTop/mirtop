@@ -56,13 +56,13 @@ def annotate(reads, mature_ref, precursors):
 
     Return: dict object with reasd as Keys and...
     """
+    n_iso = 0
     for r in reads:
         for p in reads[r].precursors:
             start = reads[r].precursors[p].start
             end = reads[r].precursors[p].end
             for mature in mature_ref[p]:
                 mi = mature_ref[p][mature]
-                # logger.debug(("ANN::mi:{0} {1}").format(mi[0], mi[1]))
                 logger.debug(("\nANN::NEW::read:{s}\n pre:{p} start:{start} end: {end} "
                               "cigar: {cigar} "
                               "\n mir:{mature} mir_pos:{mi}\n mir_seqs:{mature_s}"
@@ -74,7 +74,8 @@ def annotate(reads, mature_ref, precursors):
                 logger.debug(("ANN::is_iso:{is_iso}").format(**locals()))
                 logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
                 if is_iso:
+                    n_iso += 1
                     reads[r].precursors[p].mirna = mature
-                    break
-    logger.info("Annotated: %s" % len(reads))
+                    # break
+    logger.info("Valid hits: %s" % n_iso)
     return reads

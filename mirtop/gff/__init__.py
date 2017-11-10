@@ -38,7 +38,7 @@ def reader(args):
     # merge all reads for all samples into one dicts
     # from dict with all samples convert each in a gff line
 
-def _write(lines, headder, fn):
+def _write(lines, header, fn):
     out_handle = open(fn, 'w')
     print >>out_handle, header
     for m in lines:
