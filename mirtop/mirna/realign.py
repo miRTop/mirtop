@@ -52,7 +52,7 @@ class isomir:
     def formatGFF(self):
         value = ""
         subs = self.subs
-        if self.external != "notsure":
+        if self.external != "notsure" and self.external != "":
             return self.external
         if subs:
             if subs[0] > 1 and subs[0] < 8:
