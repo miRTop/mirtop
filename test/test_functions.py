@@ -149,8 +149,10 @@ class FunctionsTest(unittest.TestCase):
             from mirtop.importer import seqbuster
             from mirtop.bam import bam
             from mirtop.mirna import annotate
+            from mirtop.gff import body
             reads = seqbuster.read_file(fn, precursors)
             ann = annotate.annotate(reads, matures, precursors)
+            body = body.create(ann, "miRBase21", "Example")
             return True
         print "\nperfect\n"
         annotate("data/examples/seqbuster/reads20.mirna", precursors, matures)

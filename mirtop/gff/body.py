@@ -47,7 +47,7 @@ def create(reads, database, sample):
                 Cigar = iso.cigar
                 counts = read.counts
                 Filter = iso.filter
-                attrb = ("Read {r}; UID {idseq}; Name {mirName}; Parent {preName}; Variant {Variant}; Cigar {Cigar}; Expression {counts}; Filter {Filter};").format(**locals())
+                attrb = ("Read {r}; UID {idseq}; Name {mirName}; Parent {preName}; Variant {Variant}; Cigar {Cigar}; Expression {counts}; Filter {Filter}; Hits {hits};").format(**locals())
                 res = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
                 if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:
                     logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, res, seen_ann[annotation]))
