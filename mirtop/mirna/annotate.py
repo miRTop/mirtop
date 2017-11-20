@@ -1,4 +1,5 @@
 """ Read bam files"""
+import copy
 
 import mirtop.libs.logger as mylog
 
@@ -70,11 +71,13 @@ def annotate(reads, mature_ref, precursors):
                                        mature_s = precursors[p][mi[0]:mi[1] + 1],
                                        cigar = reads[r].precursors[p].cigar,
                                        **locals()))
-                is_iso = _coord(reads[r].sequence, start, mi, precursors[p], reads[r].precursors[p])
+                iso_copy =  copy.deepcopy(reads[r].precursors[p])
+                is_iso = _coord(reads[r].sequence, start, mi, precursors[p], iso_copy)
                 logger.debug(("ANN::is_iso:{is_iso}").format(**locals()))
                 logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
                 if is_iso:
                     n_iso += 1
+                    reads[r].precursors[p] = iso_copy
                     reads[r].precursors[p].mirna = mature
                     # break
     logger.info("Valid hits: %s" % n_iso)

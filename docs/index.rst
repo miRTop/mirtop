@@ -9,6 +9,7 @@ Welcome to mirtop's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
    code_structure.md
 
 Indices and tables

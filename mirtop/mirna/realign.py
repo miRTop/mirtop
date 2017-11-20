@@ -66,11 +66,15 @@ class isomir:
             else:
                 value += "iso_snp,"
         if self.add:
-            value += "iso_add,"
+            value += "iso_add:+%s," % len(self.add)
         if self.t5:
-            value += "iso_5p,"
+            size = len(self.t5)
+            direction = "+" if self.t5.isupper() else "-"
+            value += "iso_5p:%s%s," % (direction, size)
         if self.t3:
-            value += "iso_3p,"
+            size = len(self.t3)
+            direction = "+" if self.t3.isupper() else "-"
+            value += "iso_3p:%s%s," % (direction, size)
         if not value:
             value = "NA"
         return value[:-1]

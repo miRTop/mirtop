@@ -112,11 +112,11 @@ def _translate(label, description):
     if label == "mv":
         return "notsure"
     if label.find("lv3p") > -1:
-        iso.append("iso_3p")
+        iso.append("iso_3p:%s" % label.split("|")[-1].split("#")[-1])
     if label.find("lv5p") > -1:
-        iso.append("iso_5p")
+        iso.append("iso_5p:%s" % label.split("|")[-1].split("#")[-1])
     if label.find("nta") > -1:
-        iso.append("iso_add")
+        iso.append("iso_add:%s" % label.split("|")[-1].split("#")[-1])
     if label.find("NucVar") > -1:
         for nt in description.split(","):
             logger.debug("TRANSLATE::change:%s" % description)
