@@ -1,3 +1,5 @@
+# Structure of the code
+
 * mirtop/bam
   * __bam.py__ 
     * `read_bam`: read BAM file with pysamtools and store in a key - value object
