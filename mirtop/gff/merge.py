@@ -27,7 +27,7 @@ def _fix(line, expression):
     return "\t".join(cols)
 
 def _convert_to_string(d, s):
-    v = [d[ss] for ss in s]
+    v = [d[ss] if ss in d else 0 for ss in s]
     return " Expression %s" % ",".join(map(str, v))
 
 def _chrom(string):
