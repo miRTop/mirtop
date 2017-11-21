@@ -6,7 +6,7 @@ logger = mylog.getLogger(__name__)
 def create(reads, database, sample):
     """Read https://github.com/miRTop/mirtop/issues/9"""
     seen = set()
-    lines = defaultdict(list)
+    lines = defaultdict(defaultdict)
     seen_ann = {}
     filter_precursor = 0
     filter_score = 0
@@ -34,8 +34,8 @@ def create(reads, database, sample):
                     continue
                 if iso.subs:
                     iso.subs = [] if "N" in iso.subs[0] else iso.subs
-                annotation = "%s.%s" % (chrom, iso.format_id(sep="."))
                 idseq = reads[r].idseq
+                annotation = "%s.%s" % (chrom, idseq)
                 source = "ref_miRNA" if not iso.is_iso() else "isomiR"
                 strand = iso.strand
                 start, end = iso.start, iso.end
@@ -53,7 +53,9 @@ def create(reads, database, sample):
                     logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, res, seen_ann[annotation]))
                 seen_ann[annotation] = res
                 logger.debug("GFF::external %s" % iso.external)
-                lines[chrom].append([annotation, chrom, counts, sample, res])
+                if start not in lines[chrom]:
+                    lines[chrom][start] = []
+                lines[chrom][start].append([annotation, chrom, counts, sample, res])
                 logger.debug("GFF::%s" % res)
                 n_hits += 1
             else:

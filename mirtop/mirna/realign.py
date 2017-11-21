@@ -167,7 +167,7 @@ def make_cigar(seq, mature):
         if seq[pos] == mature[pos]:
             cigar += "M"
         elif seq[pos] != mature[pos] and seq[pos] != "-" and mature[pos] != "-":
-            cigar += mature[pos]
+            cigar += seq[pos]
         elif seq[pos] == "-":
             cigar += "D"
         elif mature[pos] == "-":

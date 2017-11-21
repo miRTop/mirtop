@@ -96,6 +96,19 @@ class FunctionsTest(unittest.TestCase):
         if "GCAT" != reverse_complement("ATGC"):
             logger.error("ATGC complement is not: %s" % reverse_complement("ATGC"))
 
+    @attr(merge=True)
+    def test_merge(self):
+        """Test merge functions"""
+        from mirtop.gff import merge
+        if merge._chrom("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25") != "hsa-let-7a-5p":
+            raise ValueError("Chrom should be hsa-let-7a-5p.")
+        if merge._start("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25") != "4":
+            raise ValueError("Start should be 4.")
+        expression =merge._convert_to_string({'s': 1, 'x': 2}, ['s', 'x'])
+        print merge._fix("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\tRead hsa-let-7a-1_hsa-let-7a-5p_5:26_-1:-1_mut:null_add:null_x861; UID bhJJ5WJL2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:-1; Cigar 22M; Expression 861; Filter Pass; Hits 1;", expression)
+        if expression != " Expression 1,2":
+            raise ValueError("This is wrong: %s" % expression)
+
     @attr(alignment=True)
     def test_alignment(self):
         """testing alignments function"""
