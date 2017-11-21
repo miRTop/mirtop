@@ -6,14 +6,16 @@ def merge(dts):
     """
     all_data = defaultdict(dict)
     all_lines = defaultdict()
+    samples = set()
     for fn in dts:
         for m in dts[fn]:
             for s in dts[fn][m]:
                 idu = dts[fn][m][0]
+                samples.add(dts[fn][m][3])
                 all_data[idu][dts[fn][m][3]] = dts[fn][m][1]
                 all_lines[idu] = dts[fn][m][4]
     for idu in all_data:
-        expression = _convert_to_string(all_data[idu])
+        expression = _convert_to_string(all_data[idu], samples)
         if _start(all_lines[idu]) not in merged_lines[_chrom(all_lines[idu])]:
             merged_lines[_chrom(all_lines[idu])][_start(all_lines[idu])] = []
         merged_lines[_chrom(all_lines[idu])][_start(all_lines[idu])] = _fix(all_lines[idu], expression)
