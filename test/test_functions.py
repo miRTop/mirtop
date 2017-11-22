@@ -76,8 +76,8 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Sequence 1 is not right.")
         if not fixed[1] == "AAAAGCTGGGTTGA-GAGGA":
             raise ValueError("Sequence 2 is not right.")
-        if not make_cigar("AAA-AAATAAA", "AGACAAA-AAA") == "MGMD3MI3M":
-            raise ValueError("Cigar not eq to MAMDMMMIMMM: %s" % make_cigar("AAA-AAATAAA", "AGACAAA-AAA"))
+        if not make_cigar("AAA-AAATAAA", "AGACAAA-AAA") == "MAMD3MI3M":
+            raise ValueError("Cigar not eq to MAMD3MI3M: %s" % make_cigar("AAA-AAATAAA", "AGACAAA-AAA"))
 
     @attr(locala=True)
     def test_locala(self):
