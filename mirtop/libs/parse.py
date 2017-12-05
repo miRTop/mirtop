@@ -5,6 +5,7 @@ import sys
 def parse_cl(in_args):
     print in_args
     sub_cmds = {"gff": add_subparser_gff,
+                "stats": add_subparser_stats,
                 "target": add_subparser_target,
                 "collapse": add_subparser_collapse,
                 "simulator": add_subparser_simulator
@@ -30,6 +31,15 @@ def _add_debug_option(parser):
                         dest="debug", help="max verbosity mode", default=False)
     parser.add_argument("-vd", "--print_debug", action="store_true",
                         help="print debug messageson terminal", default=False)
+    return parser
+
+
+def add_subparser_stats(subparsers):
+    parser = subparsers.add_parser("stats", help="show general stats for each sample.")
+    parser.add_argument("files", nargs="*", help="Bam files.")
+    parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
+                        help="dir of output files")
+    parser = _add_debug_option(parser)
     return parser
 
 

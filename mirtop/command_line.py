@@ -6,6 +6,7 @@ from mirtop.libs.logger import initialize_logger
 from mirtop.libs.parse import parse_cl
 from mirtop.libs.simulator import simulate
 from mirtop.gff import reader
+from mirtop.gff.stats import stats
 import mirtop.libs.logger as mylog
 import time
 
@@ -18,6 +19,9 @@ def main(**kwargs):
     if "gff" in kwargs:
         logger.info("Run annotation")
         reader(kwargs["args"])
+    elif "stats" in kwargs:
+        logger.info("Run stats.")
+        stats(kwargs["args"])
     elif "simulator" in kwargs:
         logger.info("Run simulation")
         simulate(kwargs["args"])
