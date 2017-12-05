@@ -54,17 +54,19 @@ class isomir:
         subs = self.subs
         if self.external != "notsure" and self.external != "":
             return self.external
-        if subs:
-            if subs[0] > 1 and subs[0] < 8:
-                value += "iso_snp_seed,"
-            elif subs[0] == 8:
-                value += "iso_snp_central_offset,"
-            elif subs[0] > 8 and subs[0] < 13:
-                value += "iso_snp+central,"
-            elif subs[0] > 12 and subs[0] < 18:
-                value += "iso_snp_central_supp,"
-            else:
-                value += "iso_snp,"
+        for sub in subs:
+            if sub:
+                if sub[0] > 1 and sub[0] < 8:
+                    value += "iso_snp_seed,"
+                elif sub[0] == 8:
+                    value += "iso_snp_central_offset,"
+                elif sub[0] > 8 and sub[0] < 13:
+                    value += "iso_snp_central,"
+                elif sub[0] > 12 and sub[0] < 18:
+                    value += "iso_snp_central_supp,"
+                else:
+                    value += "iso_snp,"
+
         if self.add:
             value += "iso_add:+%s," % len(self.add)
         if self.t5:

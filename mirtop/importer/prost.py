@@ -27,12 +27,23 @@ def read_file(fn, precursors, mirna_gtf):
     """
     reads = defaultdict(hits)
     map_mir = mapper.read_gtf_to_mirna(mirna_gtf)
+    non_mirna = 0
+    non_chromosome_mirna = 0
+    outside_mirna = 0
+    lines_read = 0
     with open(fn) as handle:
         handle.readline()
         for line in handle:
+            lines_read += 1
             cols = line.strip().split("\t")
             query_name = cols[0]
             query_sequence = cols[0]
+            if len(cols) < 12:
+                non_mirna += 1
+                continue
+            miRNA = cols[11]
+            if not miRNA:
+                continue
             if query_name not in reads and query_sequence == None:
                 continue
             if query_sequence and query_sequence.find("N") > -1:
@@ -41,10 +52,15 @@ def read_file(fn, precursors, mirna_gtf):
                 reads[query_name].set_sequence(query_sequence)
                 reads[query_name].counts = int(cols[9])
             for loc in cols[5].split(";"):
+                if loc.find("-") < 0:
+                    non_chromosome_mirna += 1
+                    continue
                 chrom = loc.split(":")[0]
                 start, end = loc.split(":")[1].split("-")
-                miRNA = cols[11]
                 chrom, reference_start =  _genomic2transcript(map_mir[miRNA], chrom, int(start))
+                if not chrom:
+                    non_chromosome_mirna += 1
+                    continue
                 # reference_start = int(cols[4]) - 1
                 logger.debug("\nPROST::NEW::query: {query_sequence}\n"
                              "  precursor {chrom}\n"
@@ -58,13 +74,18 @@ def read_file(fn, precursors, mirna_gtf):
                 iso.set_pos(reference_start, len(reads[query_name].sequence))
                 logger.debug("PROST:: start %s end %s" % (iso.start, iso.end))
                 if len(precursors[chrom]) < reference_start + len(reads[query_name].sequence):
+                    outside_mirna += 1
                     continue
                 iso.subs, iso.add, iso.cigar = filter.tune(reads[query_name].sequence,
                                                            precursors[chrom],
                                                            reference_start, None)
                 logger.debug("PROST::After tune start %s end %s" % (iso.start, iso.end))
-                if len(iso.subs) < 2:
-                    reads[query_name].set_precursor(chrom, iso)
+                #if len(iso.subs) < 2:
+                reads[query_name].set_precursor(chrom, iso)
+    logger.info("Lines loaded: %s" % lines_read)
+    logger.info("Skipped lines because non miRNA in line: %s" % non_mirna)
+    logger.info("Skipped lines because non chromosome in GTF: %s" % non_chromosome_mirna)
+    logger.info("Skipped lines because outside precursor: %s" % outside_mirna)
     logger.info("Hits: %s" % len(reads))
     return reads
 
@@ -73,6 +94,7 @@ def _genomic2transcript(code, chrom, pos):
         if _is_chrom(chrom, code[ref][0]):
             if _is_inside(pos, code[ref][1:3]):
                 return [ref, _transcript(pos, code[ref][1:4])]
+    return [None, None]
 
 def _is_chrom(chrom, annotated):
     logger.debug("TRANSCRIPT::CHROM::read position %s and db position %s" % (chrom, annotated))

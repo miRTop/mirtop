@@ -15,13 +15,18 @@ def stats(args):
     """
     From a list of files produce stats
     """
-    out = dict()
+    out = list()
     for fn in args.files:
         if not os.path.exists(fn):
             raise IOError("%s doesn't exist" %s)
-        out[fn] = _calc_stats(fn)
-    print out
-    # merge samples in fn with pandas
+        out.append(_calc_stats(fn))
+    df_final = pd.concat(out)
+    outfn = os.path.join(args.out, "mirtop_stats.txt")
+    if args.out != "tmp_mirtop":
+        df_final.to_csv(outfn)
+        logger.info("Stats saved at %s" % outfn)
+    else:
+        print df_final
 
 def _get_samples(fn):
     with open(fn) as inh:
@@ -29,12 +34,12 @@ def _get_samples(fn):
             if line.startswith("## COLDATA"):
                 return line.strip().split(": ")[1].strip().split(",")
     raise ValueError("%s doesn't contain COLDATA header." % fn)
+
 def _calc_stats(fn):
     """
     Read files and parse into categories
     """
     samples = _get_samples(fn)
-    print samples
     lines = []
     with open(fn) as inh:
         for line in inh:
@@ -42,14 +47,11 @@ def _calc_stats(fn):
                 continue
             cols = line.strip().split("\t")
             logger.debug("## STATS: attribute %s" % cols[8])
-            print cols[8]
             attr_v = [v.strip().split(" ")[1] for v in cols[8].strip().split(";")[:-1]]
             attr_k = [v.strip().split(" ")[0] for v in cols[8].strip().split(";")[:-1]]
             attr = dict(zip(attr_k, attr_v))
             lines.extend(_classify(cols[2], attr, samples))
-            # table [category, sample, counts] (add lines)
     df = _summary(lines)
-            # then pandas.spread()
     return df
 
 def _classify(srna_type, attr, samples):
@@ -77,5 +79,11 @@ def _summary(lines):
     labels = ["category", "sample", "counts"]
     df = pd.DataFrame.from_records(lines, columns=labels)
     df.counts = df.counts.astype(int)
-    df = df.groupby(['category', 'sample'], as_index=False).sum()
+    df_sum = df.groupby(['category', 'sample'], as_index=False).sum()
+    df_sum['category'] = ["%s_sum" % r for r in df_sum['category']]
+    df_count = df.groupby(['category', 'sample'], as_index=False).count()
+    df_count['category'] = ["%s_count" % r for r in df_count['category']]
+    df_mean = df.groupby(['category', 'sample'], as_index=False).mean()
+    df_mean['category'] = ["%s_mean" % r for r in df_mean['category']]
+    df = pd.concat([df_sum, df_count, df_mean])
     return df

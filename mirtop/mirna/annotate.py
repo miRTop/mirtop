@@ -80,5 +80,5 @@ def annotate(reads, mature_ref, precursors):
                     reads[r].precursors[p] = iso_copy
                     reads[r].precursors[p].mirna = mature
                     # break
-    logger.info("Valid hits: %s" % n_iso)
+    logger.info("Valid hits (+/-3 reference miRNA): %s" % n_iso)
     return reads
