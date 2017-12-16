@@ -43,7 +43,10 @@ def read_file(fn, precursors, mirna_gtf):
                 continue
             miRNA = cols[11]
             if not miRNA:
-                continue
+                if cols[13]:
+                    miRNA = cols[13]
+                else:
+                    continue
             if query_name not in reads and query_sequence == None:
                 continue
             if query_sequence and query_sequence.find("N") > -1:

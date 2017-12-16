@@ -206,8 +206,10 @@ class FunctionsTest(unittest.TestCase):
             from mirtop.importer import prost
             from mirtop.bam import bam
             from mirtop.mirna import annotate
+            from mirtop.gff import body
             reads = prost.read_file(fn, precursors, "data/examples/annotate/hsa.gff3")
             ann = annotate.annotate(reads, matures, precursors)
+            gff = body.create(ann, "miRBase21", "prost")
             return True
         print "\nPROST\n"
         annotate("data/examples/prost/example.mincount3.txt", precursors, matures)
