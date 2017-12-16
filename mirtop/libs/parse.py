@@ -6,6 +6,7 @@ def parse_cl(in_args):
     print in_args
     sub_cmds = {"gff": add_subparser_gff,
                 "stats": add_subparser_stats,
+                "compare": add_subparser_compare,
                 "target": add_subparser_target,
                 "collapse": add_subparser_collapse,
                 "simulator": add_subparser_simulator
@@ -38,7 +39,17 @@ def add_subparser_stats(subparsers):
     parser = subparsers.add_parser("stats", help="show general stats for each sample.")
     parser.add_argument("files", nargs="*", help="Bam files.")
     parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
-                        help="dir of output files")
+                        help="folder of output files")
+    parser = _add_debug_option(parser)
+    return parser
+
+
+def add_subparser_compare(subparsers):
+    parser = subparsers.add_parser("compare", help="Compare two GFF files.")
+    parser.add_argument("files", nargs="*", help="Files to compare."
+                                                 "First will be used as reference.")
+    parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
+                        help="folder of output files")
     parser = _add_debug_option(parser)
     return parser
 

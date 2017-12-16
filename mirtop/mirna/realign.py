@@ -78,7 +78,7 @@ class isomir:
             direction = "+" if self.t3.isupper() else "-"
             value += "iso_3p:%s%s," % (direction, size)
         if not value:
-            value = "NA"
+            value = "NA;"
         return value[:-1]
 
     def format(self, sep="\t"):

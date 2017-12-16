@@ -25,9 +25,7 @@ def create(reads, database, sample):
                 continue
             if (r, iso.mirna) not in seen:
                 seen.add((r, iso.mirna))
-                chrom = iso.mirna
-                if not chrom:
-                    chrom = p
+                chrom = p
                 seq = reads[r].sequence
                 if iso.get_score(len(seq)) < 1:
                     filter_score += 1

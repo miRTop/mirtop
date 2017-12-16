@@ -7,6 +7,7 @@ from mirtop.libs.parse import parse_cl
 from mirtop.libs.simulator import simulate
 from mirtop.gff import reader
 from mirtop.gff.stats import stats
+from mirtop.gff.compare import compare
 import mirtop.libs.logger as mylog
 import time
 
@@ -22,6 +23,9 @@ def main(**kwargs):
     elif "stats" in kwargs:
         logger.info("Run stats.")
         stats(kwargs["args"])
+    elif "compare" in kwargs:
+        logger.info("Run compare.")
+        compare(kwargs["args"])
     elif "simulator" in kwargs:
         logger.info("Run simulation")
         simulate(kwargs["args"])
