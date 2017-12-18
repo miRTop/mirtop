@@ -16,11 +16,21 @@ def compare(args):
     From a list of files produce stats
     """
     out = list()
+    result = dict()
     reference = read_reference(args.files[0])
     for fn in args.files[1:]:
         if not os.path.exists(fn):
             raise IOError("%s doesn't exist" %s)
-        _compare_to_reference(fn, reference)
+        result[os.path.basename(fn)] = _compare_to_reference(fn, reference)
+    if args.out != "tmp_mirtop":
+        fn_out = os.path.join(args.out, "summary.txt")
+        with open(fn_out, 'w') as outh:
+            for fn in result:
+                for line in result[fn]['different']:
+                    print >>outh, "%s\t%s" % (fn, line)
+                for line in result[fn]['extra']:
+                    print >>outh, "%s\t%s" % (fn, line)
+
 
 def read_reference(fn):
     """Read GFF into UID:Variant key:value dict"""
@@ -33,13 +43,14 @@ def read_reference(fn):
             attr_v = [v.strip().split(" ")[1] for v in cols[8].strip().split(";")[:-1]]
             attr_k = [v.strip().split(" ")[0] for v in cols[8].strip().split(";")[:-1]]
             attr = dict(zip(attr_k, attr_v))
-            srna[attr['UID']] = attr['Variant']
+            srna[attr['UID']] = [attr['Variant'], cols[8]]
     return srna
 
 def _compare_to_reference(fn, reference):
     same = 0
-    diff = 0
-    new = 0
+    diff = list()
+    extra = list()
+    seen = 0
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
@@ -50,14 +61,18 @@ def _compare_to_reference(fn, reference):
             attr_k = [v.strip().split(" ")[0] for v in cols[8].strip().split(";")[:-1]]
             attr = dict(zip(attr_k, attr_v))
             if attr['UID'] in reference:
-                if attr['Variant'] == reference[attr['UID']]:
+                if attr['Variant'] == reference[attr['UID']][0]:
                     same += 1
                 else:
-                    diff +=1
-                new += 1
-    print "Number of sequences found in reference: %s" % new
-    print "Number of sequences matches reference: %s" % same
-    print "Number of sequences different than reference: %s" % diff
+                    diff.append("%s | reference: %s" % (line.strip(), reference[attr['UID']][1]))
+                seen += 1
+            else:
+                extra.append("%s | extra" % line.strip())
+    logger.info("Number of sequences found in reference: %s" % seen)
+    logger.info("Number of sequences matches reference: %s" % same)
+    logger.info("Number of sequences different than reference: %s" % len(diff))
+    logger.info("Number of sequences extra sequences: %s" % len(extra))
+    return {'different': diff, 'extra': extra}
 
 def _get_samples(fn):
     with open(fn) as inh:
