@@ -10,14 +10,8 @@ Welcome to mirtop's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   code_structure.md
    installation.md
    quick_start.md
    output.md
+   code_structure.md
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
