@@ -38,16 +38,16 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
 project = u'mirtop'
-copyright = u'2017, Lorena Pantano, Thomas Desvignes, Karen EIlbeck, Ioannis Vlachos, Bastian Fromm, Marc K. Halushka, Gianvito Urgese'
-author = u'Lorena Pantano, Thomas Desvignes, Karen EIlbeck, Ioannis Vlachos, Bastian Fromm, Marc K. Halushka, Gianvito Urgese'
+copyright = u'2017, Lorena Pantano, Thomas Desvignes, Karen EIlbeck, Ioannis Vlachos, Bastian Fromm, Marc K. Halushka, Michael Hackenberg, Gianvito Urgese'
+author = u'Lorena Pantano, Thomas Desvignes, Karen EIlbeck, Ioannis Vlachos, Bastian Fromm, Marc K. Halushka, Michael Hackenberg, Gianvito Urgese'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -102,6 +102,8 @@ html_static_path = ['_static']
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
     '**': [
+        'navigation.html',
+        'searchbox.html',
         'relations.html',  # needs 'show_related': True theme option to display
         'searchbox.html',
     ]
@@ -139,7 +141,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'mirtop.tex', u'mirtop Documentation',
-     u'Lorena Pantano, Thomas Desvignes, Karen EIlbeck, Ioannis Vlachos, Bastian Fromm, Marc K. Halushka, Michael Hackenberg,Gianvito Urgese', 'manual'),
+     u'Lorena Pantano, Thomas Desvignes, Karen EIlbeck, Ioannis Vlachos, Bastian Fromm, Marc K. Halushka, Michael Hackenberg, Gianvito Urgese', 'manual'),
 ]
 
 
