@@ -39,15 +39,16 @@ Thes best solution is to install conda to get an independent enviroment.
 Quick start
 -----------
 
-`cd data`
-`mirtop gff --sps hsa --hairpin examples/annotate/hairpin.fa --mirna examples/annotate/hsa.gff3 -o test_out_mirs_fasta examples/annotate/sim_isomir.sam
+```
+git clone mirtop
+cd mirtop/data/annotate
+mirtop gff -sps hsa --hairpin hairpin.fa --gtf hsa.gff3 -o test_out sim_isomir.bam
+```
 
 Output
 ------
 
-There will be a `*.mirna` file that is a tabular file with this format:
-
-Naming of isomiRs follow these rules: https://github.com/miRTop/incubator/blob/master/format/definition.md
+The `mirtop gff` generates the GFF3 adapter format to capture miRNA variations. The output is explained [here](https://github.com/miRTop/incubator/blob/master/format/definition.md).
 
 Contributors
 ------------
