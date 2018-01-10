@@ -139,7 +139,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'mirtop.tex', u'mirtop Documentation',
-     u'Lorena Pantano, Thomas Desvignes, Karen EIlbeck, Ioannis Vlachos, Bastian Fromm, Marc K. Halushka, Gianvito Urgese', 'manual'),
+     u'Lorena Pantano, Thomas Desvignes, Karen EIlbeck, Ioannis Vlachos, Bastian Fromm, Marc K. Halushka, Michael Hackenberg,Gianvito Urgese', 'manual'),
 ]
 
 

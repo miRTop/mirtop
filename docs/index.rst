@@ -11,6 +11,9 @@ Welcome to mirtop's documentation!
    :caption: Contents:
 
    code_structure.md
+   installation.md
+   quick_start.md
+   output.md
 
 Indices and tables
 ==================
