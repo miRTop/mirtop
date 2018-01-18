@@ -1,0 +1,12 @@
+## GFF3 adapted for miRNA sequencing data. VERSION 0.0.1
+## source-ontology: miRBase1
+## COLDATA: sampleX
+hsa-let-7a-1	miRBase21	isomiR	4	29	0	+	.	Read hsa-let-7a-5p.sA.TT.ATGAGGTAGTAGGTTGTATAGTTTT; UID bhJJ5WJ%L2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:+2; Cigar 25M; Expression 21; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	4	28	0	+	.	Read hsa-let-7a-5p.sA.G5T.t.eAA.ATGAGTTAGTAGGTTGTATAGTAA; UID bwJJ5WJL; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_snp_seed,iso_add:+2,iso_5p:+1,iso_3p:-1; Cigar 5MT16MAA; Expression 620; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	5	26	0	+	.	Read hsa-let-7a-5p.t.TGAGGTAGTAGGTTGTATAGT; UID 7AwhRzw; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_3p:-1; Cigar 21M; Expression 0; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	5	28	0	+	.	Read hsa-let-7a-5p.T.TGAGGTAGTAGGTTGTATAGTTT; UID 7AwhRzwQ1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_3p:+1; Cigar 23M; Expression 43; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	6	30	0	+	.	Read hsa-let-7a-5p.st.eAAT.GAGGTAGTAGGTTGTATAGTTAAT; UID 4WWABg5o; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_add:+3,iso_5p:-1; Cigar 21MIAMD; Expression 4; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	6	26	0	+	.	Read hsa-let-7a-5p.st.A5T.t.GAGGTTGTAGGTTGTATAGT; UID 45WABgW1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_snp_seed,iso_5p:-1,iso_3p:-1; Cigar 5MT14M; Expression 40; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	6	26	0	+	.	Read hsa-let-7a-5p.st.t.GAGGTAGTAGGTTGTATAGT; UID 4WWABgW1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:-1,iso_3p:-1; Cigar 20M; Expression 6; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	7	28	0	+	.	Read hsa-let-7a-5p.stg.T.AGGTAGTAGGTTGTATAGTTT; UID hJJ5WJ%; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:-2,iso_3p:+1; Cigar 21M; Expression 362; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	7	27	0	+	.	Read hsa-let-7a-5p.stg.AGGTAGTAGGTTGTATAGTT; UID hJJ5WJQ1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:-2; Cigar 20M; Expression 499; Filter Pass; Hits 1;
