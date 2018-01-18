@@ -1,0 +1,5 @@
+## GFF3 adapted for miRNA sequencing data. VERSION 0.0.1
+## source-ontology: miRBasev21
+## COLDATA: samples1,sample2
+hsa-let-7a-5p	miRBasev21	isomiR	5	23	0	+	.	Read seq_1010_x66; UID 7AwhRz@2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_3p:-3; Cigar 19M; Expression 66,33; Filter Pass; Hits 1;
+hsa-let-7a-5p	miRBasev21	isomiR	5	26	0	+	.	Read seq_1156_x4; UID 7AwhRFwL2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_snp; Cigar 15MG6M; Expression 4,2; Filter Pass; Hits 1;
