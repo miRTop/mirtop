@@ -13,7 +13,7 @@ def _get_gff_version():
     return "## GFF3 adapted for miRNA sequencing data. VERSION 0.0.1\n"
 
 def _get_samples(samples):
-    return "## COLDATA: %s" % ";".join(samples)
+    return "## COLDATA: %s" % ",".join(samples)
 
 def _get_database(database):
     return "## source-ontology: %s\n" % database
