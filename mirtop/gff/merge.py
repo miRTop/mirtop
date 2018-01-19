@@ -6,21 +6,25 @@ def merge(dts):
     """
     all_data = defaultdict(dict)
     all_lines = defaultdict()
+    merged_lines = defaultdict(dict)
     samples = set()
     for fn in dts:
         for m in dts[fn]:
             for s in dts[fn][m]:
-                idu = dts[fn][m][0]
-                samples.add(dts[fn][m][3])
-                all_data[idu][dts[fn][m][3]] = dts[fn][m][1]
-                all_lines[idu] = dts[fn][m][4]
+                for hit in dts[fn][m][s]:
+                    idu = hit[0]
+                    samples.add(hit[3])
+                    all_data[idu][hit[3]] = hit[2] # get the expression of the sample from line
+                    all_lines[idu] = hit[4] # get the line
     for idu in all_data:
         expression = _convert_to_string(all_data[idu], samples)
         if _start(all_lines[idu]) not in merged_lines[_chrom(all_lines[idu])]:
             merged_lines[_chrom(all_lines[idu])][_start(all_lines[idu])] = []
-        merged_lines[_chrom(all_lines[idu])][_start(all_lines[idu])] = _fix(all_lines[idu], expression)
+        merged_lines[_chrom(all_lines[idu])][_start(all_lines[idu])].append([idu, "", "", "", _fix(all_lines[idu], expression)])
+    return merged_lines
 
 def _fix(line, expression):
+# Need to fix Read attribute since not usefull when multiple sample in a line.
     cols = line.split("\t")
     attr = cols[8].split(";")
     cols[8] = ";".join([a if a.find("Expression") < 0 else expression for a in attr])
