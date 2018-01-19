@@ -27,3 +27,22 @@ miRNA annotation generated from [sRNAbench](http://bioinfo2.ugr.es:8080/ceUGR/sr
 cd mirtop/data
 mirtop gff -sps hsa --hairpin annotate/hairpin.fa --gtf annotate/hsa.gff3 -o test_out srnabench
 ```
+
+## Get statistics from GFF
+
+Get number of isomiRs and miRNAs annotated in the GFF file by isomiR category.
+
+```
+cd mirtop/data
+mirtop stats -o test_out example/gff/correct_file.gff
+```
+
+## Compare GFF file with reference
+
+Compare the sequences from two or more GFF files. The first one will be used as the reference data.
+
+```
+cd mirtop/data
+mirtop stats -o test_out example/gff/correct_file.gff example/gff/alternative.gff
+```
+

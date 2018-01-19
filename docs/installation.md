@@ -2,7 +2,7 @@
 
 ## Bioconda
 
-coming soon
+`conda install mirtop -c bioconda`
 
 ## PIP
 
@@ -11,7 +11,6 @@ coming soon
 ## develop version
 
 Thes best solution is to install conda to get an independent enviroment.
-
 
 ```
 wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
