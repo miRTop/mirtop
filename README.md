@@ -8,6 +8,12 @@ Command line tool to annotate with a standard naming miRNAs e isomiRs.
 
 See more at: [isomiRs naming discussion](https://github.com/miRTop/incubator/blob/master/isomirs/isomir_naming.md)
 
+Chat
+----
+
+[Ask question, ideas](https://gitter.im/mirtop/Lobby#)
+[Contributors to code](https://gitter.im/mirtop/devel)
+
 Cite
 ---------
 
@@ -22,27 +28,44 @@ Read more: http://mirtop.github.io
 
 Installation
 ------------
+
+### Bioconda
+
+`conda install mirtop -c bioconda`
+
+### PIP
+
+`pip install mirtop`
+
+### develop version
+
 Thes best solution is to install conda to get an independent enviroment.
 
-`wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh`
+```
+wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
 
-`bash Miniconda-latest-Linux-x86_64.sh -b -p ~/mirtop_env`
+bash Miniconda-latest-Linux-x86_64.sh -b -p ~/mirtop_env
 
-`export PATH=$PATH:~/mirtop_env`
+export PATH=$PATH:~/mirtop_env
 
-`git clone http://github.com/miRTop/mirtop`
+conda install -c bioconda pysam pybedtools pandas biopython samtools
 
-`cd mirtop`
+git clone http://github.com/miRTop/mirtop
 
-`python setup.py develop`
+cd mirtop
+
+python setup.py develop
+```
 
 Quick start
 -----------
 
+Read complete commands at: https://mirtop.readthedocs.org
+
 ```
 git clone mirtop
-cd mirtop/data/annotate
-mirtop gff -sps hsa --hairpin hairpin.fa --gtf hsa.gff3 -o test_out sim_isomir.bam
+cd mirtop/data/example/annotate
+mirtop gff --sps hsa --hairpin hairpin.fa --gtf hsa.gff3 -o test_out sim_isomir.bam
 ```
 
 Output
