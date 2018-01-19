@@ -30,6 +30,8 @@ def compare(args):
                     print >>outh, "%s\t%s" % (fn, line)
                 for line in result[fn]['extra']:
                     print >>outh, "%s\t%s" % (fn, line)
+                for line in result[fn]['miss']:
+                    print >>outh, "%s\t%s" % (fn, line)
 
 
 def read_reference(fn):
@@ -50,7 +52,9 @@ def _compare_to_reference(fn, reference):
     same = 0
     diff = list()
     extra = list()
+    miss = list()
     seen = 0
+    seen_reference = set()
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
@@ -66,13 +70,18 @@ def _compare_to_reference(fn, reference):
                 else:
                     diff.append("%s | reference: %s" % (line.strip(), reference[attr['UID']][1]))
                 seen += 1
+                seen_reference.add(attr['UID'])
             else:
                 extra.append("%s | extra" % line.strip())
+    for uid in reference:
+        if uid not in seen_reference:
+            miss.append("| miss %s" %  reference[uid][1])
     logger.info("Number of sequences found in reference: %s" % seen)
     logger.info("Number of sequences matches reference: %s" % same)
     logger.info("Number of sequences different than reference: %s" % len(diff))
     logger.info("Number of sequences extra sequences: %s" % len(extra))
-    return {'different': diff, 'extra': extra}
+    logger.info("Number of sequences missed sequences: %s" % len(miss))
+    return {'different': diff, 'extra': extra, 'miss': miss}
 
 def _get_samples(fn):
     with open(fn) as inh:
