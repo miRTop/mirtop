@@ -259,3 +259,28 @@ class FunctionsTest(unittest.TestCase):
         return True
 
 
+    @attr(counts=True)
+    def test_counts(self):
+        """testing convert_gff_counts in convert.py function"""
+        from mirtop.libs import logger
+        from mirtop.gff.convert import convert_gff_counts
+        from mirtop.libs.parse import parse_cl
+        import argparse
+
+        logger.initialize_logger("test counts", True, True)
+        logger = logger.getLogger(__name__)
+     
+        counts_params = ['--gff', 'data/examples/gff/2samples.gff', '--out', 'data/examples/gff/']
+        
+
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--gff")
+        parser.add_argument("--out")
+
+        args = parser.parse_args(counts_params)
+        
+        convert_gff_counts(args)
+        
+        return True
+
+
