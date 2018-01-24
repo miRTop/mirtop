@@ -270,7 +270,7 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test counts", True, True)
         logger = logger.getLogger(__name__)
      
-        counts_params = ['--gff', '/Users/shruthi/Desktop/mirtop/data/examples/gff/2samples.gff', '--out', '/Users/shruthi/Desktop/mirtop/data/examples/gff/']
+        counts_params = ['--gff', 'data/examples/gff/2samples.gff', '--out', 'data/examples/gff/']
         
 
         parser = argparse.ArgumentParser()
