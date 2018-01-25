@@ -33,7 +33,6 @@ def compare(args):
                 for line in result[fn]['miss']:
                     print >>outh, "%s\t%s" % (fn, line)
 
-
 def read_reference(fn):
     """Read GFF into UID:Variant key:value dict"""
     srna = dict()
@@ -45,7 +44,7 @@ def read_reference(fn):
             attr_v = [v.strip().split(" ")[1] for v in cols[8].strip().split(";")[:-1]]
             attr_k = [v.strip().split(" ")[0] for v in cols[8].strip().split(";")[:-1]]
             attr = dict(zip(attr_k, attr_v))
-            srna[attr['UID']] = [attr['Variant'], cols[8]]
+            srna[attr['UID']] = [_simplify(attr['Variant']), cols[8]]
     return srna
 
 def _compare_to_reference(fn, reference):
@@ -65,7 +64,7 @@ def _compare_to_reference(fn, reference):
             attr_k = [v.strip().split(" ")[0] for v in cols[8].strip().split(";")[:-1]]
             attr = dict(zip(attr_k, attr_v))
             if attr['UID'] in reference:
-                if attr['Variant'] == reference[attr['UID']][0]:
+                if _simplify(attr['Variant']) == reference[attr['UID']][0]:
                     same += 1
                 else:
                     diff.append("%s | reference: %s" % (line.strip(), reference[attr['UID']][1]))
@@ -82,6 +81,10 @@ def _compare_to_reference(fn, reference):
     logger.info("Number of sequences extra sequences: %s" % len(extra))
     logger.info("Number of sequences missed sequences: %s" % len(miss))
     return {'different': diff, 'extra': extra, 'miss': miss}
+
+def _simplify(variant):
+    simple = [v.split(":")[0] for v in variant.split(",")]
+    return ",".join(simple)
 
 def _get_samples(fn):
     with open(fn) as inh:
