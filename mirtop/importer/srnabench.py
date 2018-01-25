@@ -108,15 +108,18 @@ def _read_iso(fn):
 def _translate(label, description):
     iso = []
     if label == "exact":
-        return "exact"
+        return "NA"
     if label == "mv":
         return "notsure"
+    number_nts = label.split("|")[-1].split("#")[-1]
+    if number_nts.find("-") < 0:
+        number_nts = "+%s" % number_nts
     if label.find("lv3p") > -1:
-        iso.append("iso_3p:%s" % label.split("|")[-1].split("#")[-1])
+        iso.append("iso_3p:%s" % number_nts)
     if label.find("lv5p") > -1:
-        iso.append("iso_5p:%s" % label.split("|")[-1].split("#")[-1])
+        iso.append("iso_5p:%s" % number_nts)
     if label.find("nta") > -1:
-        iso.append("iso_add:%s" % label.split("|")[-1].split("#")[-1])
+        iso.append("iso_add:%s" % number_nts)
     if label.find("NucVar") > -1:
         for nt in description.split(","):
             logger.debug("TRANSLATE::change:%s" % description)
