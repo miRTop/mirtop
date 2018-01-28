@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
@@ -80,3 +80,13 @@ def _merge(lines):
         dt_pre = dt_pre.loc[:, "isomir":"sample"]
         dt_pre = dt_pre.groupby(['isomir', 'chrom', 'mature', 'sample'], as_index=False).sum()
     return out_file, dt, dt_pre
+
+def _create_dict(gff_line): 
+    gff_line = " Read"+gff_line.strip().split("Read")[1]
+    gff_dict = OrderedDict()
+    for gff_item in gff_line.split(";"):
+        item_pair = gff_item.split(" ")
+        if len(item_pair) > 1:
+            gff_dict[item_pair[1]] = item_pair[2:]
+    return gff_dict
+
