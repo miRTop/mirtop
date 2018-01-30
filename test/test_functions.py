@@ -267,7 +267,6 @@ class FunctionsTest(unittest.TestCase):
         print gff
         return True
 
-
     @attr(counts=True)
     def test_counts(self):
         """testing convert_gff_counts in convert.py function"""
@@ -278,18 +277,20 @@ class FunctionsTest(unittest.TestCase):
 
         logger.initialize_logger("test counts", True, True)
         logger = logger.getLogger(__name__)
-     
+
         counts_params = ['--gff', 'data/examples/gff/2samples.gff', '--out', 'data/examples/gff/']
-        
 
         parser = argparse.ArgumentParser()
         parser.add_argument("--gff")
         parser.add_argument("--out")
 
         args = parser.parse_args(counts_params)
-        
         convert_gff_counts(args)
-        
+
         return True
 
-
+    @attr(stats=True)
+    def test_stats(self):
+        """testing stats function"""
+        from mirtop.gff import stats
+        print stats._calc_stats("data/examples/gff/correct_file.gff")

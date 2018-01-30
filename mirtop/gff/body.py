@@ -81,12 +81,12 @@ def _merge(lines):
         dt_pre = dt_pre.groupby(['isomir', 'chrom', 'mature', 'sample'], as_index=False).sum()
     return out_file, dt, dt_pre
 
-def _create_dict(gff_line): 
-    gff_line = " Read"+gff_line.strip().split("Read")[1]
+def read_attributes(gff_line):
+    gff_line = gff_line.strip().split("\t")[8]
     gff_dict = OrderedDict()
-    for gff_item in gff_line.split(";"):
-        item_pair = gff_item.split(" ")
+    for gff_item in gff_line.strip().split(";"):
+        item_pair = gff_item.strip().split(" ")
         if len(item_pair) > 1:
-            gff_dict[item_pair[1]] = item_pair[2:]
+            gff_dict[item_pair[0]] = item_pair[1]
     return gff_dict
 

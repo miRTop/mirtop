@@ -6,6 +6,7 @@ import os
 import pandas as pd
 
 from mirtop.gff import header
+from mirtop.gff.body import read_attributes
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
@@ -50,6 +51,7 @@ def _calc_stats(fn):
             attr_v = [v.strip().split(" ")[1] for v in cols[8].strip().split(";")[:-1]]
             attr_k = [v.strip().split(" ")[0] for v in cols[8].strip().split(";")[:-1]]
             attr = dict(zip(attr_k, attr_v))
+            attr = read_attributes(line)
             lines.extend(_classify(cols[2], attr, samples))
     df = _summary(lines)
     return df

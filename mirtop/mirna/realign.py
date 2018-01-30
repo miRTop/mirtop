@@ -155,10 +155,9 @@ def align(x, y):
     aligned_x = list(aligned_x)
     n_x = aligned_x[0]
     if "N" in n_x:
-        N_indices =  [i for i, ltr in enumerate(n_x) if ltr == 'N']
+        N_indices = [i for i, ltr in enumerate(n_x) if ltr == 'N']
         n_x = list(n_x)
         for N_index in N_indices:
-            #print N_index, n_x[N_index],y[N_index]
             n_x[N_index] = y[N_index]
         n_x = ''.join(n_x)
 
