@@ -84,9 +84,12 @@ class FunctionsTest(unittest.TestCase):
         """testing pairwise alignment"""
         from mirtop.mirna.realign import align
         print "\nExamples of perfect match, deletion, mutation"
-        print align("TGAGGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
+        print align("TGAGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
         print align("TGAGGTGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
         print align("TGAGGTAGTAGGCTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
+        print align("TGANTAGTAGNTTGTATNGTT", "TGAGTAGTAGGTTGTATAGTTT")[0]
+        print align("TGANTAGTNGNTTGTATNGTT", "TGAGTATAGGCCTTGTATAGTT")[0]
+        print align("NCANAGTCCAAGNTCATN", "TCATAGTCCAAGGTCATG")[0]
 
     @attr(reverse=True)
     def test_reverse(self):
