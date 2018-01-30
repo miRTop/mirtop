@@ -8,7 +8,9 @@ from mirtop.libs.simulator import simulate
 from mirtop.gff import reader
 from mirtop.gff.stats import stats
 from mirtop.gff.compare import compare
+from mirtop.gff.convert import convert_gff_counts
 import mirtop.libs.logger as mylog
+
 import time
 
 
@@ -29,6 +31,9 @@ def main(**kwargs):
     elif "simulator" in kwargs:
         logger.info("Run simulation")
         simulate(kwargs["args"])
+    elif "counts" in kwargs: 
+        logger.info("Run convertion of GFF to TSV containing expression")
+        convert_gff_counts(kwargs["args"])
     elif "check" in kwargs["args"]:
         logger.info("Not yet ready: This will check GFF files.")
     elif "query" in kwargs["args"]:

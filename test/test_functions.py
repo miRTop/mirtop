@@ -90,9 +90,12 @@ class FunctionsTest(unittest.TestCase):
         """testing pairwise alignment"""
         from mirtop.mirna.realign import align
         print "\nExamples of perfect match, deletion, mutation"
-        print align("TGAGGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
+        print align("TGAGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
         print align("TGAGGTGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
         print align("TGAGGTAGTAGGCTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
+        print align("TGANTAGTAGNTTGTATNGTT", "TGAGTAGTAGGTTGTATAGTTT")[0]
+        print align("TGANTAGTNGNTTGTATNGTT", "TGAGTATAGGCCTTGTATAGTT")[0]
+        print align("NCANAGTCCAAGNTCATN", "TCATAGTCCAAGGTCATG")[0]
 
     @attr(reverse=True)
     def test_reverse(self):
@@ -262,6 +265,31 @@ class FunctionsTest(unittest.TestCase):
         h = header.create(bam_fn, ["example"], "miRBase21")
         gff = body.create(ann, "miRBase21", "example")
         print gff
+        return True
+
+
+    @attr(counts=True)
+    def test_counts(self):
+        """testing convert_gff_counts in convert.py function"""
+        from mirtop.libs import logger
+        from mirtop.gff.convert import convert_gff_counts
+        from mirtop.libs.parse import parse_cl
+        import argparse
+
+        logger.initialize_logger("test counts", True, True)
+        logger = logger.getLogger(__name__)
+     
+        counts_params = ['--gff', 'data/examples/gff/2samples.gff', '--out', 'data/examples/gff/']
+        
+
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--gff")
+        parser.add_argument("--out")
+
+        args = parser.parse_args(counts_params)
+        
+        convert_gff_counts(args)
+        
         return True
 
 

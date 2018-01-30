@@ -151,7 +151,19 @@ def align(x, y):
     """
     https://medium.com/towards-data-science/pairwise-sequence-alignment-using-biopython-d1a9d0ba861f
     """
-    return pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
+    aligned_x =  pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
+    aligned_x = list(aligned_x)
+    n_x = aligned_x[0]
+    if "N" in n_x:
+        N_indices =  [i for i, ltr in enumerate(n_x) if ltr == 'N']
+        n_x = list(n_x)
+        for N_index in N_indices:
+            #print N_index, n_x[N_index],y[N_index]
+            n_x[N_index] = y[N_index]
+        n_x = ''.join(n_x)
+
+    aligned_x[0] = n_x
+    return tuple(aligned_x)
 
 def _add_cigar_char(counter, cache):
     if counter == 1:

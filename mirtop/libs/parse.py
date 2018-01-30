@@ -9,7 +9,8 @@ def parse_cl(in_args):
                 "compare": add_subparser_compare,
                 "target": add_subparser_target,
                 "collapse": add_subparser_collapse,
-                "simulator": add_subparser_simulator
+                "simulator": add_subparser_simulator,
+                "counts": add_subparser_counts
                 }
     parser = argparse.ArgumentParser(description="small RNA analysis")
     sub_cmd = None
@@ -112,3 +113,15 @@ def add_subparser_simulator(subparsers):
                         help="reference fasta file with index"),
     parser = _add_debug_option(parser)
     return parser
+
+def add_subparser_counts(subparsers):
+
+    parser = subparsers.add_parser("counts", help="extract expression counts for each sample for mirna/variants")
+    parser.add_argument("--gff",
+                        help="/path/to/GFF/file/file.gff", required=True)
+    parser.add_argument("--out", 
+                        required=True,
+                        help="/path/to/output/directory")
+    parser = _add_debug_option(parser)
+    return parser
+
