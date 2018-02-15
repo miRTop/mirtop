@@ -45,6 +45,8 @@ def read_file(fn, precursors, mirna_gtf):
             if not miRNA:
                 if cols[13]:
                     miRNA = cols[13]
+                elif cols[15]:
+                    miRNA = cols[15]
                 else:
                     continue
             if query_name not in reads and query_sequence == None:
@@ -60,7 +62,7 @@ def read_file(fn, precursors, mirna_gtf):
                     continue
                 chrom = loc.split(":")[0]
                 start, end = loc.split(":")[1].split("-")
-                chrom, reference_start =  _genomic2transcript(map_mir[miRNA], chrom, int(start))
+                chrom, reference_start =  genomic2transcript(map_mir[miRNA], chrom, int(start))
                 if not chrom:
                     non_chromosome_mirna += 1
                     continue
@@ -92,7 +94,7 @@ def read_file(fn, precursors, mirna_gtf):
     logger.info("Hits: %s" % len(reads))
     return reads
 
-def _genomic2transcript(code, chrom, pos):
+def genomic2transcript(code, chrom, pos):
     for ref in code:
         if _is_chrom(chrom, code[ref][0]):
             if _is_inside(pos, code[ref][1:3]):
