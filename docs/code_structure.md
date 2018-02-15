@@ -2,7 +2,7 @@
 
 * mirtop/bam
   * __bam.py__ 
-    * `read_bam`: read BAM file with pysamtools and store in a key - value object
+    * `read_bam`: reads BAM files with pysamtools and store in a key - value object
   * __filter.py__
     * `tune`: if option --clean is on, filter according generic rules
     * `clean_hits`: get the top hits
@@ -10,13 +10,14 @@
   * __init.py__ wraps the convertion process to GFF3
   * __body.py__ `create` will create the line according GFF format established.
   * __header.py__ generate header
-  * __check.py__ check header and single lines to be valid according GFF format   
+  * __check.py__ checks header and single lines to be valid according GFF format  (NOT IMPLEMENTED)
+  * __stats.py__ GFF stats counting number of isomiR, their total and average expression
   * __query.py__ accept SQlite queries after option -q ""
   * __convert.py__
     * `create_counts` table of counts
     * allow filtering by attribute
     * allow collapse by miRNA/isomiR type
-  * __filter.py__, parse from query
+  * __filter.py__, parse from query (NOT IMPLEMENTED)
 * mirtop/mirna
   * __fasta.py__: 
     * `read_precursor` fasta file: key - value
@@ -28,6 +29,8 @@
     * `make_cigar`: giving an alignment return the CIGAR of it
     * `reverse_complement`: return the reverse complement of a sequence
     * `align`: uses biopython to align two sequences of the same size
+    * `expand_cigar`: from a 12M to MMMMMMMMMMMM
+    * `cigar2snp`: from CIGAR code to list of changes with position and reference and target nts
   * __mapper.py__: 
     * `read_gtf` file: map genomic miRNA position to precursos position, then it needs genomic position for the miRNA and the precursor. Return would be like {mirna: [start, end]}
   * __annotate.py__:
