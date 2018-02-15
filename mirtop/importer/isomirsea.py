@@ -7,7 +7,7 @@ import re
 import shutil
 import pandas as pd
 import pysam
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 from mirtop.libs import do
 from mirtop.libs.utils import file_exists
@@ -32,6 +32,7 @@ def read_file(fn, database, gtf):
     reads = defaultdict(dict)
     reads_in = 0
     sample = os.path.splitext(os.path.basename(gtf))[0]
+    hits = _get_hits(fn)
     with open(fn) as handle:
         for line in handle:
             cols = line.strip().split("\t")
@@ -71,8 +72,8 @@ def read_file(fn, database, gtf):
             start = start if not tstart else tstart
             chrom = chrom if not tstart else tchrom
             end = start + len(query_sequence)
-            hits = 1
-            attrb = ("Read {query_sequence}; UID {idu}; Name {mirName}; Parent {preName}; Variant {isoformat}; Isocode {isotag}; Cigar {cigar}; Expression {counts}; Filter {Filter}; Hits {hits};").format(**locals())
+            hit = hits[idu]
+            attrb = ("Read {query_sequence}; UID {idu}; Name {mirName}; Parent {preName}; Variant {isoformat}; Isocode {isotag}; Cigar {cigar}; Expression {counts}; Filter {Filter}; Hits {hit};").format(**locals())
             res = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
             if start not in reads[chrom]:
                 reads[chrom][start] = []
@@ -82,6 +83,19 @@ def read_file(fn, database, gtf):
 
     logger.info("Hits: %s" % reads_in)
     return reads
+
+def _get_hits(fn):
+    hits = Counter()
+    with open(fn) as handle:
+        for line in handle:
+            cols = line.strip().split("\t")
+            attr = read_attributes(line, "=")
+            query_sequence = attr['TS'].replace("U", "T")
+            if query_sequence and query_sequence.find("N") > -1:
+                continue
+            idu = make_id(query_sequence)
+            hits[idu] += 1
+    return hits
 
 def cigar2variants(cigar, sequence, tag):
     """From cigar to Variants in GFF format"""
