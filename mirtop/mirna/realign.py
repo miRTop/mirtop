@@ -235,10 +235,16 @@ def expand_cigar(cigar):
     n = 0
     for nt in cigar:
         if nt in ["D", "M", "I", "A", "T", "C", "G"]:
-            cigar_long += nt * n
-            n = 1
+            if n > 0:
+                cigar_long += nt * int(n)
+            else:
+                cigar_long += nt
+            n = 0
         else:
-            n = int(nt)
+            if n > 0:
+                n = int("%s%s" % (n, nt))
+            else:
+                n = int(nt)
     return cigar_long
 
 def cigar2snp(cigar, reference):

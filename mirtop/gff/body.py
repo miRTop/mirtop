@@ -81,11 +81,11 @@ def _merge(lines):
         dt_pre = dt_pre.groupby(['isomir', 'chrom', 'mature', 'sample'], as_index=False).sum()
     return out_file, dt, dt_pre
 
-def read_attributes(gff_line):
+def read_attributes(gff_line, sep = " "):
     gff_line = gff_line.strip().split("\t")[8]
     gff_dict = OrderedDict()
     for gff_item in gff_line.strip().split(";"):
-        item_pair = gff_item.strip().split(" ")
+        item_pair = gff_item.strip().split(sep)
         if len(item_pair) > 1:
             gff_dict[item_pair[0]] = item_pair[1]
     return gff_dict

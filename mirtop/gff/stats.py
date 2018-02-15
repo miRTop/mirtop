@@ -20,6 +20,7 @@ def stats(args):
     for fn in args.files:
         if not os.path.exists(fn):
             raise IOError("%s doesn't exist" %s)
+        logger.info("Reading: %s" % fn)
         out.append(_calc_stats(fn))
     df_final = pd.concat(out)
     outfn = os.path.join(args.out, "mirtop_stats.txt")

@@ -1,5 +1,10 @@
 - 0.1.8a
 
+ * Add isomiR-SEA compatibility
+ * Fix sRNAbench exact match to NA in GFF
+ * Change stats to use only 1 level isomiR classification
+ * Add GFF to count matrix
+ * Add read_attributes function
  * Improve isomiR reading from srnabench tool
  * Add PROST to supported tools
 
