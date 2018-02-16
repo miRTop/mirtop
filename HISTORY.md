@@ -1,4 +1,4 @@
-- 0.1.8a
+- 0.1.*a
 
  * Add isomiR-SEA compatibility
  * Fix sRNAbench exact match to NA in GFF
