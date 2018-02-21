@@ -8,7 +8,7 @@ def parse_cl(in_args):
                 "stats": add_subparser_stats,
                 "compare": add_subparser_compare,
                 "target": add_subparser_target,
-                "collapse": add_subparser_collapse,
+                "join": add_subparser_join,
                 "simulator": add_subparser_simulator,
                 "counts": add_subparser_counts
                 }
@@ -70,8 +70,8 @@ def add_subparser_gff(subparsers):
     return parser
 
 
-def add_subparser_collapse(subparsers):
-    parser = subparsers.add_parser("collapse", help="collapse data")
+def add_subparser_join(subparsers):
+    parser = subparsers.add_parser("join", help="join data")
     parser.add_argument("-f", "--fastq", dest="fastq", required=1,
                          help="fastq file"),
     parser.add_argument("-m", "--min", dest="minimum", default=1,

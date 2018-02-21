@@ -15,7 +15,7 @@ miRNA annotation generated from [miraligner](https://github.com/lpantano/seqbust
 
 ```
 cd mirtop/data
-mirtop gff -sps hsa --hairpin annotate/hairpin.fa --gtf annotate/hsa.gff3 -o test_out seqbuster/reads.mirna
+mirtop gff --format seqbuster --sps hsa --hairpin annotate/hairpin.fa --gtf annotate/hsa.gff3 -o test_out seqbuster/reads.mirna
 ```
 
 ## From sRNAbench files to GFF3

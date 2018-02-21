@@ -31,9 +31,11 @@ def main(**kwargs):
     elif "simulator" in kwargs:
         logger.info("Run simulation")
         simulate(kwargs["args"])
-    elif "counts" in kwargs: 
+    elif "counts" in kwargs:
         logger.info("Run convertion of GFF to TSV containing expression")
         convert_gff_counts(kwargs["args"])
+    elif "join" in kwargs["args"]:
+        logger.info("Not yet ready: This will join multiple GFF files.")
     elif "check" in kwargs["args"]:
         logger.info("Not yet ready: This will check GFF files.")
     elif "query" in kwargs["args"]:
