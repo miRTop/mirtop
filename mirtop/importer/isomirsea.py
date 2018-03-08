@@ -60,7 +60,7 @@ def read_file(fn, database, gtf):
                          "  cigar: {cigar}\n"
                          "  iso: {isoformat}\n"
                          "  variant: {isoformat}".format(**locals()))
-            source = "isomiR" if isoformat else "ref_miRNA"
+            source = "isomiR" if isoformat != "NA" else "ref_miRNA"
             strand = "+"
             database = cols[1]
             mirName = attr['MIN'].split()[0]
