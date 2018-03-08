@@ -43,16 +43,17 @@ def _calc_stats(fn):
     """
     samples = _get_samples(fn)
     lines = []
+    seen = set()
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
                 continue
             cols = line.strip().split("\t")
             logger.debug("## STATS: attribute %s" % cols[8])
-            attr_v = [v.strip().split(" ")[1] for v in cols[8].strip().split(";")[:-1]]
-            attr_k = [v.strip().split(" ")[0] for v in cols[8].strip().split(";")[:-1]]
-            attr = dict(zip(attr_k, attr_v))
             attr = read_attributes(line)
+            if "-".join([attr['Variant'], attr['Name']]) in seen:
+                continue
+            seen.add("-".join([attr['Variant'], attr['Name']]))
             lines.extend(_classify(cols[2], attr, samples))
     df = _summary(lines)
     return df

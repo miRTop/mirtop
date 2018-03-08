@@ -118,6 +118,47 @@ class FunctionsTest(unittest.TestCase):
         if expression != " Expression 1,2":
             raise ValueError("This is wrong: %s" % expression)
 
+    @attr(getmature=True)
+    def test_mature(self):
+        """testing get mature sequence"""
+        from mirtop.mirna import fasta, mapper
+        from mirtop.mirna.realign import get_mature_sequence, align_from_variants
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        res = get_mature_sequence("GAAAATTTTTTTTTTTAAAAG", [5, 15])
+        if res != "AAAATTTTTTTTTTTAAAA":
+            raise ValueError("Results for GAAAATTTTTTTTTTTAAAAG was %s" % res)
+        mature =  get_mature_sequence(precursors["hsa-let-7a-1"],
+                                   matures["hsa-let-7a-1"]["hsa-let-7a-5p"])
+        if mature != "GGGATGAGGTAGTAGGTTGTATAGTTTTAG":
+            raise ValueError("Results for hsa-let-7a-5p is %s" % mature)
+
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTT", mature, "iso_5p:-2")
+        if res:
+            raise ValueError("Wrong alignment for test 1 %s" % res)
+        res = align_from_variants("GATGAGGTAGTAGGTTGTATAGTT", mature, "iso_5p:+2")
+        if res:
+            raise ValueError("Wrong alignment for test 2 %s" % res)
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature, "iso_5p:-2,iso_add:2")
+        if res:
+            raise ValueError("Wrong alignment for test 3 %s" % res)
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature, "iso_5p:-2,iso_3p:2")
+        if res:
+            raise ValueError("Wrong alignment for test 4 %s" % res)
+        res = align_from_variants("AGGTAGTAGGTTGTATAG", mature, "iso_5p:-2,iso_3p:-2")
+        if res:
+            raise ValueError("Wrong alignment for test 5 %s" % res)
+        res = align_from_variants("AGGTAGTAGGTTGTATAGAA", mature, "iso_5p:-2,iso_3p:-2,iso_add:2")
+        if res:
+            raise ValueError("Wrong alignment for test 6 %s" % res)
+        res =  align_from_variants("AGGTAGTAGGATGTATAGTT", mature, "iso_5p:-2,iso_snp_central")
+        if not res:
+            if res[0][0] != 10:
+                raise ValueError("Wrong alignment for test 7 %s" % res)
+        res = align_from_variants("AGGTAGTAGGATGTATAGAA", mature, "iso_5p:-2,iso_3p:-2,iso_add:2")
+        if res:
+            raise ValueError("Wrong alignment for test 8 %s" % res)
+
     @attr(alignment=True)
     def test_alignment(self):
         """testing alignments function"""
@@ -216,12 +257,9 @@ class FunctionsTest(unittest.TestCase):
             from mirtop.bam import bam
             from mirtop.mirna import annotate
             from mirtop.gff import body
-            reads = prost.read_file(fn, precursors, "data/examples/annotate/hsa.gff3")
-            ann = annotate.annotate(reads, matures, precursors)
-            gff = body.create(ann, "miRBase21", "prost")
+            reads = prost.read_file(fn, precursors, "miRBasev21","data/examples/annotate/hsa.gff3")
             return True
         print "\nPROST\n"
-        annotate("data/examples/prost/example.mincount3.txt", precursors, matures)
 
     @attr(gff=True)
     def test_gff(self):
