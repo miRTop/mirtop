@@ -9,6 +9,7 @@ from mirtop.gff import reader
 from mirtop.gff.stats import stats
 from mirtop.gff.compare import compare
 from mirtop.gff.convert import convert_gff_counts
+from mirtop.exporter import isomirs
 import mirtop.libs.logger as mylog
 
 import time
@@ -32,8 +33,11 @@ def main(**kwargs):
         logger.info("Run simulation")
         simulate(kwargs["args"])
     elif "counts" in kwargs:
-        logger.info("Run convertion of GFF to TSV containing expression")
+        logger.info("Run convert of GFF to TSV containing expression")
         convert_gff_counts(kwargs["args"])
+    elif "export" in kwargs:
+        logger.info("Run export of GFF into other format.")
+        isomirs.convert(kwargs["args"])
     elif "join" in kwargs["args"]:
         logger.info("Not yet ready: This will join multiple GFF files.")
     elif "check" in kwargs["args"]:

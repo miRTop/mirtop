@@ -23,7 +23,7 @@ def reader(args):
     for fn in args.files:
         sample = op.splitext(op.basename(fn))[0]
         samples.append(sample)
-        fn_out = op.join(args.out, sample + ".gff")
+        fn_out = op.join(args.out, sample + ".%s" % args.out_format)
         if args.format == "BAM":
             reads = _read_bam(fn, precursors)
         elif args.format == "seqbuster":
@@ -32,17 +32,17 @@ def reader(args):
         elif args.format == "srnabench":
             reads = srnabench.read_file(fn, precursors)
         elif args.format == "prost":
-            reads = prost.read_file(fn, precursors, args.gtf)
+            out_dts[fn] = prost.read_file(fn, precursors, database, args.gtf)
         elif args.format == "isomirsea":
             out_dts[fn] = isomirsea.read_file(fn, database, args.gtf)
-        if args.format != "isomirsea":
+        if args.format not in  ["isomirsea", "prost"]:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample)
         h = header.create([sample], database, "")
         _write(out_dts[fn], h, fn_out)
     # merge all reads for all samples into one dict
     merged = merge.merge(out_dts)
-    fn_merged_out = op.join(args.out, "mirtop.gff")
+    fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
     _write(merged, header.create(samples, database, ""), fn_merged_out)
 
 def _write(lines, header, fn):

@@ -3,6 +3,9 @@ from Bio.Seq import Seq
 from collections import defaultdict
 
 from mirtop.mirna.keys import *
+import mirtop.libs.logger as mylog
+
+logger = mylog.getLogger(__name__)
 
 class hits:
 
@@ -110,7 +113,7 @@ class isomir:
         return sc
 
     def is_iso(self):
-        if self.t5 or self.t3 or self.add or self.subs:
+        if self.t5 or self.t3 or self.add or self.subs or self.external != "":
             return True
         return False
 
@@ -275,3 +278,48 @@ def cigar2snp(cigar, reference):
 
 def reverse_complement(seq):
     return Seq(seq).reverse_complement()
+
+def get_mature_sequence(precursor, mature):
+    """From precursor FASTA and mature positions
+       Get mature sequence +- 4 flanking nts
+    """
+    return precursor[mature[0] - 4 :mature[1] + 5]
+
+def align_from_variants(sequence, mature, variants):
+    """Giving the sequence read,
+       the mature from get_mature_sequence,
+       and the variant GFF annotation:
+            Get a list of substitutions
+    """
+    snps = []
+    k = [v.split(":")[0] for v in variants.split(",") if v.find(":") > -1]
+    v = [int(v.split(":")[1]) for v in variants.split(",") if v.find(":") > -1]
+    var_dict = dict(zip(k, v))
+    logger.debug("realign::align_from_variants::variants %s" % variants)
+    snp = [v for v in variants.split(",") if v.find("snp") > -1]
+    if "iso_5p" in k:
+        fix_5p = 4 - var_dict["iso_5p"]
+        mature = mature[fix_5p:]
+    if "iso_add" in k:
+        sequence = sequence[:-1 * var_dict["iso_add"]]
+    if "iso_3p" in k and var_dict["iso_3p"] > 0:
+        sequence = sequence[:-1 * var_dict["iso_3p"]]
+    logger.debug("realign::align_from_variants::snp %s" % snp)
+    for pos in range(0, len(sequence)):
+        if sequence[pos] != mature[pos]:
+            value = ""
+            if pos > 1 and pos < 8:
+                value = "iso_snp_seed"
+            elif pos == 8:
+                value = "iso_snp_central_offset"
+            elif pos > 8 and pos < 13:
+                value = "iso_snp_central"
+            elif pos > 12 and pos < 18:
+                value = "iso_snp_central_supp"
+            else:
+                value = "iso_snp"
+            logger.debug("realign::align_from_variants::value %s" % value)
+            if value in snp:
+                snps.append([pos, sequence[pos], mature[pos]])
+    logger.debug("realign::align_from_variants::snps %s" % snps)
+    return snps

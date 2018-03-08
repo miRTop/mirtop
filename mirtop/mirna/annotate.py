@@ -75,6 +75,7 @@ def annotate(reads, mature_ref, precursors):
                 is_iso = _coord(reads[r].sequence, start, mi, precursors[p], iso_copy)
                 logger.debug(("ANN::is_iso:{is_iso}").format(**locals()))
                 logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
+                logger.debug("ANN::annotation:%s Variant:%s" % (r, reads[r].precursors[p].formatGFF()))
                 if is_iso:
                     n_iso += 1
                     reads[r].precursors[p] = iso_copy

@@ -10,7 +10,8 @@ def parse_cl(in_args):
                 "target": add_subparser_target,
                 "join": add_subparser_join,
                 "simulator": add_subparser_simulator,
-                "counts": add_subparser_counts
+                "counts": add_subparser_counts,
+                "export": add_subparser_export
                 }
     parser = argparse.ArgumentParser(description="small RNA analysis")
     sub_cmd = None
@@ -63,9 +64,25 @@ def add_subparser_gff(subparsers):
     parser.add_argument("--sps", required=1,
                         help="species")
     parser.add_argument("--hairpin", help="hairpin.fa")
-    parser.add_argument("--gtf", help="gtf file with precursor and mature position to genome.")
+    parser.add_argument("--gtf", help="gtf/gff file with precursor and mature position to genome.")
     parser.add_argument("--format", help="Input format, default BAM file.",
                         choices=['BAM', 'seqbuster', 'srnabench', 'prost', 'isomirsea'], default="BAM")
+    parser.add_argument("--out-format", help="Supported formats: gff3 or gtf", default = "gtf")
+    parser = _add_debug_option(parser)
+    return parser
+
+
+def add_subparser_export(subparsers):
+    parser = subparsers.add_parser("export", help="export GFF into other format")
+    parser.add_argument("files", nargs="*", help="GFF files.")
+    parser.add_argument("-o", "--out", dest="out", required=1,
+                        help="dir of output files")
+    parser.add_argument("--sps", required=1,
+                        help="species")
+    parser.add_argument("--hairpin", help="hairpin.fa")
+    parser.add_argument("--gtf", help="gtf file with precursor and mature position to genome.")
+    parser.add_argument("--format", help="Output format",
+                        choices=['seqbuster'], default="seqbuster")
     parser = _add_debug_option(parser)
     return parser
 

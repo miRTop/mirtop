@@ -13,7 +13,7 @@ from mirtop.mirna import mapper
 from mirtop.libs import do
 from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
-from mirtop.mirna.realign import isomir, hits
+from mirtop.mirna.realign import isomir, hits, make_id
 from mirtop.bam import filter
 
 logger = mylog.getLogger(__name__)
@@ -21,11 +21,12 @@ logger = mylog.getLogger(__name__)
 def header():
     return ""
 
-def read_file(fn, precursors, mirna_gtf):
+def read_file(fn, precursors, database, mirna_gtf):
     """
     read bam file and perform realignment of hits
     """
-    reads = defaultdict(hits)
+    reads = defaultdict(dict)
+    sample = os.path.splitext(os.path.basename(fn))[0]
     map_mir = mapper.read_gtf_to_mirna(mirna_gtf)
     non_mirna = 0
     non_chromosome_mirna = 0
@@ -53,16 +54,13 @@ def read_file(fn, precursors, mirna_gtf):
                 continue
             if query_sequence and query_sequence.find("N") > -1:
                 continue
-            if query_name not in reads:
-                reads[query_name].set_sequence(query_sequence)
-                reads[query_name].counts = int(cols[9])
-            for loc in cols[5].split(";"):
+            for loc in cols[5].split(";")[:1]:
                 if loc.find("-") < 0:
                     non_chromosome_mirna += 1
                     continue
                 chrom = loc.split(":")[0]
                 start, end = loc.split(":")[1].split("-")
-                chrom, reference_start =  genomic2transcript(map_mir[miRNA], chrom, int(start))
+                preName, reference_start =  genomic2transcript(map_mir[miRNA], chrom, int(start))
                 if not chrom:
                     non_chromosome_mirna += 1
                     continue
@@ -73,20 +71,21 @@ def read_file(fn, precursors, mirna_gtf):
                              "  start: {start}\n"
                              "  reference_start: {reference_start}\n"
                              "  mirna: {miRNA}".format(**locals()))
-                # logger.debug("PROST:: cigar {cigar}".format(**locals()))
-                iso = isomir()
-                iso.align = line
-                iso.set_pos(reference_start, len(reads[query_name].sequence))
-                logger.debug("PROST:: start %s end %s" % (iso.start, iso.end))
-                if len(precursors[chrom]) < reference_start + len(reads[query_name].sequence):
-                    outside_mirna += 1
-                    continue
-                iso.subs, iso.add, iso.cigar = filter.tune(reads[query_name].sequence,
-                                                           precursors[chrom],
-                                                           reference_start, None)
-                logger.debug("PROST::After tune start %s end %s" % (iso.start, iso.end))
-                #if len(iso.subs) < 2:
-                reads[query_name].set_precursor(chrom, iso)
+                Filter = "PASS"
+                hit = "NA"
+                isoformat = _make_variant(cols[19:])
+                idu = make_id(query_sequence)
+                strand = "."
+                counts = cols[9]
+                cigar = "NA"
+                score = "."
+                source = "isomiR" if isoformat != "NA" else "ref_miRNA"
+                attrb = ("Read {query_sequence}; UID {idu}; Name {miRNA}; Parent {preName}; Variant {isoformat}; Cigar {cigar}; Expression {counts}; Filter {Filter}; Hits {hit};").format(**locals())
+                res = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+                if start not in reads[chrom]:
+                    reads[chrom][start] = []
+                reads[chrom][start].append([idu, chrom, counts, sample, res])
+
     logger.info("Lines loaded: %s" % lines_read)
     logger.info("Skipped lines because non miRNA in line: %s" % non_mirna)
     logger.info("Skipped lines because non chromosome in GTF: %s" % non_chromosome_mirna)
@@ -122,3 +121,27 @@ def _transcript(pos, annotated):
     elif annotated[2] == "-":
         return annotated[1] - pos
     raise ValueError("Strand information is incorrect %s" % annotated[3])
+
+def _make_variant(cols):
+    logger.debug("PROST::variant: %s" % cols)
+    variant = []
+    if cols[0] != "0":
+        variant.append("iso_5p:%s" % cols[0])
+    if cols[1] != "0":
+        variant.append("iso_3p:%s" % cols[1])
+    if cols[2] != "0":
+        variant.append("iso_add:%s" % cols[2])
+    if cols[3] == "True":
+        variant.append("iso_snp_seed")
+    if cols[4] == "True":
+        variant.append("iso_snp_central_offset")
+    if cols[5] == "True":
+        variant.append("iso_snp_central")
+    if cols[6] == "True":
+        variant.append("iso_snp_supp")
+    if cols[7] == "True":
+        variant.append("iso_snp")
+    if not variant:
+        return "NA"
+    return ",".join(variant)
+
