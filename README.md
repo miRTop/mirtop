@@ -6,7 +6,7 @@ mirtop
 
 Command line tool to annotate with a standard naming miRNAs e isomiRs.
 
-See more at: [isomiRs naming discussion](https://github.com/miRTop/incubator/blob/master/isomirs/isomir_naming.md)
+This tool adapt the miRNA GFF3 format agreed on here: https://github.com/miRTop/incubator/blob/master/format/definition.md
 
 Chat
 ----
