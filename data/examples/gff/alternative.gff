@@ -1,0 +1,43 @@
+## GFF3 adapted for miRNA sequencing data. VERSION 0.0.1
+## source-ontology: miRBasev21
+## COLDATA: synthetic-mirbase-ready
+hsa-let-7a-2	miRBasev21	isomiR	4	28	0	+	.	Read seq_38_x6; UID 7AwhRzwQL2; Name hsa-let-7a-5p; Parent hsa-let-7a-2; Variant iso_add:+1,iso_3p:+2; Cigar 24MT; Expression 6; Filter Pass; Hits 1;
+hsa-let-7a-2	miRBasev21	isomiR	5	29	0	+	.	Read seq_12_x59; UID 4WWABg5zL2; Name hsa-let-7a-5p; Parent hsa-let-7a-2; Variant iso_add:+2,iso_5p:-1,iso_3p:+2; Cigar 23MTT; Expression 59; Filter Pass; Hits 1;
+hsa-let-7a-2	miRBasev21	isomiR	6	28	0	+	.	Read seq_7_x8; UID hJJ5WJ%g1; Name hsa-let-7a-5p; Parent hsa-let-7a-2; Variant iso_add:+1,iso_5p:-2,iso_3p:+2; Cigar 22MT; Expression 8; Filter Pass; Hits 1;
+hsa-let-7a-2	miRBasev21	isomiR	7	29	0	+	.	Read seq_8_x9; UID AwhRzwQL1; Name hsa-let-7a-5p; Parent hsa-let-7a-2; Variant iso_add:+2,iso_5p:-3,iso_3p:+2; Cigar 21MTM; Expression 9; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	3	24	0	+	.	Read seq_41_x12; UID 7AwhR0wL2; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_snp_central_supp; Cigar 16MC5M; Expression 12; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	3	27	0	+	.	Read seq_23_x29; UID 7AwhRzwLL2; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_snp,iso_add:+2; Cigar 22MIIMD; Expression 29; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	3	25	0	+	.	Read seq_17_x111; UID 7AwhRzwL1; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+1; Cigar 22MA; Expression 111; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	3	25	0	+	.	Read seq_26_x29; UID 7AwhRzwQ1; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_3p:+1; Cigar 23M; Expression 29; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	ref_miRNA	3	24	0	+	.	Read seq_2_x156; UID 7AwhRzwL2; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant NA; Cigar 22M; Expression 156; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	3	23	0	+	.	Read seq_35_x2; UID 7AwhRzw; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_3p:-1; Cigar 21M; Expression 2; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	3	26	0	+	.	Read seq_4_x9; UID 7AwhRzw%; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+1,iso_3p:+1; Cigar 23MT; Expression 9; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	4	24	0	+	.	Read seq_44_x15; UID 4WWABg5; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_5p:-1; Cigar 21M; Expression 15; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	4	23	0	+	.	Read seq_11_x3; UID 4WWABgW1; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_5p:-1,iso_3p:-1; Cigar 20M; Expression 3; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	4	26	0	+	.	Read seq_39_x23; UID 4WWABg5Q1; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+1,iso_5p:-1,iso_3p:+1; Cigar 22MT; Expression 23; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	4	26	0	+	.	Read seq_33_x273; UID 4WWABg5@1; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+2,iso_5p:-1; Cigar 21MAA; Expression 273; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	4	27	0	+	.	Read seq_10_x2; UID 4WWABg5o; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_snp,iso_add:+2,iso_5p:-1; Cigar 21MIIMD; Expression 2; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	4	23	0	+	.	Read seq_22_x39; UID 45WABgW1; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_snp_seed,iso_5p:-1,iso_3p:-1; Cigar 5MT14M; Expression 39; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	4	24	0	+	.	Read seq_36_x45; UID 4W3ABg5; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_snp_central_offset,iso_5p:-1; Cigar 8MG12M; Expression 45; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	5	24	0	+	.	Read seq_24_x432; UID hJJ5WJQ1; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_5p:-2; Cigar 20M; Expression 432; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	5	23	0	+	.	Read seq_27_x5; UID hJJ5WJL2; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_5p:-2,iso_3p:-1; Cigar 19M; Expression 5; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	5	25	0	+	.	Read seq_31_x426; UID hJJ5WJ%; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_5p:-2,iso_3p:+1; Cigar 21M; Expression 426; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	5	26	0	+	.	Read seq_15_x2; UID hJJ5WJ%@2; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+1,iso_5p:-2,iso_3p:+1; Cigar 21MA; Expression 2; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	5	26	0	+	.	Read seq_20_x38; UID hJJ5WJ%L2; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+1,iso_5p:-2,iso_3p:+1; Cigar 21MT; Expression 38; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	6	25	0	+	.	Read seq_32_x20; UID AwhRzwQ1; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_5p:-3,iso_3p:+1; Cigar 20M; Expression 20; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	6	26	0	+	.	Read seq_1_x102; UID AwhRzwQ; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+1,iso_5p:-3,iso_3p:+1; Cigar 20MA; Expression 102; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	6	26	0	+	.	Read seq_9_x11; UID AwhRzw%; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+1,iso_5p:-3,iso_3p:+1; Cigar 20MT; Expression 11; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	6	26	0	+	.	Read seq_5_x3227; UID AwhRzwL; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_add:+2,iso_5p:-3; Cigar 19MAA; Expression 3227; Filter Pass; Hits 1;
+hsa-let-7a-3	miRBasev21	isomiR	6	24	0	+	.	Read seq_34_x7; UID AwhRzwL2; Name hsa-let-7a-5p; Parent hsa-let-7a-3; Variant iso_5p:-3; Cigar 19M; Expression 7; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	27	0	+	.	Read seq_43_x438; UID bwJJ5WJL; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_snp_seed,iso_add:+2,iso_5p:+1,iso_3p:-1; Cigar 5MT16MAA; Expression 438; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	25	0	+	.	Read seq_28_x11; UID bhJJ5WJL2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:-1; Cigar 22M; Expression 11; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	27	0	+	.	Read seq_3_x35; UID bhJJ5WJL; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_add:+2,iso_5p:+1,iso_3p:-1; Cigar 22MAA; Expression 35; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	26	0	+	.	Read seq_29_x56; UID bhJJ5WJQ1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1; Cigar 23M; Expression 56; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	27	0	+	.	Read seq_42_x5; UID bhJJ5WJQ; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_add:+1,iso_5p:+1; Cigar 23MA; Expression 5; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	30	0	+	.	Read seq_19_x703; UID bhJJ5WJ%%; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_add:+2,iso_5p:+1,iso_3p:+2; Cigar 25MTT; Expression 703; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	29	0	+	.	Read seq_18_x66; UID bhJJ5WJ%Q1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_add:+1,iso_5p:+1,iso_3p:+2; Cigar 25MT; Expression 66; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	28	0	+	.	Read seq_21_x13; UID bhJJ5WJ%L2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:+2; Cigar 25M; Expression 13; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	30	0	+	.	Read seq_13_x112; UID bhJJ5WJ%Q; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_snp,iso_5p:+1,iso_3p:+3; Cigar 21MI5M; Expression 112; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	4	28	0	+	.	Read seq_14_x2; UID bhJJ5WJ%@2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_add:+1,iso_5p:+1,iso_3p:+1; Cigar 24MA; Expression 2; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	5	29	0	+	.	Read seq_25_x19; UID 7AwhRzw%L2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_add:+1,iso_3p:+2; Cigar 24MT; Expression 19; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBasev21	isomiR	6	31	0	+	.	Read seq_16_x50; UID 4WWABg5%@1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_snp,iso_add:+1,iso_5p:-1,iso_3p:+3; Cigar 19MI5MA; Expression 50; Filter Pass; Hits 1;

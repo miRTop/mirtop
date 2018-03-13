@@ -28,6 +28,36 @@ def guess_database(gtf):
         raise ValueError("Database not found in %s header" % gtf)
     return database
 
+def read_gtf_to_mirna(gtf):
+    """
+    Load GTF file with precursor positions on genome
+    """
+    if not gtf:
+        return gtf
+    db = defaultdict(list)
+    db_mir = defaultdict(dict)
+    id_dict = dict()
+    map_dict = defaultdict(dict)
+    with open(gtf) as in_handle:
+        for line in in_handle:
+            if line.startswith("#"):
+                continue
+            cols = line.strip().split("\t")
+            name = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("Name")]
+            idname = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("ID")]
+            chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
+            id_dict[idname[0]] = name[0]
+            if cols[2] == "miRNA_primary_transcript":
+                db[idname[0]] = [chrom, int(start), int(end), strand]
+            if cols[2] == "miRNA":
+                parent = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("Derives_from")]
+                db_mir[name[0]].update({id_dict[parent[0]]: db[parent[0]]})
+                logger.debug("MAP:: mirna:%s" % name[0])
+                logger.debug("MAP:: precursor:%s" % id_dict[parent[0]])
+                logger.debug("MAP:: precursor pos %s" % db[parent[0]])
+    return db_mir
+
+
 def read_gtf_to_precursor(gtf):
     """
     Load GTF file with precursor positions on genome

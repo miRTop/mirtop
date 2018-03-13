@@ -1,3 +1,16 @@
+- 0.1.*a
+
+ * Make GTF default output
+ * Add function to get SNPs from Variant attribute
+ * Improve PROST with last version output
+ * Add isomiR-SEA compatibility
+ * Fix sRNAbench exact match to NA in GFF
+ * Change stats to use only 1 level isomiR classification
+ * Add GFF to count matrix
+ * Add read_attributes function
+ * Improve isomiR reading from srnabench tool
+ * Add PROST to supported tools
+
 - 0.1.7a
  
  * Remove deletion from addition isomiRs
