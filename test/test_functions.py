@@ -118,8 +118,8 @@ class FunctionsTest(unittest.TestCase):
         if expression != " Expression 1,2":
             raise ValueError("This is wrong: %s" % expression)
 
-    @attr(getmature=True)
-    def test_mature(self):
+    @attr(variant=True)
+    def test_variant(self):
         """testing get mature sequence"""
         from mirtop.mirna import fasta, mapper
         from mirtop.mirna.realign import get_mature_sequence, align_from_variants

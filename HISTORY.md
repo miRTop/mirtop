@@ -1,4 +1,8 @@
-- 0.1.*a
+- 0.3.*a
+
+ * Fix output for isomiRs package
+
+- 0.2.*
 
  * Make GTF default output
  * Add function to get SNPs from Variant attribute

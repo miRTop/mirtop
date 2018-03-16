@@ -305,6 +305,8 @@ def align_from_variants(sequence, mature, variants):
     if "iso_3p" in k and var_dict["iso_3p"] > 0:
         sequence = sequence[:-1 * var_dict["iso_3p"]]
     logger.debug("realign::align_from_variants::snp %s" % snp)
+    logger.debug("realign::align_from_variants::sequence %s" % sequence)
+    logger.debug("realign::align_from_variants::mature %s" % mature)
     for pos in range(0, len(sequence)):
         if sequence[pos] != mature[pos]:
             value = ""

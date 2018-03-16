@@ -22,3 +22,10 @@ def _filter(filters):
     if not filters:
         return "## FILTER: PASS\n"
     return "## FILTER: %s" % ";\n".join(filters)
+
+def read_samples(fn):
+    with open(fn) as inh:
+        for line in inh:
+            if line.startswith("## COLDATA"):
+                return line.strip().split(": ")[1].strip().split(",")
+    raise ValueError("%s doesn't contain COLDATA header." % fn)
