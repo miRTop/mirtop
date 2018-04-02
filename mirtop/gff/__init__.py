@@ -32,10 +32,10 @@ def reader(args):
         elif args.format == "srnabench":
             reads = srnabench.read_file(fn, precursors)
         elif args.format == "prost":
-            out_dts[fn] = prost.read_file(fn, precursors, database, args.gtf)
+            reads = prost.read_file(fn, precursors, database, args.gtf)
         elif args.format == "isomirsea":
             out_dts[fn] = isomirsea.read_file(fn, database, args.gtf)
-        if args.format not in  ["isomirsea", "prost"]:
+        if args.format not in ["isomirsea"]:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample)
         h = header.create([sample], database, "")

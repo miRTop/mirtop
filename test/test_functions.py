@@ -252,14 +252,14 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna import fasta, mapper
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
         matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
-        def annotate(fn, precursors, matures):
-            from mirtop.importer import prost
-            from mirtop.bam import bam
-            from mirtop.mirna import annotate
-            from mirtop.gff import body
-            reads = prost.read_file(fn, precursors, "miRBasev21","data/examples/annotate/hsa.gff3")
-            return True
-        print "\nPROST\n"
+        fn = "data/examples/prost/prost.example.txt"
+        from mirtop.importer import prost
+        reads = prost.read_file(fn, precursors, "miRBasev21","data/examples/annotate/hsa.gff3")
+        from mirtop.mirna import annotate
+        from mirtop.gff import body
+        ann = annotate.annotate(reads, matures, precursors)
+        body = body.create(ann, "miRBase21", "Example")
+        return True
 
     @attr(gff=True)
     def test_gff(self):
