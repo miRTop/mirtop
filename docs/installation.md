@@ -22,8 +22,9 @@ export PATH=$PATH:~/mirtop_env
 conda install -c bioconda pysam pybedtools pandas biopython samtools
 
 git clone http://github.com/miRTop/mirtop
-
 cd mirtop
+git fetch origin dev
+git checkout dev
 
 python setup.py develop
 ```
