@@ -1,5 +1,6 @@
 - 0.3.*a
 
+ * Improve PROST! importer
  * Fix output for isomiRs package
 
 - 0.2.*
@@ -15,7 +16,7 @@
  * Improve isomiR reading from srnabench tool
  * Add PROST to supported tools
 
-- 0.1.7a
+- 0.1.7
  
  * Remove deletion from addition isomiRs
  * Support for srnabench output
@@ -24,14 +25,14 @@
  * Functin to guess database used from GTF file through --mirna parameter
  * Adapt output format to https://github.com/miRTop/incubator/blob/master/format/definition.md
 
-- 0.1.5a
+- 0.1.5
  
  * add function to check correct annotation
  * add test data for SAM parsing
  * add script to simulate isomiRs
  * parse indels from bam file
  
-- 0.1.4a
+- 0.1.4
 
  * fix index BAM file command line
  * add function to accept indels and test unit

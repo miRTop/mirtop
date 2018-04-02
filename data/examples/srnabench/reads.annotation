@@ -1,2 +1,4 @@
-TGAGGTAGTAGGTTGTATAG	101	37.36092764593974	mature#sense	mature#hsa-let-7a-5p#sense#hsa-let-7a-3,4,25,+	1
-TGAGGTAGTAGGTTGTGTAGTT	4	1.4796406988490984	mature#sense	mature#hsa-let-7b-5p#sense#hsa-let-7b,6,27,+$mature#hsa-let-7a-5p#sense#hsa-let-7a-1,6,27,+$mature#hsa-let-7a-5p#sense#hsa-let-7a-2,5,26,+	4
+GAGGTAGTAGGTTGTATAGTTTTTAA	50	8595.4959601169	mature#sense	mature#hsa-let-7a-5p#sense#hsa-let-7a-2,6,31	1
+ATGAGGTAGTAGGTTGTATAGTTTTT	66	11346.054667354307	mature#sense	mature#hsa-let-7a-5p#sense#hsa-let-7a-1,5,30	1
+ATGAGGTAGTAGGTTGTATAGT	11	1891.0091112257178	mature#sense	mature#hsa-let-7a-5p#sense#hsa-let-7a-1,5,26	1
+TGAGGTAGTAGGTTGTATAGTT	156	26817.947395564723	mature#sense	mature#hsa-let-7a-5p#sense#hsa-let-7a-3,4,25$mature#hsa-let-7a-5p#sense#hsa-let-7a-1,6,27$mature#hsa-let-7a-5p#sense#hsa-let-7a-2,5,26	3

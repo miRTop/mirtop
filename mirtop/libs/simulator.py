@@ -27,7 +27,7 @@ def simulate(args):
 def _generate_reads(seq, name):
     """Main function that create reads from precursors"""
     reads = dict()
-    if len(seq) < 130 and len(seq) > 70:
+    if len(seq) < 150 and len(seq) > 70:
         reads.update(_mature(seq[:40], 0, name))
         reads.update(_mature(seq[-40:], len(seq) - 40, name))
         reads.update(_noise(seq, name))

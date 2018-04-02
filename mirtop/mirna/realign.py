@@ -113,6 +113,8 @@ class isomir:
         return sc
 
     def is_iso(self):
+        if self.external == "NA":
+            return False
         if self.t5 or self.t3 or self.add or self.subs or self.external != "":
             return True
         return False
@@ -150,11 +152,14 @@ def make_id(seq):
         idName += str(len(dummy))
     return idName
 
-def align(x, y):
+def align(x, y, local = False):
     """
     https://medium.com/towards-data-science/pairwise-sequence-alignment-using-biopython-d1a9d0ba861f
     """
-    aligned_x =  pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
+    if local:
+        aligned_x = pairwise2.align.localxx(x, y)[0]
+    else:
+        aligned_x =  pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
     aligned_x = list(aligned_x)
     n_x = aligned_x[0]
     if "N" in n_x:
@@ -279,10 +284,12 @@ def cigar2snp(cigar, reference):
 def reverse_complement(seq):
     return Seq(seq).reverse_complement()
 
-def get_mature_sequence(precursor, mature):
+def get_mature_sequence(precursor, mature, exact = False):
     """From precursor FASTA and mature positions
        Get mature sequence +- 4 flanking nts
     """
+    if exact:
+        return precursor[mature[0]:mature[1] + 1]
     return precursor[mature[0] - 4 :mature[1] + 5]
 
 def align_from_variants(sequence, mature, variants):

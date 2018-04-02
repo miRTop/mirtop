@@ -9,7 +9,7 @@ git clone mirtop
 cd mirtop/data/annotate
 mirtop gff -sps hsa --hairpin hairpin.fa --gtf hsa.gff3 -o test_out sim_isomir.bam
 ```
-## From miraligner files to GFF3
+## From `seqbuster::miraligner` files to GFF3
 
 miRNA annotation generated from [miraligner](https://github.com/lpantano/seqbuster) tool:
 
@@ -18,7 +18,7 @@ cd mirtop/data
 mirtop gff --format seqbuster --sps hsa --hairpin annotate/hairpin.fa --gtf annotate/hsa.gff3 -o test_out seqbuster/reads.mirna
 ```
 
-## From sRNAbench files to GFF3
+## From `sRNAbench` files to GFF3
 
 
 miRNA annotation generated from [sRNAbench](http://bioinfo2.ugr.es:8080/ceUGR/srnabench/) tool:
