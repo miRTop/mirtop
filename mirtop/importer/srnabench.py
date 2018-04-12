@@ -94,10 +94,10 @@ def _read_iso(fn):
         h = inh.readline()
         for line in inh:
             cols = line.strip().split("\t")
-            label = cols[3].split("$")
+            label = [cols[3]]
             mirnas = cols[1].split("$")
             if len(mirnas) != len(label):
-                label.extend([label[-1]] * (len(mirnas) - len(label)))
+                label = label * (len(mirnas) - len(label))
             anno = dict(zip(mirnas, label))
             logger.debug("TRANSLATE::%s with %s" % (mirnas, label))
             for m in anno:
@@ -105,24 +105,32 @@ def _read_iso(fn):
                 logger.debug("TRANSLATE::code %s" % iso[(cols[0], m)])
     return iso
 
-def _translate(label, description):
+def _translate(isomirs, description):
     iso = []
-    if label == "exact":
-        return "exact"
-    if label == "mv":
-        return "notsure"
-    if label.find("lv3p") > -1:
-        iso.append("iso_3p:%s" % label.split("|")[-1].split("#")[-1])
-    if label.find("lv5p") > -1:
-        iso.append("iso_5p:%s" % label.split("|")[-1].split("#")[-1])
-    if label.find("nta") > -1:
-        iso.append("iso_add:%s" % label.split("|")[-1].split("#")[-1])
-    if label.find("NucVar") > -1:
-        for nt in description.split(","):
-            logger.debug("TRANSLATE::change:%s" % description)
-            if nt == "-":
-                return "notsure"
-            iso.extend(_iso_snp(int(nt.split(":")[0])))
+    labels = isomirs.split("@")
+    logger.debug("TRANSLATE::labeasl:%s" % isomirs)
+    for label in labels:
+        logger.debug("TRANSLATE::label:%s" % label)
+        if label == "exact":
+            return "NA"
+        if label == "mv":
+            return "notsure"
+        number_nts = label.split("|")[-1].split("#")[-1]
+        if number_nts.find("-") < 0:
+            number_nts = "+%s" % number_nts
+        if label.find("lv3p") > -1:
+            iso.append("iso_3p:%s" % number_nts)
+        if label.find("lv5p") > -1:
+            iso.append("iso_5p:%s" % number_nts)
+        if label.find("nta") > -1:
+            iso.append("iso_add:%s" % number_nts)
+        if label.find("NucVar") > -1:
+            for nt in description.split(","):
+                logger.debug("TRANSLATE::change:%s" % description)
+                if nt == "-":
+                    return "notsure"
+                iso.extend(_iso_snp(int(nt.split(":")[0])))
+        logger.debug("TRANSLATE::iso:%s" % iso)
     return ",".join(iso)
 
 def _iso_snp(pos):

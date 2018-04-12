@@ -2,16 +2,19 @@ import os.path as op
 
 from mirtop.mirna import fasta, mapper
 from mirtop.bam.bam import read_bam
-from mirtop.importer import seqbuster, srnabench, prost
+from mirtop.importer import seqbuster, srnabench, prost, isomirsea
 from mirtop.mirna.annotate import annotate
 from mirtop.gff import body, header, merge
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
+
 def reader(args):
     """
     Realign BAM hits to miRBAse to get better accuracy and annotation
     """
+    global FILE_FORMAT
+    FILE_FORMAT = args.out_format
     samples = []
     database = mapper.guess_database(args.gtf)
     # hairpin, mirna = download_mirbase(args)
@@ -23,7 +26,7 @@ def reader(args):
     for fn in args.files:
         sample = op.splitext(op.basename(fn))[0]
         samples.append(sample)
-        fn_out = op.join(args.out, sample + ".gff")
+        fn_out = op.join(args.out, sample + ".%s" % args.out_format)
         if args.format == "BAM":
             reads = _read_bam(fn, precursors)
         elif args.format == "seqbuster":
@@ -32,14 +35,17 @@ def reader(args):
         elif args.format == "srnabench":
             reads = srnabench.read_file(fn, precursors)
         elif args.format == "prost":
-            reads = prost.read_file(fn, precursors, args.gtf)
+            reads = prost.read_file(fn, precursors, database, args.gtf)
+        elif args.format == "isomirsea":
+            out_dts[fn] = isomirsea.read_file(fn, database, args.gtf)
+        if args.format not in ["isomirsea"]:
+            ann = annotate(reads, matures, precursors)
+            out_dts[fn] = body.create(ann, database, sample)
         h = header.create([sample], database, "")
-        ann = annotate(reads, matures, precursors)
-        out_dts[fn] = body.create(ann, database, sample)
         _write(out_dts[fn], h, fn_out)
     # merge all reads for all samples into one dict
-    merged = merge.merge(out_dts)
-    fn_merged_out = op.join(args.out, "mirtop.gff")
+    merged = merge.merge(out_dts, samples)
+    fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
     _write(merged, header.create(samples, database, ""), fn_merged_out)
 
 def _write(lines, header, fn):

@@ -3,6 +3,9 @@ from Bio.Seq import Seq
 from collections import defaultdict
 
 from mirtop.mirna.keys import *
+import mirtop.libs.logger as mylog
+
+logger = mylog.getLogger(__name__)
 
 class hits:
 
@@ -110,7 +113,9 @@ class isomir:
         return sc
 
     def is_iso(self):
-        if self.t5 or self.t3 or self.add or self.subs:
+        if self.external == "NA":
+            return False
+        if self.t5 or self.t3 or self.add or self.subs or self.external != "":
             return True
         return False
 
@@ -147,11 +152,25 @@ def make_id(seq):
         idName += str(len(dummy))
     return idName
 
-def align(x, y):
+def align(x, y, local = False):
     """
     https://medium.com/towards-data-science/pairwise-sequence-alignment-using-biopython-d1a9d0ba861f
     """
-    return pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
+    if local:
+        aligned_x = pairwise2.align.localxx(x, y)[0]
+    else:
+        aligned_x =  pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
+    aligned_x = list(aligned_x)
+    n_x = aligned_x[0]
+    if "N" in n_x:
+        N_indices = [i for i, ltr in enumerate(n_x) if ltr == 'N']
+        n_x = list(n_x)
+        for N_index in N_indices:
+            n_x[N_index] = y[N_index]
+        n_x = ''.join(n_x)
+
+    aligned_x[0] = n_x
+    return tuple(aligned_x)
 
 def _add_cigar_char(counter, cache):
     if counter == 1:
@@ -215,5 +234,101 @@ def cigar_correction(cigarLine, query, target):
             target_pos = target_pos + cigarLength
     return ["".join(query_fixed), "".join(target_fixed)]
 
+def expand_cigar(cigar):
+    """
+    From short CIGAR version to long CIGAR version
+    where each character is each nts in the sequence
+    """
+    cigar_long = ""
+    n = 0
+    for nt in cigar:
+        if nt in ["D", "M", "I", "A", "T", "C", "G"]:
+            if n > 0:
+                cigar_long += nt * int(n)
+            else:
+                cigar_long += nt
+            n = 0
+        else:
+            if n > 0:
+                n = int("%s%s" % (n, nt))
+            else:
+                n = int(nt)
+    return cigar_long
+
+def cigar2snp(cigar, reference):
+    """
+    From a CIGAR string and reference sequence
+    return position of mismatches (indels included) as
+      [pos, seq_nt, ref_nt]
+    """
+    snp = []
+    pos_seq = 0
+    pos_ref = 0
+    for nt in expand_cigar(cigar):
+        if nt != "M":
+            if nt == "I":
+                snp.append([pos_seq, nt, "-"])
+                pos_seq += 1
+            elif nt == "D":
+                snp.append([pos_seq, "-", reference[pos_ref]])
+                pos_ref += 1
+            else:
+                snp.append([pos_seq, nt, reference[pos_ref]])
+                pos_ref += 1
+                pos_seq += 1
+        else:
+            pos_ref += 1
+            pos_seq += 1
+    return snp
+
 def reverse_complement(seq):
     return Seq(seq).reverse_complement()
+
+def get_mature_sequence(precursor, mature, exact = False):
+    """From precursor FASTA and mature positions
+       Get mature sequence +- 4 flanking nts
+    """
+    if exact:
+        return precursor[mature[0]:mature[1] + 1]
+    return precursor[mature[0] - 4 :mature[1] + 5]
+
+def align_from_variants(sequence, mature, variants):
+    """Giving the sequence read,
+       the mature from get_mature_sequence,
+       and the variant GFF annotation:
+            Get a list of substitutions
+    """
+    snps = []
+    k = [v.split(":")[0] for v in variants.split(",") if v.find(":") > -1]
+    v = [int(v.split(":")[1]) for v in variants.split(",") if v.find(":") > -1]
+    var_dict = dict(zip(k, v))
+    logger.debug("realign::align_from_variants::variants %s" % variants)
+    snp = [v for v in variants.split(",") if v.find("snp") > -1]
+    if "iso_5p" in k:
+        fix_5p = 4 - var_dict["iso_5p"]
+        mature = mature[fix_5p:]
+    if "iso_add" in k:
+        sequence = sequence[:-1 * var_dict["iso_add"]]
+    if "iso_3p" in k and var_dict["iso_3p"] > 0:
+        sequence = sequence[:-1 * var_dict["iso_3p"]]
+    logger.debug("realign::align_from_variants::snp %s" % snp)
+    logger.debug("realign::align_from_variants::sequence %s" % sequence)
+    logger.debug("realign::align_from_variants::mature %s" % mature)
+    for pos in range(0, len(sequence)):
+        if sequence[pos] != mature[pos]:
+            value = ""
+            if pos > 1 and pos < 8:
+                value = "iso_snp_seed"
+            elif pos == 8:
+                value = "iso_snp_central_offset"
+            elif pos > 8 and pos < 13:
+                value = "iso_snp_central"
+            elif pos > 12 and pos < 18:
+                value = "iso_snp_central_supp"
+            else:
+                value = "iso_snp"
+            logger.debug("realign::align_from_variants::value %s" % value)
+            if value in snp:
+                snps.append([pos, sequence[pos], mature[pos]])
+    logger.debug("realign::align_from_variants::snps %s" % snps)
+    return snps

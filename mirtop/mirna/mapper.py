@@ -57,7 +57,6 @@ def read_gtf_to_mirna(gtf):
                 logger.debug("MAP:: precursor pos %s" % db[parent[0]])
     return db_mir
 
-
 def read_gtf_to_precursor(gtf):
     """
     Load GTF file with precursor positions on genome

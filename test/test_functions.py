@@ -50,6 +50,14 @@ class FunctionsTest(unittest.TestCase):
         #    raise ValueError("GFF is not loaded correctly.")
         return True
 
+    @attr(read_line=True)
+    def test_read_line(self):
+        """Read GFF/GTF line"""
+        from mirtop.gff.body import read_gff_line
+        with open("data/examples/gff/2samples.gff") as inh:
+            for line in inh:
+                print read_gff_line(line)
+
     @attr(code=True)
     def test_code(self):
         """testing code correction function"""
@@ -70,7 +78,7 @@ class FunctionsTest(unittest.TestCase):
     def test_cigar(self):
         """testing cigar correction function"""
         cigar = [[0, 14], [1, 1], [0, 5]]
-        from mirtop.mirna.realign import cigar_correction, make_cigar
+        from mirtop.mirna.realign import cigar_correction, make_cigar, cigar2snp, expand_cigar
         fixed = cigar_correction(cigar, "AAAAGCTGGGTTGAGGAGGA", "AAAAGCTGGGTTGAGAGGA")
         if not fixed[0] == "AAAAGCTGGGTTGAGGAGGA":
             raise ValueError("Sequence 1 is not right.")
@@ -78,15 +86,24 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Sequence 2 is not right.")
         if not make_cigar("AAA-AAATAAA", "AGACAAA-AAA") == "MAMD3MI3M":
             raise ValueError("Cigar not eq to MAMD3MI3M: %s" % make_cigar("AAA-AAATAAA", "AGACAAA-AAA"))
+        # test expand cigar
+        if not expand_cigar("3MA3M") == "MMMAMMM":
+            raise ValueError("Cigar 3MA3M not eqaul to MMMAMMM but to %s" % expand_cigar("3MA3M"))
+        # test cigar to snp
+        if not cigar2snp("3MA3M", "AAATCCC")[0] == [3, "A", "T"]:
+            raise ValueError("3MA3M not equal AAATCCC but %s" % cigar2snp("3MA3M", "AAATCCC"))
 
     @attr(locala=True)
     def test_locala(self):
         """testing pairwise alignment"""
         from mirtop.mirna.realign import align
         print "\nExamples of perfect match, deletion, mutation"
-        print align("TGAGGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
+        print align("TGAGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
         print align("TGAGGTGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
         print align("TGAGGTAGTAGGCTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
+        print align("TGANTAGTAGNTTGTATNGTT", "TGAGTAGTAGGTTGTATAGTTT")[0]
+        print align("TGANTAGTNGNTTGTATNGTT", "TGAGTATAGGCCTTGTATAGTT")[0]
+        print align("NCANAGTCCAAGNTCATN", "TCATAGTCCAAGGTCATG")[0]
 
     @attr(reverse=True)
     def test_reverse(self):
@@ -108,6 +125,47 @@ class FunctionsTest(unittest.TestCase):
         print merge._fix("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\tRead hsa-let-7a-1_hsa-let-7a-5p_5:26_-1:-1_mut:null_add:null_x861; UID bhJJ5WJL2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:-1; Cigar 22M; Expression 861; Filter Pass; Hits 1;", expression)
         if expression != " Expression 1,2":
             raise ValueError("This is wrong: %s" % expression)
+
+    @attr(variant=True)
+    def test_variant(self):
+        """testing get mature sequence"""
+        from mirtop.mirna import fasta, mapper
+        from mirtop.mirna.realign import get_mature_sequence, align_from_variants
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        res = get_mature_sequence("GAAAATTTTTTTTTTTAAAAG", [5, 15])
+        if res != "AAAATTTTTTTTTTTAAAA":
+            raise ValueError("Results for GAAAATTTTTTTTTTTAAAAG was %s" % res)
+        mature =  get_mature_sequence(precursors["hsa-let-7a-1"],
+                                   matures["hsa-let-7a-1"]["hsa-let-7a-5p"])
+        if mature != "GGGATGAGGTAGTAGGTTGTATAGTTTTAG":
+            raise ValueError("Results for hsa-let-7a-5p is %s" % mature)
+
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTT", mature, "iso_5p:-2")
+        if res:
+            raise ValueError("Wrong alignment for test 1 %s" % res)
+        res = align_from_variants("GATGAGGTAGTAGGTTGTATAGTT", mature, "iso_5p:+2")
+        if res:
+            raise ValueError("Wrong alignment for test 2 %s" % res)
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature, "iso_5p:-2,iso_add:2")
+        if res:
+            raise ValueError("Wrong alignment for test 3 %s" % res)
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature, "iso_5p:-2,iso_3p:2")
+        if res:
+            raise ValueError("Wrong alignment for test 4 %s" % res)
+        res = align_from_variants("AGGTAGTAGGTTGTATAG", mature, "iso_5p:-2,iso_3p:-2")
+        if res:
+            raise ValueError("Wrong alignment for test 5 %s" % res)
+        res = align_from_variants("AGGTAGTAGGTTGTATAGAA", mature, "iso_5p:-2,iso_3p:-2,iso_add:2")
+        if res:
+            raise ValueError("Wrong alignment for test 6 %s" % res)
+        res =  align_from_variants("AGGTAGTAGGATGTATAGTT", mature, "iso_5p:-2,iso_snp_central")
+        if not res:
+            if res[0][0] != 10:
+                raise ValueError("Wrong alignment for test 7 %s" % res)
+        res = align_from_variants("AGGTAGTAGGATGTATAGAA", mature, "iso_5p:-2,iso_3p:-2,iso_add:2")
+        if res:
+            raise ValueError("Wrong alignment for test 8 %s" % res)
 
     @attr(alignment=True)
     def test_alignment(self):
@@ -202,17 +260,14 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna import fasta, mapper
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
         matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
-        def annotate(fn, precursors, matures):
-            from mirtop.importer import prost
-            from mirtop.bam import bam
-            from mirtop.mirna import annotate
-            from mirtop.gff import body
-            reads = prost.read_file(fn, precursors, "data/examples/annotate/hsa.gff3")
-            ann = annotate.annotate(reads, matures, precursors)
-            gff = body.create(ann, "miRBase21", "prost")
-            return True
-        print "\nPROST\n"
-        annotate("data/examples/prost/example.mincount3.txt", precursors, matures)
+        fn = "data/examples/prost/prost.example.txt"
+        from mirtop.importer import prost
+        reads = prost.read_file(fn, precursors, "miRBasev21","data/examples/annotate/hsa.gff3")
+        from mirtop.mirna import annotate
+        from mirtop.gff import body
+        ann = annotate.annotate(reads, matures, precursors)
+        body = body.create(ann, "miRBase21", "Example")
+        return True
 
     @attr(gff=True)
     def test_gff(self):
@@ -258,7 +313,6 @@ class FunctionsTest(unittest.TestCase):
         print gff
         return True
 
-
     @attr(counts=True)
     def test_counts(self):
         """testing convert_gff_counts in convert.py function"""
@@ -269,18 +323,20 @@ class FunctionsTest(unittest.TestCase):
 
         logger.initialize_logger("test counts", True, True)
         logger = logger.getLogger(__name__)
-     
+
         counts_params = ['--gff', 'data/examples/gff/2samples.gff', '--out', 'data/examples/gff/']
-        
 
         parser = argparse.ArgumentParser()
         parser.add_argument("--gff")
         parser.add_argument("--out")
 
         args = parser.parse_args(counts_params)
-        
         convert_gff_counts(args)
-        
+
         return True
 
-
+    @attr(stats=True)
+    def test_stats(self):
+        """testing stats function"""
+        from mirtop.gff import stats
+        print stats._calc_stats("data/examples/gff/correct_file.gff")

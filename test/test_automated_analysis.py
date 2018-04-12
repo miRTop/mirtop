@@ -102,6 +102,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(annotate=True)
+    @attr(bam=True)
     def test_srnaseq_annotation_bam(self):
         """Run miraligner analysis
         """
@@ -111,7 +112,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--sps", "hsa",
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
-                      "-o", "test_out_mirs_fasta",
+                      "-o", "test_out_mirs",
                       "../../data/examples/annotate/sim_isomir.sam"]
             print ""
             print " ".join(clcode)
@@ -129,8 +130,24 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--sps", "hsa",
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
-                      "-o", "test_out_mirs_fasta",
+                      "-o", "test_out_mirs",
                       "../../data/examples/seqbuster/reads.mirna"]
             print ""
             print " ".join(clcode)
             subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(stats_cmd=True)
+    def test_srnaseq_stats(self):
+        """Run stats analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "stats",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/gff/correct_file.gff"]
+            print ""
+            print " ".join(clcode)
+            subprocess.check_call(clcode)
+
+
