@@ -4,9 +4,10 @@ Produce stats from GFF3 format
 
 import os
 import pandas as pd
-
 from mirtop.gff import header
-from mirtop.gff.body import read_attributes
+from mirtop.gff.body import read_attributes, read_gff_line
+from mirtop import version
+
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
@@ -16,6 +17,8 @@ def stats(args):
     """
     From a list of files produce stats
     """
+    v = version.__version__
+    message_info = ("# mirtop stats version {v}").format(**locals())
     out = list()
     for fn in args.files:
         if not os.path.exists(fn):
@@ -25,9 +28,12 @@ def stats(args):
     df_final = pd.concat(out)
     outfn = os.path.join(args.out, "mirtop_stats.txt")
     if args.out != "tmp_mirtop":
-        df_final.to_csv(outfn)
+        with open(outfn, 'a') as outh:
+            print >>outh, message_info
+            df_final.to_csv(outh)
         logger.info("Stats saved at %s" % outfn)
     else:
+        print message_info
         print df_final
 
 def _get_samples(fn):
@@ -49,12 +55,13 @@ def _calc_stats(fn):
             if line.startswith("#"):
                 continue
             cols = line.strip().split("\t")
-            logger.debug("## STATS: attribute %s" % cols[8])
-            attr = read_attributes(line)
+            cols = read_gff_line(line)
+            logger.debug("## STATS: attribute %s" % cols['attrb'])
+            attr = cols['attrb']
             if "-".join([attr['Variant'], attr['Name']]) in seen:
                 continue
             seen.add("-".join([attr['Variant'], attr['Name']]))
-            lines.extend(_classify(cols[2], attr, samples))
+            lines.extend(_classify(cols['type'], attr, samples))
     df = _summary(lines)
     return df
 

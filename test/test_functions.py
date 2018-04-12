@@ -50,6 +50,14 @@ class FunctionsTest(unittest.TestCase):
         #    raise ValueError("GFF is not loaded correctly.")
         return True
 
+    @attr(read_line=True)
+    def test_read_line(self):
+        """Read GFF/GTF line"""
+        from mirtop.gff.body import read_gff_line
+        with open("data/examples/gff/2samples.gff") as inh:
+            for line in inh:
+                print read_gff_line(line)
+
     @attr(code=True)
     def test_code(self):
         """testing code correction function"""

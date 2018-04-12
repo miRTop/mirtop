@@ -8,10 +8,13 @@ from mirtop.gff import body, header, merge
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
+
 def reader(args):
     """
     Realign BAM hits to miRBAse to get better accuracy and annotation
     """
+    global FILE_FORMAT
+    FILE_FORMAT = args.out_format
     samples = []
     database = mapper.guess_database(args.gtf)
     # hairpin, mirna = download_mirbase(args)
@@ -41,7 +44,7 @@ def reader(args):
         h = header.create([sample], database, "")
         _write(out_dts[fn], h, fn_out)
     # merge all reads for all samples into one dict
-    merged = merge.merge(out_dts)
+    merged = merge.merge(out_dts, samples)
     fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
     _write(merged, header.create(samples, database, ""), fn_merged_out)
 

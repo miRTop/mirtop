@@ -6,7 +6,7 @@ import os
 import pandas as pd
 
 from mirtop.gff import header
-from mirtop.gff.body import read_attributes
+from mirtop.gff.body import read_attributes, read_gff_line
 from mirtop.mirna.realign import read_id
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
@@ -41,8 +41,8 @@ def read_reference(fn):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = line.strip().split("\t")
-            attr = read_attributes(line)
+            cols = read_gff_line(line)
+            attr = cols['attrb']
             srna[attr['UID']] = [_simplify(attr['Variant']), attr]
     return srna
 
@@ -58,8 +58,8 @@ def _compare_to_reference(fn, reference):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = line.strip().split("\t")
-            attr = read_attributes(line)
+            cols = read_gff_line(line)
+            attr = cols['attrb']
             if attr['UID'] in reference:
                 mirna = "Y" if attr['Name'] == reference[attr['UID']][1]['Name'] else attr['Name']
                 accuracy =  _accuracy(_simplify(attr['Variant']), reference[attr['UID']][0])

@@ -81,6 +81,18 @@ def _merge(lines):
         dt_pre = dt_pre.groupby(['isomir', 'chrom', 'mature', 'sample'], as_index=False).sum()
     return out_file, dt, dt_pre
 
+def guess_format(line):
+    return "=" if line.find("Name=") > -1 else " "
+
+def paste_columns(cols, sep = " "):
+    """
+    Create GFF/GTF line from read_gff_line
+    """
+    cols['attrb'] = ";".join("%s%s%s" % (a, sep, cols['attrb'][a]) for a in cols['attrb'])
+    return "\t".join([cols['chrom'], cols['source'], cols['type'],
+                      cols['start'], cols['end'], cols['score'],
+                      cols['strand'], cols['ext'], cols['attrb']])
+
 def read_attributes(gff_line, sep = " "):
     gff_line = gff_line.strip().split("\t")[8]
     gff_dict = OrderedDict()
@@ -90,3 +102,23 @@ def read_attributes(gff_line, sep = " "):
             gff_dict[item_pair[0]] = item_pair[1]
     return gff_dict
 
+def read_gff_line(line):
+    """
+    Read GFF/GTF line and return dictionary with fields
+    """
+    if line.startswith("#"):
+        return line
+    cols = line.strip().split("\t")
+    sep = guess_format(line)
+    if len(cols) != 9:
+        raise ValueError("Line doesn't have 9 elements: %s" % line)
+    fields = {'chrom': cols[0],
+              'source': cols[1],
+              'type': cols[2],
+              'start': cols[3],
+              'end': cols[4],
+              'score': cols[5],
+              'strand': cols[6],
+              'ext': cols[7],
+              'attrb': read_attributes(line, sep)}
+    return fields

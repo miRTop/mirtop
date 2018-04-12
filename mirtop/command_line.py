@@ -14,12 +14,14 @@ import mirtop.libs.logger as mylog
 
 import time
 
+FILE_FORMAT = "gtf"
 
 def main(**kwargs):
     kwargs = parse_cl(sys.argv[1:])
     initialize_logger(kwargs['args'].out, kwargs['args'].debug, kwargs['args'].print_debug)
     logger = mylog.getLogger(__name__)
     start = time.time()
+
     if "gff" in kwargs:
         logger.info("Run annotation")
         reader(kwargs["args"])
