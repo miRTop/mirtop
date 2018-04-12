@@ -3,7 +3,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '0.3.3a'
+version = '0.3.4a'
 
 def readme():
     with open('README.md') as f:
