@@ -23,6 +23,10 @@ def parse_cl(in_args):
         print "use %s" % sub_cmds.keys()
         sys.exit(0)
     args = parser.parse_args()
+    if "files" in args:
+        if not args.files:
+            print "use %s -h to see help." % in_args[0]
+            sys.exit(1)
 
     assert sub_cmd is not None
     kwargs = {"args": args, sub_cmd: True}
@@ -39,7 +43,7 @@ def _add_debug_option(parser):
 
 def add_subparser_stats(subparsers):
     parser = subparsers.add_parser("stats", help="show general stats for each sample.")
-    parser.add_argument("files", nargs="*", help="Bam files.", required = 1)
+    parser.add_argument("files", nargs="*", help="Bam files.")
     parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
                         help="folder of output files")
     parser = _add_debug_option(parser)
@@ -49,7 +53,7 @@ def add_subparser_stats(subparsers):
 def add_subparser_compare(subparsers):
     parser = subparsers.add_parser("compare", help="Compare two GFF files.")
     parser.add_argument("files", nargs="*", help="Files to compare."
-                                                 "First will be used as reference.", required = 1)
+                                                 "First will be used as reference.")
     parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
                         help="folder of output files")
     parser = _add_debug_option(parser)
@@ -58,7 +62,7 @@ def add_subparser_compare(subparsers):
 
 def add_subparser_gff(subparsers):
     parser = subparsers.add_parser("gff", help="realign miRNA BAM file")
-    parser.add_argument("files", nargs="*", help="Bam files.", required = 1)
+    parser.add_argument("files", nargs="*", help="Bam files.")
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
     parser.add_argument("--sps", required=1,
