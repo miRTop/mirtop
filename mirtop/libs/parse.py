@@ -39,7 +39,7 @@ def _add_debug_option(parser):
 
 def add_subparser_stats(subparsers):
     parser = subparsers.add_parser("stats", help="show general stats for each sample.")
-    parser.add_argument("files", nargs="*", help="Bam files.")
+    parser.add_argument("files", nargs="*", help="Bam files.", required = 1)
     parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
                         help="folder of output files")
     parser = _add_debug_option(parser)
@@ -49,7 +49,7 @@ def add_subparser_stats(subparsers):
 def add_subparser_compare(subparsers):
     parser = subparsers.add_parser("compare", help="Compare two GFF files.")
     parser.add_argument("files", nargs="*", help="Files to compare."
-                                                 "First will be used as reference.")
+                                                 "First will be used as reference.", required = 1)
     parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
                         help="folder of output files")
     parser = _add_debug_option(parser)
@@ -58,7 +58,7 @@ def add_subparser_compare(subparsers):
 
 def add_subparser_gff(subparsers):
     parser = subparsers.add_parser("gff", help="realign miRNA BAM file")
-    parser.add_argument("files", nargs="*", help="Bam files.")
+    parser.add_argument("files", nargs="*", help="Bam files.", required = 1)
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
     parser.add_argument("--sps", required=1,
@@ -74,7 +74,7 @@ def add_subparser_gff(subparsers):
 
 def add_subparser_export(subparsers):
     parser = subparsers.add_parser("export", help="export GFF into other format")
-    parser.add_argument("files", nargs="*", help="GFF files.")
+    parser.add_argument("files", nargs="*", help="GFF files.", required = 1)
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
     parser.add_argument("--sps", required=1,
@@ -136,8 +136,8 @@ def add_subparser_counts(subparsers):
 
     parser = subparsers.add_parser("counts", help="extract expression counts for each sample for mirna/variants")
     parser.add_argument("--gff",
-                        help="/path/to/GFF/file/file.gff", required=True)
-    parser.add_argument("--out", 
+                        help="/path/to/GFF/file/file.gff", required = 1)
+    parser.add_argument("--out",
                         required=True,
                         help="/path/to/output/directory")
     parser = _add_debug_option(parser)

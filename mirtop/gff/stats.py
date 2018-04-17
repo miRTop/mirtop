@@ -58,9 +58,9 @@ def _calc_stats(fn):
             cols = read_gff_line(line)
             logger.debug("## STATS: attribute %s" % cols['attrb'])
             attr = cols['attrb']
-            if "-".join([attr['Variant'], attr['Name']]) in seen:
+            if "-".join([attr['UID'], attr['Variant'], attr['Name']]) in seen:
                 continue
-            seen.add("-".join([attr['Variant'], attr['Name']]))
+            seen.add("-".join([attr['UID'], attr['Variant'], attr['Name']]))
             lines.extend(_classify(cols['type'], attr, samples))
     df = _summary(lines)
     return df
