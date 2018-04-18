@@ -31,7 +31,7 @@ def _fix(line, expression):
 
 def _convert_to_string(d, s):
     v = [str(d[ss]) if ss in d else "0" for ss in s]
-    return " Expression %s" % ",".join(v)
+    return "%s" % ",".join(v)
 
 def _chrom(string):
     return string.split("\t")[0]

@@ -1,5 +1,6 @@
 - 0.3.*a
 
+ * Fix Expression attrb when join gff files.Thanks @AlisR.
  * Print help when no files are giving to any subcommand.
  * Fix bug for duplicated isomiRs tags. Thanks @AlisR.
  * Fix bug in order of merged gff file. Thanks @AlisR.
