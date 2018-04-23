@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
 
+"""
+Function that loads a gff file into a pandas dataframe
+"""
 import pandas as pd
 import numpy as np
 
 
-"""
-Function that loads a gff file into a pandas dataframe
-"""
-def loadfile(filename,verbose,zero=False):
+def loadfile(filename,verbose=True):
         
     try:
         if verbose==True:
             print 'Loading', filename
         # obtaning sample names and number from 3rd line in header
+        num_header_lines=0
         with open(filename) as f:
             rowfile=f.readline()
+            num_header_lines+=1
             while True:
                 if rowfile.startswith('## COLDATA'):
                     sample_names=rowfile.split()[2].split(',')
                     break
                 else:
                     rowfile=f.readline()
+                    num_header_lines+=1
         sample_number = len(sample_names)
         if verbose==True:
             print '--------------------------------------'
@@ -30,41 +33,50 @@ def loadfile(filename,verbose,zero=False):
                 print elem
             print '--------------------------------------'
         
+        
+        
+        
         # number of columns in gff file
-        gff_cols = pd.read_table(filename, sep='\t', skiprows=3, header=None).columns
+        gff_cols = pd.read_table(filename, sep='\t', skiprows=num_header_lines, header=None).columns
          
         # Adquiring non-attributes data
-        body_data=pd.read_table(filename, sep='\t', skiprows=3, header=None, usecols=gff_cols[0:-1])
+        body_data=pd.read_table(filename, sep='\t', skiprows=num_header_lines, header=None, usecols=gff_cols[0:-1])
         body_data.columns = ['SeqID', 'source', 'type', 'start', 'end', 'score', 'strand', 'phase']
         # Adquiring attributes data
-        atr_data = pd.read_table(filename, sep='\t', skiprows=3, header=None, usecols=gff_cols[[-1]])
-    
+        atr_data = pd.read_table(filename, sep='\t', skiprows=num_header_lines, header=None, usecols=gff_cols[[-1]])
+        
+        #print 'hasta aqui todo bien'
         # Splitting the attributes column
         list_atr = []
         # cheking attributes present in first row
-        attr_names=atr_data.values[0,0].split()[0::2]      #attributes in the column
+ 
+        
+        attr_names=[attr.split()[0] for attr in atr_data.values[0,0].split(';')]
+        #attributes in the column
+        
+      
+        #print attr_names
         num_attr = len(attr_names)                         #number of attributes
-        expression_colindex=attr_names.index ('Expression')  #position of the expression column in the attr column 
+        #expression_colindex=attr_names.index ('Expression')  #position of the expression column in the attr column 
         if verbose==True:
             print num_attr,' attributes in the file '
             print '--------------------------------------'
             for attr in attr_names:
                 print attr
             print '--------------------------------------'
+        
         # joining rows of attributes without the descriptor
         for row in range(atr_data.shape[0]):
-            list_atr.append(atr_data.values[row, 0].split()[1::2])
+            list_atr.append([attr.split()[1] for attr in atr_data.values[row,0].split(';')])
+            #list_atr.append(atr_data.values[row, 0].split()[1::2])
     
         # appending observations
         atr_data = pd.DataFrame(list_atr, columns=attr_names)
-        # Eliminating ;
-        for i in attr_names:
-            atr_data[i] = atr_data[i].replace({';': ''}, regex=True)
-    
+   
         # desglosing the expression column in a column for each sample
         list_expression=[]
         for row in range(atr_data.shape[0]):
-            list_expression.append(atr_data.values[row,expression_colindex].split(','))
+            list_expression.append(atr_data.loc[row,'Expression'].split(','))
         sample_names=['Expression_' +x for x in sample_names]
         
         expression_data = pd.DataFrame(list_expression, columns=sample_names)      
@@ -89,7 +101,12 @@ def loadfile(filename,verbose,zero=False):
         
         for var in list_variants_present:
             for row in data.itertuples():
-                if var in data.loc[row.Index,'Variant']:
+                
+                try:
+                    index=data.loc[row.Index,'Variant'].split(',').index(var)
+                except:
+                    index=-1
+                if index>=0:
                     #print var, data.loc[row.Index,'Variant']
                     data.at[row.Index,var]=1
                 else:
@@ -154,7 +171,7 @@ def load_check_gff3(filename):
             # Labels in type column
             if dataframe.loc[i, 'type'] not in ['ref_miRNA', 'isomiR']:
                 Error = True
-                print'line', i, 'bad type error'
+                print'line', i, 'pip install Markdownbad type error'
     
             # start<end
             if dataframe.loc[i, 'start'] >= dataframe.loc[i, 'end']:
@@ -180,7 +197,7 @@ def load_check_gff3(filename):
                     if variant_i[var].split(':')[0] not in possible_variant:
                         Error = True
                         print 'Variant error', variant_i[0].split(':')[0], 'line', i
-        #dataframe=dataframe.drop('Variant',index=1) #Remove the Variant column
+
         #Checking expression data
         expression_cols=[col for col in dataframe.columns if 'Expression_' in col]         
         for col in expression_cols:
@@ -198,7 +215,7 @@ def load_check_gff3(filename):
         if Error:
             print 'File format error'
             return False
-        dataframe=dataframe.drop('Variant',axis=1) #Remove the Variant column
+
         print '--------------------------------------'
         print dataframe.dtypes
         print '--------------------------------------'
@@ -207,17 +224,3 @@ def load_check_gff3(filename):
     except:
         print 'Error checking the file'
         return False
-
-
-
-
-#file='/home/rafa/mirtop_project/Scripts/blood.gff3'
-#file='/home/rafa/mirtop_project/Scripts/blood2.gff3'
-file='/home/rafa/mirtop_project/Aligments/blood/blood2/13_plasma-1-TruSeq_fastq-mirbase-ready.gff3'
-
-#file='/home/rafa/mirtop_project/Scripts/gff_examples/2uid_missing.gff'
-#file='/home/rafa/mirtop_project/Scripts/gff_examples/coldata_missing.gff'
-#file='/home/rafa/mirtop_project/Scripts/gff_examples/missing_filter_type.gff'
-#file='/home/rafa/mirtop_project/Scripts/gff_examples/3wrong_type.gff'
-
-filedata = load_check_gff3(file)
