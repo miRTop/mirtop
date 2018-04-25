@@ -123,7 +123,7 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Start should be 4.")
         expression =merge._convert_to_string({'s': 1, 'x': 2}, ['s', 'x'])
         print merge._fix("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\tRead hsa-let-7a-1_hsa-let-7a-5p_5:26_-1:-1_mut:null_add:null_x861; UID bhJJ5WJL2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:-1; Cigar 22M; Expression 861; Filter Pass; Hits 1;", expression)
-        if expression != " Expression 1,2":
+        if expression != "1,2":
             raise ValueError("This is wrong: %s" % expression)
 
     @attr(variant=True)

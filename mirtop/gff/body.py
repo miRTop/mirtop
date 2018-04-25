@@ -88,7 +88,7 @@ def paste_columns(cols, sep = " "):
     """
     Create GFF/GTF line from read_gff_line
     """
-    cols['attrb'] = ";".join("%s%s%s" % (a, sep, cols['attrb'][a]) for a in cols['attrb'])
+    cols['attrb'] = "; ".join("%s%s%s" % (a, sep, cols['attrb'][a]) for a in cols['attrb'])
     return "\t".join([cols['chrom'], cols['source'], cols['type'],
                       cols['start'], cols['end'], cols['score'],
                       cols['strand'], cols['ext'], cols['attrb']])
@@ -99,7 +99,7 @@ def read_attributes(gff_line, sep = " "):
     for gff_item in gff_line.strip().split(";"):
         item_pair = gff_item.strip().split(sep)
         if len(item_pair) > 1:
-            gff_dict[item_pair[0]] = item_pair[1]
+            gff_dict[item_pair[0].strip()] = item_pair[1].strip()
     return gff_dict
 
 def read_gff_line(line):

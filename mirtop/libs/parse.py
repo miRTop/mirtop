@@ -23,6 +23,10 @@ def parse_cl(in_args):
         print "use %s" % sub_cmds.keys()
         sys.exit(0)
     args = parser.parse_args()
+    if "files" in args:
+        if not args.files:
+            print "use %s -h to see help." % in_args[0]
+            sys.exit(1)
 
     assert sub_cmd is not None
     kwargs = {"args": args, sub_cmd: True}
@@ -74,7 +78,7 @@ def add_subparser_gff(subparsers):
 
 def add_subparser_export(subparsers):
     parser = subparsers.add_parser("export", help="export GFF into other format")
-    parser.add_argument("files", nargs="*", help="GFF files.")
+    parser.add_argument("files", nargs="*", help="GFF files.", required = 1)
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
     parser.add_argument("--sps", required=1,
@@ -136,8 +140,8 @@ def add_subparser_counts(subparsers):
 
     parser = subparsers.add_parser("counts", help="extract expression counts for each sample for mirna/variants")
     parser.add_argument("--gff",
-                        help="/path/to/GFF/file/file.gff", required=True)
-    parser.add_argument("--out", 
+                        help="/path/to/GFF/file/file.gff", required = 1)
+    parser.add_argument("--out",
                         required=True,
                         help="/path/to/output/directory")
     parser = _add_debug_option(parser)
