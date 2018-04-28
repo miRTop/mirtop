@@ -1,5 +1,7 @@
 - 0.3.*a
 
+ * Allow extra attributes to show the nts
+   that change in each isomiR type.
  * Fix Expression attrb when join gff files.Thanks @AlisR.
  * Print help when no files are giving to any subcommand.
  * Fix bug for duplicated isomiRs tags. Thanks @AlisR.

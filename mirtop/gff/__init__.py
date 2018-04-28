@@ -13,13 +13,14 @@ def reader(args):
     """
     Realign BAM hits to miRBAse to get better accuracy and annotation
     """
-    global FILE_FORMAT
-    FILE_FORMAT = args.out_format
+    sep = " " if args.out_format == "gtf" else "="
     samples = []
     database = mapper.guess_database(args.gtf)
     # hairpin, mirna = download_mirbase(args)
     precursors = fasta.read_precursor(args.hairpin, args.sps)
+    args.precursors = precursors
     matures = mapper.read_gtf_to_precursor(args.gtf)
+    args.matures = matures
     # check numnbers of miRNA and precursors read
     # print message if numbers mismatch
     out_dts = dict()
@@ -40,7 +41,7 @@ def reader(args):
             out_dts[fn] = isomirsea.read_file(fn, database, args.gtf)
         if args.format not in ["isomirsea"]:
             ann = annotate(reads, matures, precursors)
-            out_dts[fn] = body.create(ann, database, sample)
+            out_dts[fn] = body.create(ann, database, sample, args)
         h = header.create([sample], database, "")
         _write(out_dts[fn], h, fn_out)
     # merge all reads for all samples into one dict

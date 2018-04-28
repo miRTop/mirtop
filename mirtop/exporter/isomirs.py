@@ -14,7 +14,7 @@ from mirtop.mirna import fasta, mapper
 from mirtop.mirna.realign import isomir, hits
 from mirtop.gff.body import read_attributes
 from mirtop.gff.header import read_samples
-from mirtop.mirna.realign import get_mature_sequence, align_from_variants, read_id
+from mirtop.mirna.realign import get_mature_sequence, align_from_variants, read_id, variant_to_5p, variant_to_3p, variant_to_add
 
 logger = mylog.getLogger(__name__)
 
@@ -41,14 +41,14 @@ def read_file(fn, precursors, matures, out_dir):
             cols = line.strip().split("\t")
             attr = read_attributes(line)
             read = read_id(attr["UID"])
-            t5 = _get_5p(precursors[attr["Parent"]],
-                         matures[attr["Parent"]][attr["Name"]],
-                         attr["Variant"])
-            t3 = _get_3p(precursors[attr["Parent"]],
-                         matures[attr["Parent"]][attr["Name"]],
-                         attr["Variant"])
-            add = _get_add(read,
-                           attr["Variant"])
+            t5 = variant_to_5p(precursors[attr["Parent"]],
+                               matures[attr["Parent"]][attr["Name"]],
+                               attr["Variant"])
+            t3 = variant_to_3p(precursors[attr["Parent"]],
+                               matures[attr["Parent"]][attr["Name"]],
+                               attr["Variant"])
+            add = variant_to_add(read,
+                                 attr["Variant"])
             mature_sequence = get_mature_sequence(precursors[attr["Parent"]],
                                                   matures[attr["Parent"]][attr["Name"]])
             mm = align_from_variants(read,
@@ -116,12 +116,3 @@ def _get_add(read, variant):
         add = int(add[0].split(":")[-1][-1]) * -1
         return read[add:]
     return "0"
-
-def _get_change(alignment):
-    """
-    from a 2 string alignment, return the positions
-    at which the nucleotides are different in a list:
-        AAAAGTTT, AAAACTTT
-        return 4CG
-    """
-    return None

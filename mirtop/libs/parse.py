@@ -72,6 +72,7 @@ def add_subparser_gff(subparsers):
     parser.add_argument("--format", help="Input format, default BAM file.",
                         choices=['BAM', 'seqbuster', 'srnabench', 'prost', 'isomirsea'], default="BAM")
     parser.add_argument("--out-format", help="Supported formats: gff3 or gtf", default = "gtf")
+    parser.add_argument("--add-extra", help="Add extra attributes to gff", action="store_true")
     parser = _add_debug_option(parser)
     return parser
 

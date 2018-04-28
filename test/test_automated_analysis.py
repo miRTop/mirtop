@@ -109,7 +109,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
         with make_workdir():
             clcode = ["mirtop",
                       "gff",
-                      "--sps", "hsa",
+                      "--sps", "hsa", "--add-extra",
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "-o", "test_out_mirs",

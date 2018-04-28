@@ -288,9 +288,12 @@ def get_mature_sequence(precursor, mature, exact = False):
     """From precursor FASTA and mature positions
        Get mature sequence +- 4 flanking nts
     """
+    p = "NNNNN%s" % precursor
+    s = mature[0] + 5
+    e = mature[1] + 5
     if exact:
-        return precursor[mature[0]:mature[1] + 1]
-    return precursor[mature[0] - 4 :mature[1] + 5]
+        return p[s:e + 1]
+    return p[s - 4 :e + 5]
 
 def align_from_variants(sequence, mature, variants):
     """Giving the sequence read,
@@ -302,6 +305,7 @@ def align_from_variants(sequence, mature, variants):
     k = [v.split(":")[0] for v in variants.split(",") if v.find(":") > -1]
     v = [int(v.split(":")[1]) for v in variants.split(",") if v.find(":") > -1]
     var_dict = dict(zip(k, v))
+    logger.debug("realign::align_from_variants::mature %s" % mature)
     logger.debug("realign::align_from_variants::variants %s" % variants)
     snp = [v for v in variants.split(",") if v.find("snp") > -1]
     if "iso_5p" in k:
@@ -316,6 +320,8 @@ def align_from_variants(sequence, mature, variants):
     logger.debug("realign::align_from_variants::mature %s" % mature)
     for pos in range(0, len(sequence)):
         if sequence[pos] != mature[pos]:
+            if mature[pos] == "N":
+                continue
             value = ""
             if pos > 1 and pos < 8:
                 value = "iso_snp_seed"
@@ -332,3 +338,51 @@ def align_from_variants(sequence, mature, variants):
                 snps.append([pos, sequence[pos], mature[pos]])
     logger.debug("realign::align_from_variants::snps %s" % snps)
     return snps
+
+def variant_to_5p(hairpin, pos, variant):
+    """from a sequence and a start position get the nts
+       +/- indicated by variants:
+           AAATTTT, 3, -1
+           return: T
+       pos option is 0-base-index
+    """
+    pos = pos[0]
+    t5 = [v for v in variant.split(",") if v.startswith("iso_5p")]
+    if t5:
+        t5 = int(t5[0].split(":")[-1][-1])
+        if t5 > 0:
+            return hairpin[pos - t5:pos]
+        elif t5 < 0:
+            return hairpin[pos:pos + t5].lower()
+    return "0"
+
+def variant_to_3p(hairpin, pos, variant):
+    """from a sequence and a end position get the nts
+       +/- indicated by variants:
+           AAATTTT, 3, -1
+           return: A
+       pos option is 0-base-index
+    """
+    pos = pos[1]
+    t3 = [v for v in variant.split(",") if v.startswith("iso_3p")]
+    if t3:
+        t3 = int(t3[0].split(":")[-1][-1])
+        if t3 > 0:
+            return hairpin[pos:pos + t3]
+        elif t3 < 0:
+            return hairpin[pos - t3:pos].lower()
+    return "0"
+
+def variant_to_add(read, variant):
+    """from a sequence and a end position get the nts
+       +/- indicated by variants:
+           AAATTTT, 3, 2
+           return: TT
+       pos option is 0-base-index
+       variant is always positive
+    """
+    add = [v for v in variant.split(",") if v.startswith("iso_add")]
+    if add:
+        add = int(add[0].split(":")[-1][-1]) * -1
+        return read[add:]
+    return "0"

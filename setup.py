@@ -3,14 +3,11 @@
 import os
 from setuptools import setup, find_packages
 
-version = '0.3.6a'
+version = '0.3.7a'
 
 def readme():
     with open('README.md') as f:
         return f.read()
-
-# with open("reqs.txt", "r") as f:
-#     install_requires = [x.strip() for x in f.readlines() if not x.startswith("#")]
 
 def write_version_py():
     version_py = os.path.join(os.path.dirname(__file__), 'mirtop',
@@ -20,6 +17,7 @@ def write_version_py():
 
 
 write_version_py()
+
 setup(name='mirtop',
       version=version,
       description='Small RNA-seq annotation',
