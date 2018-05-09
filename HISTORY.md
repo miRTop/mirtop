@@ -1,5 +1,6 @@
 - 0.3.*a
 
+ * Allow extra attributes for isomir-sea as well.
  * Allow extra attributes to show the nts
    that change in each isomiR type.
  * Fix Expression attrb when join gff files.Thanks @AlisR.

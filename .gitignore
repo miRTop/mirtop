@@ -1,7 +1,11 @@
 # data
 *res*
 *test_out_mirs_fasta*
+*test_out*
 *bam
+
+# instalation
+mirtop/version.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

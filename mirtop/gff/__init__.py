@@ -38,7 +38,7 @@ def reader(args):
         elif args.format == "prost":
             reads = prost.read_file(fn, precursors, database, args.gtf)
         elif args.format == "isomirsea":
-            out_dts[fn] = isomirsea.read_file(fn, database, args.gtf)
+            out_dts[fn] = isomirsea.read_file(fn, database, args)
         if args.format not in ["isomirsea"]:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample, args)

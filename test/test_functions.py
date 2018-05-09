@@ -1,4 +1,5 @@
-"""This directory is setup with configurations to run the main functional test.
+"""
+This directory is setup with configurations to run the main functional test.
 
 Inspired in bcbio-nextgen code
 """
@@ -14,7 +15,7 @@ from nose import SkipTest
 from nose.plugins.attrib import attr
 import yaml
 
-def annotate(fn, read_file):
+def annotate(fn, read_file, load = False):
     import argparse
     args = argparse.Namespace()
     args.hairpin = "data/examples/annotate/hairpin.fa"
@@ -29,10 +30,13 @@ def annotate(fn, read_file):
     args.matures = matures
     from mirtop.mirna import annotate
     from mirtop.gff import body
-    reads = read_file(fn, precursors)
+    if not load:
+        reads = read_file(fn, precursors)
+    else:
+        reads  = read_file
     ann = annotate.annotate(reads, matures, precursors)
     body = body.create(ann, "miRBase21", "Example", args)
-
+    return body
 
 
 class FunctionsTest(unittest.TestCase):
@@ -187,46 +191,32 @@ class FunctionsTest(unittest.TestCase):
         if res:
             raise ValueError("Wrong alignment for test 8 %s" % res)
 
-
     @attr(alignment=True)
     def test_alignment(self):
         """testing alignments function"""
-        from mirtop.libs import logger
-        logger.initialize_logger("test", True, True)
-        logger = logger.getLogger(__name__)
-        from mirtop.mirna import fasta, mapper
-        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
-        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
-        # matures = mirtop.mirna.read_mature("data/examples/annotate/mirnas.gff", "hsa")
-        def annotate(fn, precursors, matures):
-            from mirtop.bam import bam
-            from mirtop.gff import body
-            from mirtop.mirna import annotate
-            reads = bam.read_bam(fn, precursors)
-            ann = annotate.annotate(reads, matures, precursors)
-            # gff = body.create(ann, "miRBase21", "example")
+        from mirtop.bam import bam
         print "\nlast1D\n"
-        annotate("data/aligments/let7-last1D.sam", precursors, matures)
+        print annotate("data/aligments/let7-last1D.sam", bam.read_bam)
         #mirna TGAGGTAGTAGGTTGTATAGTT
         #seq   AGAGGTAGTAGGTTGTA
         print "\n1D\n"
-        annotate("data/aligments/let7-1D.sam", precursors, matures)
+        print annotate("data/aligments/let7-1D.sam", bam.read_bam)
         #mirna TGAGGTAG-TAGGTTGTATAGTT
         #seq   TGAGGTAGGTAGGTTGTATAGTTA
         print "\nlast7M1I\n"
-        annotate("data/aligments/let7-last7M1I.sam", precursors, matures)
+        print annotate("data/aligments/let7-last7M1I.sam", bam.read_bam)
         #mirna TGAGGTAGTAGGTTGTATAGTT
         #seq   TGAGGTAGTAGGTTGTA-AGT
         print "\nmiddle1D\n"
-        annotate("data/aligments/let7-middle1D.sam", precursors, matures)
+        print annotate("data/aligments/let7-middle1D.sam", bam.read_bam)
         #mirna TGAGGTAGTAGGTTGTATAGTT
         #seq   TGAGGTAGTAGGTTGTATAGTT
         print "\nperfect\n"
-        annotate("data/aligments/let7-perfect.sam", precursors, matures)
+        print annotate("data/aligments/let7-perfect.sam", bam.read_bam)
         #mirna TGAGGTAGTAGGTTGTATAGTT
         #seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
         print "\ntriming\n"
-        annotate ("data/aligments/let7-triming.sam", precursors, matures)
+        print annotate("data/aligments/let7-triming.sam", bam.read_bam)
 
     @attr(seqbuster=True)
     def test_seqbuster(self):
@@ -247,36 +237,20 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.importer import srnabench
-        print "\nsRNAbench\n"
         annotate("data/examples/srnabench", srnabench.read_file)
 
     @attr(prost=True)
     def test_prost(self):
         """testing reading prost files function"""
-        import argparse
-        args = argparse.Namespace()
-        args.hairpin = "data/examples/annotate/hairpin.fa"
-        args.sps = "hsa"
-        args.gtf = "data/examples/annotate/hsa.gff3"
-        args.add_extra = True
-        args.out_format = "gtf"
-
         from mirtop.libs import logger
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
-        from mirtop.mirna import fasta, mapper
+        from mirtop.mirna import fasta
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
-        args.precursors = precursors
-        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
-        args.matures = matures
         fn = "data/examples/prost/prost.example.txt"
         from mirtop.importer import prost
         reads = prost.read_file(fn, precursors, "miRBasev21","data/examples/annotate/hsa.gff3")
-        from mirtop.mirna import annotate
-        from mirtop.gff import body
-        ann = annotate.annotate(reads, matures, precursors)
-        body = body.create(ann, "miRBase21", "Example", args)
-        return True
+        annotate("data/example/prost/prost.example.txt", reads, True)
 
     @attr(gff=True)
     def test_gff(self):

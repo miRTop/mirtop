@@ -136,6 +136,27 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print " ".join(clcode)
             subprocess.check_call(clcode)
 
+
+    @attr(complete=True)
+    @attr(cmd_isomirsea=True)
+    def test_srnaseq_annotation_isomirsea(self):
+        """Run isomirsea analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff",
+                      "--format", "isomirsea",
+                      "--sps", "hsa",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/isomir-sea/tagMir-all.gff"]
+            print ""
+            print " ".join(clcode)
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
+
     @attr(complete=True)
     @attr(stats_cmd=True)
     def test_srnaseq_stats(self):

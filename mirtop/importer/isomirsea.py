@@ -14,7 +14,7 @@ from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 from mirtop.mirna import mapper
 from mirtop.mirna.realign import isomir, hits, expand_cigar, make_id
-from mirtop.gff.body import read_attributes
+from mirtop.gff.body import read_attributes, paste_columns, variant_with_nt, read_gff_line
 from mirtop.bam import filter
 from mirtop.importer.prost import genomic2transcript
 
@@ -24,10 +24,12 @@ def header():
     h = ""
     return h
 
-def read_file(fn, database, gtf):
+def read_file(fn, database, args):
     """
     read bam file and perform realignment of hits
     """
+    gtf = args.gtf
+    sep = " " if args.out_format == "gtf" else "="
     map_mir = mapper.read_gtf_to_mirna(gtf)
     reads = defaultdict(dict)
     reads_in = 0
@@ -52,7 +54,7 @@ def read_file(fn, database, gtf):
             cigar = attr['CI'].replace("U", "T")
             idu = make_id(query_sequence)
             isoformat = cigar2variants(cigar, query_sequence, attr['ISO'])
-            logger.debug("\nSOMIRSEA::NEW::query: {query_sequence}\n"
+            logger.debug("\nISOMIRSEA::NEW::query: {query_sequence}\n"
                          "  precursor {chrom}\n"
                          "  name: {query_name}\n"
                          "  idu: {idu}\n"
@@ -74,12 +76,17 @@ def read_file(fn, database, gtf):
             end = start + len(query_sequence)
             hit = hits[idu]
             attrb = ("Read {query_sequence}; UID {idu}; Name {mirName}; Parent {preName}; Variant {isoformat}; Isocode {isotag}; Cigar {cigar}; Expression {counts}; Filter {Filter}; Hits {hit};").format(**locals())
-            res = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+            line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+            if args.add_extra:
+                extra = variant_with_nt(line, args.precursors, args.matures)
+                line = "%s Changes %s;" % (line, extra)
+
+            line = paste_columns(read_gff_line(line), sep = sep)
             if start not in reads[chrom]:
                 reads[chrom][start] = []
             if Filter == "Pass":
                 reads_in += 1
-                reads[chrom][start].append([idu, chrom, counts, sample, res])
+                reads[chrom][start].append([idu, chrom, counts, sample, line])
 
     logger.info("Hits: %s" % reads_in)
     return reads
