@@ -307,10 +307,12 @@ def align_from_variants(sequence, mature, variants):
     var_dict = dict(zip(k, v))
     logger.debug("realign::align_from_variants::mature %s" % mature)
     logger.debug("realign::align_from_variants::variants %s" % variants)
-    snp = [v for v in variants.split(",") if v.find("snp") > -1]
+    # snp = [v for v in variants.split(",") if v.find("snp") > -1]
+    snp = ["iso_snp" for v in variants.split(",") if v.find("snp") > -1]
+    fix_5p = 4
     if "iso_5p" in k:
         fix_5p = 4 - var_dict["iso_5p"]
-        mature = mature[fix_5p:]
+    mature = mature[fix_5p:]
     if "iso_add" in k:
         sequence = sequence[:-1 * var_dict["iso_add"]]
     if "iso_3p" in k and var_dict["iso_3p"] > 0:
@@ -318,24 +320,26 @@ def align_from_variants(sequence, mature, variants):
     logger.debug("realign::align_from_variants::snp %s" % snp)
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
-    for pos in range(0, len(sequence)):
-        if sequence[pos] != mature[pos]:
-            if mature[pos] == "N":
+    for p in range(0, len(sequence)):
+        if sequence[p] != mature[p]:
+            if mature[p] == "N":
                 continue
             value = ""
-            if pos > 1 and pos < 8:
-                value = "iso_snp_seed"
-            elif pos == 8:
-                value = "iso_snp_central_offset"
-            elif pos > 8 and pos < 13:
-                value = "iso_snp_central"
-            elif pos > 12 and pos < 18:
-                value = "iso_snp_central_supp"
-            else:
-                value = "iso_snp"
-            logger.debug("realign::align_from_variants::value %s" % value)
+            pos = p + 1
+            value = "iso_snp"
+            #if pos > 1 and pos < 8:
+            #    value = "iso_snp_seed"
+            #elif pos == 8:
+            #    value = "iso_snp_central_offset"
+            #elif pos > 8 and pos < 13:
+            #    value = "iso_snp_central"
+            #elif pos > 12 and pos < 18:
+            #    value = "iso_snp_central_supp"
+            #else:
+            #    value = "iso_snp"
+            logger.debug("realign::align_from_variants::value %s at %s" % (value, pos))
             if value in snp:
-                snps.append([pos, sequence[pos], mature[pos]])
+                snps.append([pos, sequence[p], mature[p]])
     logger.debug("realign::align_from_variants::snps %s" % snps)
     return snps
 
@@ -347,12 +351,13 @@ def variant_to_5p(hairpin, pos, variant):
        pos option is 0-base-index
     """
     pos = pos[0]
-    t5 = [v for v in variant.split(",") if v.startswith("iso_5p")]
-    if t5:
-        t5 = int(t5[0].split(":")[-1][-1])
-        if t5 > 0:
-            return hairpin[pos - t5:pos]
-        elif t5 < 0:
+    iso_t5 = [v for v in variant.split(",") if v.startswith("iso_5p")]
+    if iso_t5:
+        t5 = int(iso_t5[0].split(":")[-1][-1])
+        direction_t5 = int(iso_t5[0].split(":")[-1])
+        if direction_t5 > 0:
+            return hairpin[pos - t5 + 1:pos + 1]
+        elif direction_t5 < 0:
             return hairpin[pos:pos + t5].lower()
     return "0"
 
@@ -364,13 +369,14 @@ def variant_to_3p(hairpin, pos, variant):
        pos option is 0-base-index
     """
     pos = pos[1]
-    t3 = [v for v in variant.split(",") if v.startswith("iso_3p")]
-    if t3:
-        t3 = int(t3[0].split(":")[-1][-1])
-        if t3 > 0:
+    iso_t3 = [v for v in variant.split(",") if v.startswith("iso_3p")]
+    if iso_t3:
+        t3 = int(iso_t3[0].split(":")[-1][-1])
+        direction_t3 = int(iso_t3[0].split(":")[-1])
+        if direction_t3 > 0:
             return hairpin[pos:pos + t3]
-        elif t3 < 0:
-            return hairpin[pos - t3:pos].lower()
+        elif direction_t3 < 0:
+            return hairpin[pos - t3 + 1:pos + 1].lower()
     return "0"
 
 def variant_to_add(read, variant):

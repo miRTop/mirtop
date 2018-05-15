@@ -285,14 +285,15 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test counts", True, True)
         logger = logger.getLogger(__name__)
 
-        counts_params = ['--gff', 'data/examples/gff/2samples.gff', '--out', 'data/examples/gff/']
-
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--gff")
-        parser.add_argument("--out")
-
-        args = parser.parse_args(counts_params)
+        args = argparse.Namespace()
+        args.hairpin = "data/examples/annotate/hairpin.fa"
+        args.sps = "hsa"
+        args.gtf = "data/examples/annotate/hsa.gff3"
+        args.gff = 'data/examples/gff/2samples.gff'
+        args.out = 'data/examples/gff'
+        args.add_extra = True
         convert_gff_counts(args)
+        os.remove(os.path.join(args.out, "expression_counts.tsv"))
 
         return True
 

@@ -162,7 +162,7 @@ def variant_with_nt(line, precursors, matures):
     mm = align_from_variants(read,
                              mature_sequence,
                              attr["Variant"])
-    if len(mm) > 1:
+    if len(mm) > 0:
         mm = "".join(["".join(map(str, m)) for m in mm])
     else:
         mm = "0"
