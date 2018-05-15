@@ -40,12 +40,13 @@ def convert_gff_counts(args):
             for samples_line in gff_file:
                 if samples_line.startswith("## COLDATA:"):
                     samples = "\t".join(samples_line.strip().split(" ")[2].split(","))
-                    header = "\t".join(['UID','miRNA', 'Variant', variant_header, samples,"\n"])
+                    header = "\t".join(['UID', 'Read', 'miRNA', 'Variant', variant_header, samples,"\n"])
                     outh.write(header)
                     break
 
             for mirna_line in gff_file:
                 mirna_values = read_gff_line(mirna_line)
+                Read = mirna_values["attrb"]["Read"]
                 UID = mirna_values["attrb"]["UID"]
                 mirna = mirna_values["attrb"]["Name"]
                 variant = mirna_values["attrb"]["Variant"]
@@ -55,7 +56,7 @@ def convert_gff_counts(args):
                     extra = variant_with_nt(mirna_line, precursors, matures)
                     logger.debug(extra)
                     cols_variants = "\t".join([cols_variants, _expand(extra, True)])
-                summary = "\t".join([UID, mirna, cols_variants, expression,"\n"])
+                summary = "\t".join([UID, Read,  mirna, cols_variants, expression,"\n"])
                 logger.debug(summary)
                 outh.write(summary)
 
@@ -71,7 +72,7 @@ def _expand(variant, nts = False):
     for v in variant.split(","):
         if v.find(":") > 0:
             isomir[v.split(":")[0]] = v.split(":")[1]
-        else:
+        elif v.find("snp") > 0:
             snp_var.append(1)
 
     if "iso_5p" in isomir:
@@ -96,5 +97,4 @@ def _expand(variant, nts = False):
         list_variant.append(snp)
     return "\t".join(map(str, list_variant))
 
-#convert_gff_counts("/Users/shruthi/Desktop/mirtop/data/examples/gff/2samples.gff","/Users/shruthi/Desktop/outfile.txt")
 

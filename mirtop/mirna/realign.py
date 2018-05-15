@@ -356,7 +356,7 @@ def variant_to_5p(hairpin, pos, variant):
         t5 = int(iso_t5[0].split(":")[-1][-1])
         direction_t5 = int(iso_t5[0].split(":")[-1])
         if direction_t5 > 0:
-            return hairpin[pos - t5 + 1:pos + 1]
+            return hairpin[pos - t5:pos]
         elif direction_t5 < 0:
             return hairpin[pos:pos + t5].lower()
     return "0"
