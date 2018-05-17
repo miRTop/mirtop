@@ -65,7 +65,7 @@ def add_subparser_gff(subparsers):
     parser.add_argument("files", nargs="*", help="Bam files.")
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
-    parser.add_argument("--sps", required=1,
+    parser.add_argument("--sps",
                         help="species")
     parser.add_argument("--hairpin", help="hairpin.fa")
     parser.add_argument("--gtf", help="gtf/gff file with precursor and mature position to genome.")
@@ -148,7 +148,7 @@ def add_subparser_counts(subparsers):
     parser.add_argument("--add-extra", help="Add extra attributes to gff", action="store_true")
     parser.add_argument("--hairpin", help="hairpin.fa")
     parser.add_argument("--gtf", help="gtf/gff file with precursor and mature position to genome.")
-    parser.add_argument("--sps", required=1,
+    parser.add_argument("--sps",
                         help="species")
     parser = _add_debug_option(parser)
     return parser

@@ -20,10 +20,14 @@ def read_precursor(precursor, sps):
             if line.startswith(">"):
                 if name in hairpin:
                     hairpin[name] = hairpin[name] + "NNNNNNNNNNNN"
-                name = line.strip().replace(">", " ").split()[0]
+                if not sps or line.find(sps) > -1:
+                    name = line.strip().replace(">", " ").split()[0]
+                else:
+                    name = None
                 logger.debug(name)
-            else:
+            elif name:
                 hairpin[name] += line.strip().replace("U", "T")
                 logger.debug(hairpin[name])
-        hairpin[name] = hairpin[name] + "NNNNNNNNNNNN"
+        if name:
+            hairpin[name] = hairpin[name] + "NNNNNNNNNNNN"
     return hairpin

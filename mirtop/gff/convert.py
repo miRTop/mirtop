@@ -20,13 +20,14 @@ def convert_gff_counts(args):
 	the format : UID miRNA Variant Sample1 Sample2 ... Sample N
 
 	"""
-        variant_header = "\t".join(['iso_5p', 'iso_3p',
+        sep = "\t"
+        variant_header = sep.join(['iso_5p', 'iso_3p',
                                     'iso_add', 'iso_snp'])
         if args.add_extra:
             database = mapper.guess_database(args.gtf)
             precursors = fasta.read_precursor(args.hairpin, args.sps)
             matures = mapper.read_gtf_to_precursor(args.gtf)
-            variant_header = "\t".join([variant_header,
+            variant_header = sep.join([variant_header,
                                         'iso_5p_nt', 'iso_3p_nt',
                                         'iso_add_nt', 'iso_snp_nt'])
 
@@ -39,9 +40,9 @@ def convert_gff_counts(args):
 
             for samples_line in gff_file:
                 if samples_line.startswith("## COLDATA:"):
-                    samples = "\t".join(samples_line.strip().split(" ")[2].split(","))
-                    header = "\t".join(['UID', 'Read', 'miRNA', 'Variant', variant_header, samples,"\n"])
-                    outh.write(header)
+                    samples = sep.join(samples_line.strip().split("COLDATA:")[1].strip().split(","))
+                    header = sep.join(['UID', 'Read', 'miRNA', 'Variant', variant_header, samples])
+                    print >>outh, header
                     break
 
             for mirna_line in gff_file:
@@ -50,15 +51,15 @@ def convert_gff_counts(args):
                 UID = mirna_values["attrb"]["UID"]
                 mirna = mirna_values["attrb"]["Name"]
                 variant = mirna_values["attrb"]["Variant"]
-                expression = "\t".join(mirna_values["attrb"]["Expression"].split(","))
-                cols_variants = _expand(variant)
+                expression = sep.join(mirna_values["attrb"]["Expression"].strip().split(","))
+                cols_variants = sep.join(_expand(variant))
                 if args.add_extra:
-                    extra = variant_with_nt(mirna_line, precursors, matures)
+                    extra = sep.join(variant_with_nt(mirna_line, precursors, matures))
                     logger.debug(extra)
-                    cols_variants = "\t".join([cols_variants, _expand(extra, True)])
-                summary = "\t".join([UID, Read,  mirna, cols_variants, expression,"\n"])
+                    cols_variants = sep.join([cols_variants] + _expand(extra, True))
+                summary = sep.join([UID, Read,  mirna, variant, cols_variants, expression])
                 logger.debug(summary)
-                outh.write(summary)
+                print >>outh, summary
 
 	gff_file.close()
         logger.info("Output file is at %s" % out_file)
@@ -95,6 +96,6 @@ def _expand(variant, nts = False):
     else:
         snp = sum(snp_var)
         list_variant.append(snp)
-    return "\t".join(map(str, list_variant))
+    return map(str, list_variant)
 
 

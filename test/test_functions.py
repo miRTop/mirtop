@@ -60,6 +60,11 @@ class FunctionsTest(unittest.TestCase):
         if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 5:
             raise ValueError("GFF is not loaded correctly.")
         fasta_precursor = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        print fasta_precursor
+        fasta_precursor2 = fasta.read_precursor("data/examples/annotate/hairpin.fa", None)
+        print fasta_precursor2
+        if fasta_precursor != fasta_precursor2:
+            raise ValueError("species value generates two different dicts.")
         # read data/aligments/let7-perfect.bam
         return True
 
