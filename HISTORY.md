@@ -1,5 +1,7 @@
 - 0.3.*a
-
+ 
+ * Fix separators in counts cmd.
+ * Make --sps optional.
  * Add synthetic data with known isomiRs to data set.
  * Allow extra columns when converting to counts TSV file.
  * Allow extra attributes for isomir-sea as well.
