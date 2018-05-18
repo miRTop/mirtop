@@ -54,8 +54,8 @@ def convert_gff_counts(args):
                 expression = sep.join(mirna_values["attrb"]["Expression"].strip().split(","))
                 cols_variants = sep.join(_expand(variant))
                 if args.add_extra:
-                    extra = sep.join(variant_with_nt(mirna_line, precursors, matures))
-                    logger.debug(extra)
+                    extra = variant_with_nt(mirna_line, precursors, matures)
+                    logger.debug("COUNTS::EXTRA:%s" % extra)
                     cols_variants = sep.join([cols_variants] + _expand(extra, True))
                 summary = sep.join([UID, Read,  mirna, variant, cols_variants, expression])
                 logger.debug(summary)

@@ -294,8 +294,8 @@ class FunctionsTest(unittest.TestCase):
         args.hairpin = "data/examples/annotate/hairpin.fa"
         args.sps = "hsa"
         args.gtf = "data/examples/annotate/hsa.gff3"
-        args.gff = 'data/examples/gff/2samples.gff'
-        args.out = 'data/examples/gff'
+        args.gff = 'data/examples/synthetic/let7a-5p.gtf'
+        args.out = 'data/examples/synthetic'
         args.add_extra = True
         convert_gff_counts(args)
         os.remove(os.path.join(args.out, "expression_counts.tsv"))
