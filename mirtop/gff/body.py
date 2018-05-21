@@ -1,9 +1,29 @@
+import os
+
 from collections import defaultdict, OrderedDict
 from mirtop.mirna.realign import get_mature_sequence, align_from_variants, variant_to_5p, variant_to_3p, variant_to_add, read_id
 from mirtop.mirna import fasta, mapper
+from mirtop.gff.header import read_samples
 
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
+
+def read(fn, database, args):
+    """Read GTF/GFF file and load into annotate, chrom counts, sample, line"""
+    samples = read_samples(fn)
+    lines = []
+    seen = set()
+    with open(fn) as inh:
+        for line in inh:
+            if line.startswith("#"):
+                continue
+            cols = read_gff_line(line)
+            lines[cols['chrom'], cols['start']] = [cols['attrb']['UID'],
+                                                   cols['chrom'],
+                                                   cols['attrb']['Expression'].strip().split(","),
+                                                   samples,
+                                                   line]
+    return {os.path.basename(fn): lines}
 
 def create(reads, database, sample, args):
     """Read https://github.com/miRTop/mirtop/issues/9"""

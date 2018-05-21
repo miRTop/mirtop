@@ -20,7 +20,7 @@ from mirtop.importer.prost import genomic2transcript
 
 logger = mylog.getLogger(__name__)
 
-def header():
+def header(fn):
     h = ""
     return h
 
@@ -33,7 +33,8 @@ def read_file(fn, database, args):
     map_mir = mapper.read_gtf_to_mirna(gtf)
     reads = defaultdict(dict)
     reads_in = 0
-    sample = os.path.splitext(os.path.basename(gtf))[0]
+    sample = os.path.splitext(os.path.basename(fn))[0]
+    logger.debug("ISOMIRSEA::SAMPLE::%s" % sample)
     hits = _get_hits(fn)
     with open(fn) as handle:
         for line in handle:

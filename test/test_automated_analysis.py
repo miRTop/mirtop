@@ -119,7 +119,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
-    @attr(annotate=True)
+    @attr(cmd_seqbuster=True)
     def test_srnaseq_annotation_seqbuster(self):
         """Run miraligner analysis
         """
@@ -150,15 +150,15 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "-o", "test_out_mirs",
-                      "../../data/examples/isomir-sea/tagMir-all.gff"]
+                      "../../data/examples/isomir-sea/tagMir-all.gff",
+                      "-d", "-vd"]
             print ""
             print " ".join(clcode)
             subprocess.check_call(clcode)
 
-    @attr(complete=True)
 
     @attr(complete=True)
-    @attr(stats_cmd=True)
+    @attr(cmd_stats=True)
     def test_srnaseq_stats(self):
         """Run stats analysis
         """
@@ -171,4 +171,21 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print " ".join(clcode)
             subprocess.check_call(clcode)
 
-
+    @attr(complete=True)
+    @attr(cmd_merge=True)
+    def test_merge_bam(self):
+        """
+        Run collapse two samples
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff",
+                      "--sps", "hsa", "--add-extra",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/merge/samples1.sam",
+                      "../../data/merge/samples2.sam"]
+            print ""
+            print " ".join(clcode)
+            subprocess.check_call(clcode)
