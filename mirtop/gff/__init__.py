@@ -25,9 +25,10 @@ def reader(args):
     # print message if numbers mismatch
     out_dts = dict()
     for fn in args.files:
-        sample = op.splitext(op.basename(fn))[0]
-        samples.append(sample)
-        fn_out = op.join(args.out, sample + ".%s" % args.out_format)
+        if args.format != "gff":
+            sample = op.splitext(op.basename(fn))[0]
+            samples.append(sample)
+            fn_out = op.join(args.out, sample + ".%s" % args.out_format)
         if args.format == "BAM":
             reads = _read_bam(fn, precursors)
         elif args.format == "seqbuster":
@@ -39,6 +40,10 @@ def reader(args):
             reads = prost.read_file(fn, precursors, database, args.gtf)
         elif args.format == "isomirsea":
             out_dts[fn] = isomirsea.read_file(fn, database, args)
+        elif args.format == "gff":
+            samples.extend(header.read_samples(fn))
+            out_dts[fn] = body.read(fn, args)
+            continue
         if args.format not in ["isomirsea"]:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample, args)

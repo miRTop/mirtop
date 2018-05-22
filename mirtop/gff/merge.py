@@ -10,7 +10,7 @@ def merge(dts, samples):
     """
     logger.debug("MERGE::SAMPLES::given %s" % samples)
     all_data = defaultdict(dict)
-    all_lines = defaultdict()
+    all_lines = defaultdict(list)
     merged_lines = defaultdict(dict)
     for fn in dts:
         for m in dts[fn]:
@@ -20,14 +20,16 @@ def merge(dts, samples):
                     logger.debug("MERGE::SAMPLES::counts %s" % [hit[3], hit[2]])
                     formatted_counts = _format_samples_counts(hit[3], hit[2])
                     logger.debug("MERGE::SAMPLES::fixed %s" % formatted_counts)
-                    for s in formatted_counts:
-                        all_data[idu][s] = formatted_counts[s] # get the expression of the sample from line
+                    for sample in formatted_counts:
+                        all_data[idu][sample] = formatted_counts[sample] # get the expression of the sample from line
                     all_lines[idu] = hit[4] # get the line
     for idu in all_data:
+        line = all_lines[idu]
         expression = _convert_to_string(all_data[idu], samples)
-        if _start(all_lines[idu]) not in merged_lines[_chrom(all_lines[idu])]:
-            merged_lines[_chrom(all_lines[idu])][_start(all_lines[idu])] = []
-        merged_lines[_chrom(all_lines[idu])][_start(all_lines[idu])].append([idu, "", "", "", _fix(all_lines[idu], expression)])
+        if _start(line) not in merged_lines[_chrom(line)]:
+            merged_lines[_chrom(line)][_start(line)] = []
+        merged_lines[_chrom(line)][_start(line)].append([idu, "", "", "",
+                                                             _fix(line, expression)])
     return merged_lines
 
 def _format_samples_counts(samples, expression):

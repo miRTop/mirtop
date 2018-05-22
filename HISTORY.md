@@ -1,5 +1,6 @@
 - 0.3.*a
- 
+
+ * Skip lines with non-valid UID or miRNAs not in reference at counts cmd.
  * Fix separators in counts cmd.
  * Make --sps optional.
  * Add synthetic data with known isomiRs to data set.

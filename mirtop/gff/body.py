@@ -8,22 +8,27 @@ from mirtop.gff.header import read_samples
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
-def read(fn, database, args):
+def read(fn, args):
     """Read GTF/GFF file and load into annotate, chrom counts, sample, line"""
     samples = read_samples(fn)
-    lines = []
+    lines = defaultdict(dict)
     seen = set()
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
                 continue
             cols = read_gff_line(line)
-            lines[cols['chrom'], cols['start']] = [cols['attrb']['UID'],
+            if cols['start'] not in lines[cols['chrom']]:
+                lines[cols['chrom']][cols['start']] = []
+            uid = "%s-%s-%s" % (cols['attrb']['UID'],
+                                cols['attrb']['Variant'],
+                                cols['attrb']['Name'])
+            lines[cols['chrom']][cols['start']].append([uid,
                                                    cols['chrom'],
                                                    cols['attrb']['Expression'].strip().split(","),
                                                    samples,
-                                                   line]
-    return {os.path.basename(fn): lines}
+                                                   line.strip()])
+    return lines
 
 def create(reads, database, sample, args):
     """Read https://github.com/miRTop/mirtop/issues/9"""

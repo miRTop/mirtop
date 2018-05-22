@@ -7,6 +7,7 @@ import pandas as pd
 import pysam
 
 from mirtop.mirna import fasta, mapper
+from mirtop.mirna.realign import read_id
 from mirtop.gff.body import read_gff_line, variant_with_nt
 from mirtop.libs import do
 from mirtop.libs.utils import file_exists
@@ -36,6 +37,9 @@ def convert_gff_counts(args):
 
 	gff_file = open(args.gff, 'r')
 	out_file = op.join(args.out, "expression_counts.tsv")
+        missing_parent = 0
+        missing_mirna = 0
+        unvalid_uid = 0
         with open(out_file, 'w') as outh:
 
             for samples_line in gff_file:
@@ -50,7 +54,19 @@ def convert_gff_counts(args):
                 Read = mirna_values["attrb"]["Read"]
                 UID = mirna_values["attrb"]["UID"]
                 mirna = mirna_values["attrb"]["Name"]
+                parent = mirna_values["attrb"]["Parent"]
                 variant = mirna_values["attrb"]["Variant"]
+                try:
+                    read_id(UID)
+                except KeyError:
+                    unvalid_uid += 1
+                    continue
+                if parent not in precursors:
+                    missing_parent += 1
+                    continue
+                if mirna not in matures[parent]:
+                    missing_mirna += 1
+                    continue
                 expression = sep.join(mirna_values["attrb"]["Expression"].strip().split(","))
                 cols_variants = sep.join(_expand(variant))
                 if args.add_extra:
@@ -62,6 +78,9 @@ def convert_gff_counts(args):
                 print >>outh, summary
 
 	gff_file.close()
+        logger.info("Missing Parents in hairpin file: %s" % missing_parent)
+        logger.info("Missing MiRNAs in GFF file: %s" % missing_mirna)
+        logger.info("Non valid UID: %s" % unvalid_uid)
         logger.info("Output file is at %s" % out_file)
 
 
