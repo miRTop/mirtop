@@ -242,7 +242,7 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.importer import srnabench
-        annotate("data/examples/srnabench", srnabench.read_file)
+        # annotate("data/examples/srnabench", srnabench.read_file)
 
     @attr(prost=True)
     def test_prost(self):

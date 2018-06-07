@@ -16,6 +16,7 @@ def reader(args):
     sep = " " if args.out_format == "gtf" else "="
     samples = []
     database = mapper.guess_database(args.gtf)
+    args.database = database
     # hairpin, mirna = download_mirbase(args)
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     args.precursors = precursors
@@ -35,7 +36,7 @@ def reader(args):
             reads = seqbuster.read_file(fn, precursors)
             custom = seqbuster.header()
         elif args.format == "srnabench":
-            reads = srnabench.read_file(fn, precursors)
+            out_dts[fn] = srnabench.read_file(fn, args)
         elif args.format == "prost":
             reads = prost.read_file(fn, precursors, database, args.gtf)
         elif args.format == "isomirsea":
@@ -44,7 +45,7 @@ def reader(args):
             samples.extend(header.read_samples(fn))
             out_dts[fn] = body.read(fn, args)
             continue
-        if args.format not in ["isomirsea"]:
+        if args.format not in ["isomirsea", "srnabench"]:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample, args)
         h = header.create([sample], database, "")

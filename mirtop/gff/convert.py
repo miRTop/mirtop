@@ -61,16 +61,21 @@ def convert_gff_counts(args):
                 except KeyError:
                     unvalid_uid += 1
                     continue
-                if parent not in precursors:
-                    missing_parent += 1
-                    continue
-                if mirna not in matures[parent]:
-                    missing_mirna += 1
-                    continue
+                
                 expression = sep.join(mirna_values["attrb"]["Expression"].strip().split(","))
                 cols_variants = sep.join(_expand(variant))
+                logger.debug("COUNTS::Read:%s" % Read)
+                logger.debug("COUNTS::EXTRA:%s" % variant)
                 if args.add_extra:
+                    if parent not in precursors:
+                        missing_parent += 1
+                        continue
+                    if mirna not in matures[parent]:
+                        missing_mirna += 1
+                        continue
                     extra = variant_with_nt(mirna_line, precursors, matures)
+                    if extra == "Invalid":
+                        continue
                     logger.debug("COUNTS::EXTRA:%s" % extra)
                     cols_variants = sep.join([cols_variants] + _expand(extra, True))
                 summary = sep.join([UID, Read,  mirna, variant, cols_variants, expression])

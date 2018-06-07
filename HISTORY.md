@@ -1,5 +1,9 @@
 - 0.3.*a
 
+ * Only counts sequences with Filter == Pass during stats.
+ * Counts cmd add nucleotide information when --add-extra option is on.
+ * Fix error in stats that open the file in addition mode.
+ * Importer for sRNAbench just convert lines from input to GFF format.
  * Skip lines with non-valid UID or miRNAs not in reference at counts cmd.
  * Fix separators in counts cmd.
  * Make --sps optional.

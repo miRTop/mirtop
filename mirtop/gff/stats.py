@@ -28,7 +28,7 @@ def stats(args):
     df_final = pd.concat(out)
     outfn = os.path.join(args.out, "mirtop_stats.txt")
     if args.out != "tmp_mirtop":
-        with open(outfn, 'a') as outh:
+        with open(outfn, 'w') as outh:
             print >>outh, message_info
             df_final.to_csv(outh)
         logger.info("Stats saved at %s" % outfn)
@@ -54,10 +54,11 @@ def _calc_stats(fn):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = line.strip().split("\t")
             cols = read_gff_line(line)
             logger.debug("## STATS: attribute %s" % cols['attrb'])
             attr = cols['attrb']
+            if attr['Filter'] != "Pass":
+                continue
             if "-".join([attr['UID'], attr['Variant'], attr['Name']]) in seen:
                 continue
             seen.add("-".join([attr['UID'], attr['Variant'], attr['Name']]))
@@ -75,11 +76,13 @@ def _classify(srna_type, attr, samples):
     lines = []
     counts = dict(zip(samples, attr['Expression'].split(",")))
     for s in counts:
-        lines.append([srna_type, s, counts[s]])
+        if int(counts[s]) > 0:
+            lines.append([srna_type, s, counts[s]])
         if attr['Variant'].find("iso") == -1:
             continue
         for v in attr['Variant'].split(","):
-            lines.append([v.split(":")[0], s, counts[s]])
+            if int(counts[s]) > 0:
+                lines.append([v.split(":")[0], s, counts[s]])
     return lines
 
 def _summary(lines):

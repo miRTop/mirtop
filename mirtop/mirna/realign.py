@@ -301,10 +301,12 @@ def align_from_variants(sequence, mature, variants):
        and the variant GFF annotation:
             Get a list of substitutions
     """
+    init_log = "iso:%s -> %s\nref:%s" % (sequence, variants, mature)
     snps = []
     k = [v.split(":")[0] for v in variants.split(",") if v.find(":") > -1]
     v = [int(v.split(":")[1]) for v in variants.split(",") if v.find(":") > -1]
     var_dict = dict(zip(k, v))
+    logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
     logger.debug("realign::align_from_variants::variants %s" % variants)
     # snp = [v for v in variants.split(",") if v.find("snp") > -1]
@@ -320,6 +322,9 @@ def align_from_variants(sequence, mature, variants):
     logger.debug("realign::align_from_variants::snp %s" % snp)
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
+    if len(sequence) > len(mature):
+        logger.warning("Invalid isomiR definition:\n%s\niso:%s\nref:%s" % (init_log, sequence, mature))
+        return "Invalid"
     for p in range(0, len(sequence)):
         if sequence[p] != mature[p]:
             if mature[p] == "N":
