@@ -12,7 +12,7 @@ before_install:
 install:
 - export PATH=~/install/bin/:$PATH
 - conda install --yes ncurses -c conda-forge
-- conda install --yes -c bioconda bedtools samtools pip nose pysam pandas pyyaml pybedtools  biopython setuptools dateutil -q 
+- conda install --yes -c conda-forge -c bioconda bedtools samtools pip nose pysam pandas pyyaml pybedtools  biopython setuptools dateutil -q 
   # - conda install --yes -c bioconda htslib=1.3
 script:
 - python setup.py develop
