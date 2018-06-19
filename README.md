@@ -64,7 +64,7 @@ Read complete commands at: https://mirtop.readthedocs.org
 
 ```
 git clone mirtop
-cd mirtop/data/example/annotate
+cd mirtop/data/examples/annotate
 mirtop gff --sps hsa --hairpin hairpin.fa --gtf hsa.gff3 -o test_out sim_isomir.bam
 ```
 

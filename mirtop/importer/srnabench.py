@@ -169,7 +169,7 @@ def _translate(isomirs, description):
         if label.find("NucVar") > -1:
             for nt in description.split(","):
                 logger.debug("TRANSLATE::change:%s" % description)
-                if nt == "-":
+                if nt == "-" or nt == "NA":
                     return "notsure"
                 iso.extend(_iso_snp(int(nt.split(":")[0])))
         logger.debug("TRANSLATE::iso:%s" % iso)
