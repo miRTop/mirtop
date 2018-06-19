@@ -8,7 +8,6 @@ def parse_cl(in_args):
                 "stats": add_subparser_stats,
                 "compare": add_subparser_compare,
                 "target": add_subparser_target,
-                "join": add_subparser_join,
                 "simulator": add_subparser_simulator,
                 "counts": add_subparser_counts,
                 "export": add_subparser_export
@@ -37,13 +36,13 @@ def _add_debug_option(parser):
     parser.add_argument("-d", "--debug", action="store_true",
                         dest="debug", help="max verbosity mode", default=False)
     parser.add_argument("-vd", "--print_debug", action="store_true",
-                        help="print debug messageson terminal", default=False)
+                        help="print debug messages on terminal", default=False)
     return parser
 
 
 def add_subparser_stats(subparsers):
     parser = subparsers.add_parser("stats", help="show general stats for each sample.")
-    parser.add_argument("files", nargs="*", help="Bam files.")
+    parser.add_argument("files", nargs="*", help="GFF/GTF files.")
     parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
                         help="folder of output files")
     parser = _add_debug_option(parser)
@@ -68,7 +67,7 @@ def add_subparser_gff(subparsers):
     parser.add_argument("--sps",
                         help="species")
     parser.add_argument("--hairpin", help="hairpin.fa")
-    parser.add_argument("--gtf", help="gtf/gff file with precursor and mature position to genome.")
+    parser.add_argument("--gtf", help="GFF file with precursor and mature position to genome.")
     parser.add_argument("--format", help="Input format, default BAM file.",
                         choices=['BAM', 'seqbuster', 'srnabench', 'prost', 'isomirsea', 'gff'], default="BAM")
     parser.add_argument("--out-format", help="Supported formats: gff3 or gtf", default = "gtf")
@@ -79,33 +78,15 @@ def add_subparser_gff(subparsers):
 
 def add_subparser_export(subparsers):
     parser = subparsers.add_parser("export", help="export GFF into other format")
-    parser.add_argument("files", nargs="*", help="GFF files.", required = 1)
+    parser.add_argument("files", nargs="*", help="GFF files.")
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
-    parser.add_argument("--sps", required=1,
+    parser.add_argument("--sps",
                         help="species")
     parser.add_argument("--hairpin", help="hairpin.fa")
     parser.add_argument("--gtf", help="gtf file with precursor and mature position to genome.")
     parser.add_argument("--format", help="Output format",
                         choices=['seqbuster'], default="seqbuster")
-    parser = _add_debug_option(parser)
-    return parser
-
-
-def add_subparser_join(subparsers):
-    parser = subparsers.add_parser("join", help="join data")
-    parser.add_argument("-f", "--fastq", dest="fastq", required=1,
-                         help="fastq file"),
-    parser.add_argument("-m", "--min", dest="minimum", default=1,
-                        type=int,
-                         help="Minimum number of counts required."
-                              "Not recomended > 1. Could bias downstream"
-                              "Analysis.")
-    parser.add_argument("-o", "--out",
-                         dest="out", help="output file", required=1)
-    parser = _add_debug_option(parser)
-    return parser
-
     parser = _add_debug_option(parser)
     return parser
 

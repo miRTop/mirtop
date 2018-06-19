@@ -208,3 +208,37 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print ""
             print " ".join(clcode)
             subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_export=True)
+    def test_export(self):
+        """
+        Run export command
+        """
+        with make_workdir():
+          clcode = ["mirtop",
+                    "export",
+                    "-o", "test_out_mirs",
+                    "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                    "--gtf", "../../data/examples/annotate/hsa.gff3",
+                    "../../data/examples/gff/correct_file.gff"]
+          print ""
+          print " ".join(clcode)
+          subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_count=True)
+    def test_count(self):
+        """
+        Run count command
+        """
+        with make_workdir():
+          clcode = ["mirtop",
+                    "count",
+                    "-o", "test_out_mirs",
+                    "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                    "--gtf", "../../data/examples/annotate/hsa.gff3",
+                    "../../data/examples/synthetic/let7a-5p.gtf"]
+          print ""
+          print " ".join(clcode)
+          subprocess.check_call(clcode)

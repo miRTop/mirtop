@@ -1,5 +1,6 @@
 - 0.3.*a
 
+ * Improve examples commands and test coverage.
  * Only counts sequences with Filter == Pass during stats.
  * Counts cmd add nucleotide information when --add-extra option is on.
  * Fix error in stats that open the file in addition mode.

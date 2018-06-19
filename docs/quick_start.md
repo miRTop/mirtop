@@ -64,6 +64,22 @@ Compare the sequences from two or more GFF files. The first one will be used as 
 
 ```
 cd mirtop/data
-mirtop stats -o test_out example/gff/correct_file.gff example/gff/alternative.gff
+mirtop compare -o test_out example/gff/correct_file.gff example/gff/alternative.gff
+```
+### Export file to isomiRs format
+
+To be compatible with [isomiRs](https://bioconductor.org/packages/release/bioc/html/isomiRs.html) bioconductor package use:
+
+```
+cd mirtop/data
+mirtop export -o test_out_mirs --hairpin examples/annotate/hairpin.fa --gtf examples/annotate/hsa.gff3 examples/gff/correct_file.gff                                   
 ```
 
+### Get count file
+
+This file it is useful to load into R as a matrix. It contains the minimal information about each sequence and the count data in columns for each samples.
+
+```
+cd mirtop/data
+mirtop count -o test_out_mirs --hairpin examples/annotate/hairpin.fa --gtf examples/annotate/hsa.gff3 examples/synthetic/let7a-5p.gtf                              
+```

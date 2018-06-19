@@ -40,8 +40,6 @@ def main(**kwargs):
     elif "export" in kwargs:
         logger.info("Run export of GFF into other format.")
         isomirs.convert(kwargs["args"])
-    elif "join" in kwargs["args"]:
-        logger.info("Not yet ready: This will join multiple GFF files.")
     elif "check" in kwargs["args"]:
         logger.info("Not yet ready: This will check GFF files.")
     elif "query" in kwargs["args"]:
