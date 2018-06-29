@@ -96,6 +96,9 @@ html_theme_options = {
     'travis_button': True,
     'fixed_sidebar': False,
     'github_button': True,
+    'travis_button': True,
+    'sidebar_collapse': True,
+    'codecov_button': True
 }
 
 
@@ -111,6 +114,7 @@ html_static_path = ['_static']
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
     '**': [
+        'about.html',
         'navigation.html',
         'searchbox.html',
         'relations.html',  # needs 'show_related': True theme option to display

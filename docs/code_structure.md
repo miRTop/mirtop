@@ -4,12 +4,12 @@
   * __bam.py__ 
     * `read_bam`: reads BAM files with pysamtools and store in a key - value object
   * __filter.py__
-    * `tune`: if option --clean is on, filter according generic rules
+    * `tune`: if option `--clean` is on, filter according generic rules
     * `clean_hits`: get the top hits
 * mirtop/gff
   * __init.py__ wraps the convertion process to GFF3
   * __body.py__ `create` will create the line according GFF format established.
-  * __header.py__ generate header
+  * __header.py__ generate header and read header section.
   * __check.py__ checks header and single lines to be valid according GFF format  (NOT IMPLEMENTED)
   * __stats.py__ GFF stats counting number of isomiR, their total and average expression
   * __query.py__ accept SQlite queries after option -q ""
