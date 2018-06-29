@@ -19,6 +19,15 @@ Cite
 
 http://mirtop.github.io
 
+Contributing
+------------
+
+Everybody is welcome to contribute, fork the `devel` branch and start working!
+
+If you are interesting in miRNA or small RNA analysis, you can jump into the incubator issue pages to propose/ask or say hi: 
+
+https://github.com/miRTop/incubator/issues
+
 About
 -----
 
