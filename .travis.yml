@@ -15,7 +15,7 @@ install:
 - conda install --yes -c conda-forge -c bioconda bedtools samtools pip nose pysam pandas dateutil pyyaml pybedtools  biopython setuptools codecov -q 
 script:
 - python setup.py develop
-- nosetests
+- nosetests --with-coverage
 after_success:
   - codecov
 deploy:
