@@ -7,7 +7,7 @@ import mirtop.libs.logger as mylog
 from mirtop.mirna import mapper
 from mirtop.mirna.realign import expand_cigar, make_id
 from mirtop.gff.body import read_attributes, paste_columns
-from mitop.gff.body import variant_with_nt, read_gff_line
+from mirtop.gff.body import variant_with_nt, read_gff_line
 
 logger = mylog.getLogger(__name__)
 
