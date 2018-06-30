@@ -69,11 +69,15 @@ def _add_subparser_gff(subparsers):
     parser.add_argument("--sps",
                         help="species")
     parser.add_argument("--hairpin", help="hairpin.fa")
-    parser.add_argument("--gtf", help="GFF file with precursor and mature position to genome.")
+    parser.add_argument("--gtf",
+                        help="GFF file with precursor and mature position to genome.")
     parser.add_argument("--format", help="Input format, default BAM file.",
-                        choices=['BAM', 'seqbuster', 'srnabench', 'prost', 'isomirsea', 'gff'], default="BAM")
-    parser.add_argument("--out-format", help="Supported formats: gff3 or gtf", default = "gtf")
-    parser.add_argument("--add-extra", help="Add extra attributes to gff", action="store_true")
+                        choices=['BAM', 'seqbuster', 'srnabench',
+                                 'prost', 'isomirsea', 'gff'], default="BAM")
+    parser.add_argument("--out-format", help="Supported formats: gff3 or gtf",
+                        choices = ["gff", "gft"], default="gff")
+    parser.add_argument("--add-extra", help="Add extra attributes to gff",
+                        action="store_true")
     parser = _add_debug_option(parser)
     return parser
 
@@ -135,4 +139,3 @@ def _add_subparser_counts(subparsers):
                         help="species")
     parser = _add_debug_option(parser)
     return parser
-

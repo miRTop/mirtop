@@ -14,7 +14,6 @@ import mirtop.libs.logger as mylog
 
 import time
 
-FILE_FORMAT = "gtf"
 
 def main(**kwargs):
     kwargs = parse_cl(sys.argv[1:])

@@ -4,18 +4,12 @@ This directory is setup with configurations to run the main functional test.
 Inspired in bcbio-nextgen code
 """
 import os
-import subprocess
 import unittest
-import shutil
-import contextlib
-import collections
-import functools
 
-from nose import SkipTest
 from nose.plugins.attrib import attr
-import yaml
 
-def annotate(fn, read_file, load = False):
+
+def annotate(fn, read_file, load=False, create=True):
     import argparse
     args = argparse.Namespace()
     args.hairpin = "data/examples/annotate/hairpin.fa"
@@ -28,14 +22,16 @@ def annotate(fn, read_file, load = False):
     matures = mapper.read_gtf_to_precursor(args.gtf)
     args.precursors = precursors
     args.matures = matures
+    args.database = mapper.guess_database(args.gtf)
     from mirtop.mirna import annotate
     from mirtop.gff import body
     if not load:
-        reads = read_file(fn, precursors)
+        reads = read_file(fn, args)
     else:
-        reads  = read_file
-    ann = annotate.annotate(reads, matures, precursors)
-    body = body.create(ann, "miRBase21", "Example", args)
+        reads = read_file
+    if create:
+        ann = annotate.annotate(reads, matures, precursors)
+        body = body.create(ann, "miRBase21", "Example", args)
     return body
 
 
@@ -70,7 +66,7 @@ class FunctionsTest(unittest.TestCase):
 
     @attr(read_genomic=True)
     def test_read_genomic(self):
-        from mirtop.mirna import mapper, fasta
+        from mirtop.mirna import mapper
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = mapper.read_gtf_to_mirna("data/examples/annotate/hsa.gff3")
@@ -91,7 +87,8 @@ class FunctionsTest(unittest.TestCase):
     def test_code(self):
         """testing code correction function"""
         from mirtop.mirna.realign import make_id, read_id
-        def _convert(s, test, reverse = False):
+
+        def _convert(s, test, reverse=False):
             code = read_id(s) if reverse else make_id(s)
             if code != test:
                 raise ValueError("%s didn't result on %s but in %s" % (s, test, code))
@@ -140,7 +137,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna.realign import reverse_complement
         print "Testing ATGC complement"
         if "GCAT" != reverse_complement("ATGC"):
-            logger.error("ATGC complement is not: %s" % reverse_complement("ATGC"))
+            raise ValueError("ATGC complement is not: %s" % reverse_complement("ATGC"))
 
     @attr(merge=True)
     def test_merge(self):
@@ -150,7 +147,7 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Chrom should be hsa-let-7a-5p.")
         if merge._start("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25") != "4":
             raise ValueError("Start should be 4.")
-        expression =merge._convert_to_string({'s': 1, 'x': 2}, ['s', 'x'])
+        expression = merge._convert_to_string({'s': 1, 'x': 2}, ['s', 'x'])
         print merge._fix("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\tRead hsa-let-7a-1_hsa-let-7a-5p_5:26_-1:-1_mut:null_add:null_x861; UID bhJJ5WJL2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:-1; Cigar 22M; Expression 861; Filter Pass; Hits 1;", expression)
         if expression != "1,2":
             raise ValueError("This is wrong: %s" % expression)
@@ -165,8 +162,8 @@ class FunctionsTest(unittest.TestCase):
         res = get_mature_sequence("GAAAATTTTTTTTTTTAAAAG", [5, 15])
         if res != "AAAATTTTTTTTTTTAAAA":
             raise ValueError("Results for GAAAATTTTTTTTTTTAAAAG was %s" % res)
-        mature =  get_mature_sequence(precursors["hsa-let-7a-1"],
-                                   matures["hsa-let-7a-1"]["hsa-let-7a-5p"])
+        mature = get_mature_sequence(precursors["hsa-let-7a-1"],
+                                     matures["hsa-let-7a-1"]["hsa-let-7a-5p"])
         if mature != "GGGATGAGGTAGTAGGTTGTATAGTTTTAG":
             raise ValueError("Results for hsa-let-7a-5p is %s" % mature)
 
@@ -242,7 +239,7 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.importer import srnabench
-        # annotate("data/examples/srnabench", srnabench.read_file)
+        annotate("data/examples/srnabench", srnabench.read_file, create=False)
 
     @attr(prost=True)
     def test_prost(self):
@@ -254,7 +251,8 @@ class FunctionsTest(unittest.TestCase):
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
         fn = "data/examples/prost/prost.example.txt"
         from mirtop.importer import prost
-        reads = prost.read_file(fn, precursors, "miRBasev21","data/examples/annotate/hsa.gff3")
+        reads = prost.read_file(
+            fn, precursors, "miRBasev21", "data/examples/annotate/hsa.gff3")
         annotate("data/example/prost/prost.example.txt", reads, True)
 
     @attr(gff=True)
@@ -284,7 +282,6 @@ class FunctionsTest(unittest.TestCase):
         """testing convert_gff_counts in convert.py function"""
         from mirtop.libs import logger
         from mirtop.gff.convert import convert_gff_counts
-        from mirtop.libs.parse import parse_cl
         import argparse
 
         logger.initialize_logger("test counts", True, True)

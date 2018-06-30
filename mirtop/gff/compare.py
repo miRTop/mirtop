@@ -11,7 +11,7 @@ from mirtop.mirna.realign import read_id
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
-# Add check first 
+# Add check first
 
 def compare(args):
     """
@@ -30,7 +30,7 @@ def compare(args):
     reference = read_reference(args.files[0])
     for fn in args.files[1:]:
         if not os.path.exists(fn):
-            raise IOError("%s doesn't exist" %s)
+            raise IOError("%s doesn't exist" % fn)
         result[os.path.basename(fn)] = _compare_to_reference(fn, reference)
     if args.out != "tmp_mirtop":
         fn_out = os.path.join(args.out, "summary.txt")
@@ -44,7 +44,7 @@ def compare(args):
 
 def read_reference(fn):
     """Read GFF into UID:Variant
-    
+
     Args:
         *fn (str)*: GFF file.
 

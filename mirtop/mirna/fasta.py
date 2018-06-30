@@ -1,17 +1,25 @@
-import os.path as op
-import os
-import re
+"""Read precursor fasta file"""
+
 from collections import defaultdict
 
-from mirtop.libs import do
-from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 
 logger = mylog.getLogger(__name__)
 
-def read_precursor(precursor, sps):
+
+def read_precursor(precursor, sps=None):
     """
     Load precursor file for that species
+
+    Args:
+        *precursor(str)*: file name with fasta sequences
+
+        *sps(str)*: if any, select species to keep.
+            It'll do a `header_sequence.find(sps)`.
+
+    Returns:
+        *hairpin(dict)*: keys are precursor names and
+            values are precursor sequences.
     """
     hairpin = defaultdict(str)
     name = None

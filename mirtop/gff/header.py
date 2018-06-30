@@ -1,13 +1,19 @@
+"""Helpers to define the header fo the GFF file"""
+
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
-def create(samples, database, custom, filter = None):
+
+def create(samples, database, custom, filter=None):
     """Create header for GFF file.
 
     Args:
         *samples (list)*: character list with names for samples
+
         *database (str)*: name of the database.
+
         *custom (str)*: extra lines.
+
         *filter (list)*: character list with filter definition.
 
     Returns:
@@ -29,10 +35,12 @@ def _get_samples(samples):
 def _get_database(database):
     return "## source-ontology: %s\n" % database
 
+
 def _filter(filters):
     if not filters:
         return "## FILTER: PASS\n"
     return "## FILTER: %s" % ";\n".join(filters)
+
 
 def read_samples(fn):
     """Read samples from the header of a GFF file.

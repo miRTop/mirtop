@@ -1,32 +1,17 @@
-"""GFF reader and creator"""
-
-import os
+"""GFF reader and creator helpers"""
 
 from collections import defaultdict, OrderedDict
 from mirtop.mirna.realign import get_mature_sequence, align_from_variants, variant_to_5p, variant_to_3p, variant_to_add, read_id
-from mirtop.mirna import fasta, mapper
 from mirtop.gff.header import read_samples
 
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
+
 def read(fn, args):
-    """Read GTF/GFF file to structure the information by a list of lines.
-
-    Args:
-        *fn (str)*: file name with GFF information.
-
-        *args (namedtuple)*: arguments from *mirtop.libs.parse.add_subparser_gff()*.
-
-    Returns:
-        *nested dicst* with this elements:
-
-        >>> {mirna: {start: [UID, chrom, counts, sample, GFF line]}}
-    """
-
+    """Read GTF/GFF file and load into annotate, chrom counts, sample, line"""
     samples = read_samples(fn)
     lines = defaultdict(dict)
-    seen = set()
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
@@ -37,31 +22,17 @@ def read(fn, args):
             uid = "%s-%s-%s" % (cols['attrb']['UID'],
                                 cols['attrb']['Variant'],
                                 cols['attrb']['Name'])
-            lines[cols['chrom']][cols['start']].append([uid,
-                                                   cols['chrom'],
-                                                   cols['attrb']['Expression'].strip().split(","),
-                                                   samples,
-                                                   line.strip()])
+            lines[cols['chrom']][cols['start']].append(
+                [uid,
+                 cols['chrom'],
+                 cols['attrb']['Expression'].strip().split(","),
+                 samples,
+                 line.strip()])
     return lines
 
+
 def create(reads, database, sample, args):
-    """Create GFF lines
-
-    Args:
-        *reads (dict)*: contains different sequences with values
-            being *mirtop.mirna.realign.hits()*.
-
-        *database (str)*: name of the database (miRBase or mirGeneDB)
-
-        *sample (str)*: sample name (only single samples supported).
-
-        *args (namedtuple)*: rest of arguments with precursor and mature
-            information.
-
-    Returns:
-        *list* with this elements: UID, chrom, counts, sample, GFF line
-
-    """
+    """Read https://github.com/miRTop/mirtop/issues/9"""
     sep = " " if args.out_format == "gtf" else "="
     seen = set()
     lines = defaultdict(defaultdict)
@@ -106,18 +77,24 @@ def create(reads, database, sample, args):
                 counts = read.counts
                 Filter = iso.filter
 
-                attrb = ("Read {r}; UID {idseq}; Name {mirName}; Parent {preName};"
-                        " Variant {Variant}; Cigar {Cigar}; Expression {counts};"
-                        " Filter {Filter}; Hits {hits};").format(**locals())
-                line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+                attrb = ("Read {r}; UID {idseq}; Name {mirName};"
+                         " Parent {preName};"
+                         " Variant {Variant}; Cigar {Cigar};"
+                         " Expression {counts};"
+                         " Filter {Filter}; Hits {hits};").format(**locals())
+                line = ("{chrom}\t{database}\t{source}\t{start}\t{end}"
+                        "\t{score}\t{strand}\t.\t{attrb}").format(**locals())
                 logger.debug("GFF::%s" % line)
                 if args.add_extra:
                     extra = variant_with_nt(line, precursors, matures)
                     line = "%s Changes %s;" % (line, extra)
 
-                line = paste_columns(read_gff_line(line), sep = sep)
+                line = paste_columns(read_gff_line(line), sep=sep)
                 if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:
-                    logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, line, seen_ann[annotation]))
+                    logger.warning(
+                        "Same isomir %s from different sequence:"
+                        " \n%s and \n%s" % (annotation, line,
+                                            seen_ann[annotation]))
                 seen_ann[annotation] = line
                 logger.debug("GFF::external %s" % iso.external)
                 if start not in lines[chrom]:
@@ -131,66 +108,27 @@ def create(reads, database, sample, args):
     logger.info("GFF miRNAs: %s" % len(lines))
     logger.info("GFF hits %s by %s reads" % (n_hits, n_reads))
     logger.info("Filtered by being duplicated: %s" % n_seen)
-    logger.info("Filtered by being outside miRNA positions: %s" % filter_precursor)
+    logger.info("Filtered by being outside miRNA positions:"
+                " %s" % filter_precursor)
     logger.info("Filtered by being low score: %s" % filter_score)
     return lines
 
-def _merge(lines):
-    if lines:
-        dt = pd.DataFrame(lines)
-        dt.columns = ["isomir", "chrom", "counts", "sample", "hits"]
-        dt = dt[dt['hits']>0]
-        dt = dt.loc[:, "isomir":"sample"]
-        dt = dt.groupby(['isomir', 'chrom', 'sample'], as_index=False).sum()
-        dt.to_csv(out_file + "_summary")
-        dt_pre = pd.DataFrame(lines_pre)
-        dt_pre.columns = ["isomir", "mature", "chrom", "counts", "sample", "hits"]
-        dt_pre = dt_pre[dt_pre['hits']==1]
-        dt_pre = dt_pre.loc[:, "isomir":"sample"]
-        dt_pre = dt_pre.groupby(['isomir', 'chrom', 'mature', 'sample'], as_index=False).sum()
-    return out_file, dt, dt_pre
 
 def guess_format(line):
-    """Guess GFF or GTF format. It use the Attribute column to check
-        whether key-value are separated by = or by `space`.
-
-        Possible bugs can occurre here.
-
-    Args:
-        *line (str)*: GFF line
-
-    Returns:
-        *str*: `=` if GFF or ` ` if GTF.
-    """
     return "=" if line.find("Name=") > -1 else " "
 
-def paste_columns(cols, sep = " "):
+
+def paste_columns(cols, sep=" "):
     """
-    Create GFF/GTF line from *mirtop.gff.body.read_gff_line()* output.
-
-    Args:
-        *cols (dict)*: keys are columns and values their content.
-
-    Returns:
-        *line (str)*: GFF line in the right format and right order or columns.
+    Create GFF/GTF line from read_gff_line
     """
     cols['attrb'] = "; ".join("%s%s%s" % (a, sep, cols['attrb'][a]) for a in cols['attrb'])
     return "\t".join([cols['chrom'], cols['source'], cols['type'],
                       cols['start'], cols['end'], cols['score'],
                       cols['strand'], cols['ext'], cols['attrb']])
 
-def read_attributes(gff_line, sep = " "):
-    """Read attribute columns and create a dict to access quickly to each of them.
 
-    Args:
-        *gff_line (str)*: GFF line having 8 columns, and last one being attribute one.
-
-        *sep (str)*: character used to separate attributes.
-    Returns:
-        *gff_dict (dict)*:
-            >>> {'Name': name_1, 'Variants': 'iso_snp',...}
-
-    """
+def read_attributes(gff_line, sep=" "):
     gff_line = gff_line.strip().split("\t")[8]
     gff_dict = OrderedDict()
     for gff_item in gff_line.strip().split(";"):
@@ -199,18 +137,10 @@ def read_attributes(gff_line, sep = " "):
             gff_dict[item_pair[0].strip()] = item_pair[1].strip()
     return gff_dict
 
+
 def read_gff_line(line):
     """
-    Read GFF/GTF line and return dictionary with key:values
-    representing the columns.
-
-    Args:
-        *line (str)*: GFF line.
-
-    Returns:
-        *fields (dict)*: Each attribute can be accessed as:
-
-            >>> fields['attrb']['Variant']
+    Read GFF/GTF line and return dictionary with fields
     """
     if line.startswith("#"):
         return line
@@ -229,24 +159,12 @@ def read_gff_line(line):
               'attrb': read_attributes(line, sep)}
     return fields
 
+
 def variant_with_nt(line, precursors, matures):
     """
     Return nucleotides changes for each variant type
     using Variant attribute, precursor sequences and
     mature position.
-
-    Args:
-        *line (str)*: GFF line.
-
-        *precursors (dict)*: dict with keys being precursors name and
-            values being sequence. See *mirtop.mirna.fastq.read_precursor()*.
-
-        *matures (dict)*: dict with keys being precursors and
-            values being dict of mature positions on precursor.
-            See *mirtop.mirna.mapper.read_gtf_to_precursor()*.
-    Returns:
-        *(str)*: Variants value for **Extra** attribtue.
-
     """
     cols = read_gff_line(line)
     attr = cols["attrb"]
@@ -261,8 +179,9 @@ def variant_with_nt(line, precursors, matures):
                        attr["Variant"])
     add = variant_to_add(read,
                          attr["Variant"])
-    mature_sequence = get_mature_sequence(precursors[attr["Parent"]],
-                                          matures[attr["Parent"]][attr["Name"]])
+    mature_sequence = get_mature_sequence(
+        precursors[attr["Parent"]],
+        matures[attr["Parent"]][attr["Name"]])
     logger.debug("GFF::BODY::mature_sequence %s" % mature_sequence)
     mm = align_from_variants(read,
                              mature_sequence,

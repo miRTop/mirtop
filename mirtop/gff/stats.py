@@ -4,14 +4,12 @@ Produce stats from GFF3 format
 
 import os
 import pandas as pd
-from mirtop.gff import header
-from mirtop.gff.body import read_attributes, read_gff_line
+from mirtop.gff.body import read_gff_line
 from mirtop import version
 
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
-# Add check first 
 
 def stats(args):
     """
@@ -29,7 +27,7 @@ def stats(args):
     out = list()
     for fn in args.files:
         if not os.path.exists(fn):
-            raise IOError("%s doesn't exist" %s)
+            raise IOError("%s doesn't exist" % fn)
         logger.info("Reading: %s" % fn)
         out.append(_calc_stats(fn))
     df_final = pd.concat(out)
@@ -43,12 +41,14 @@ def stats(args):
         print message_info
         print df_final
 
+
 def _get_samples(fn):
     with open(fn) as inh:
         for line in inh:
             if line.startswith("## COLDATA"):
                 return line.strip().split(": ")[1].strip().split(",")
     raise ValueError("%s doesn't contain COLDATA header." % fn)
+
 
 def _calc_stats(fn):
     """
@@ -73,6 +73,7 @@ def _calc_stats(fn):
     df = _summary(lines)
     return df
 
+
 def _classify(srna_type, attr, samples):
     """
     Parse the line and return one
@@ -91,6 +92,7 @@ def _classify(srna_type, attr, samples):
             if int(counts[s]) > 0:
                 lines.append([v.split(":")[0], s, counts[s]])
     return lines
+
 
 def _summary(lines):
     """
