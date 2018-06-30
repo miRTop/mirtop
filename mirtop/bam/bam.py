@@ -33,7 +33,19 @@ def _bam_sort(bam_fn):
 
 def read_bam(bam_fn, precursors, clean = True):
     """
-    read bam file and perform realignment of hits
+    Read bam file and perform realignment of hits
+    
+    Args:
+        *bam_fn*: a BAM file with alignments to the precursor
+        
+        *precursors*: dict with keys being precursor names and values
+            being sequences. Come from mirtop.mirna.fasta.read_precursor().
+        
+        *clean*: Use mirtop.filter.clean_hits() to remove lower score hits.
+
+    Returns:
+        *reads*: dictionary where keys are read_id and values are *mirtop.realign.hits*
+
     """
     bam_fn = _sam_to_bam(bam_fn)
     bam_fn = _bam_sort(bam_fn)

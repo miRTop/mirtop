@@ -17,6 +17,7 @@ __pycache__/
 *.swp
 *.swo
 *.Rhistory
+*.DS_Store
 
 # Distribution / packaging
 .Python

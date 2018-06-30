@@ -258,8 +258,10 @@ def expand_cigar(cigar):
 def cigar2snp(cigar, reference):
     """
     From a CIGAR string and reference sequence
-    return position of mismatches (indels included) as
-      [pos, seq_nt, ref_nt]
+    
+    Returns:
+        position of mismatches (indels included) as
+        [pos, seq_nt, ref_nt]
     """
     snp = []
     pos_seq = 0
@@ -299,7 +301,7 @@ def align_from_variants(sequence, mature, variants):
     """Giving the sequence read,
        the mature from get_mature_sequence,
        and the variant GFF annotation:
-            Get a list of substitutions
+       Get a list of substitutions
     """
     init_log = "iso:%s -> %s\nref:%s" % (sequence, variants, mature)
     snps = []
@@ -351,9 +353,14 @@ def align_from_variants(sequence, mature, variants):
 def variant_to_5p(hairpin, pos, variant):
     """from a sequence and a start position get the nts
        +/- indicated by variants:
-           AAATTTT, 3, -1
-           return: T
+       
        pos option is 0-base-index
+
+    Args:
+       AAATTTT, 3, -1
+    Returns:
+       T
+    
     """
     pos = pos[0]
     iso_t5 = [v for v in variant.split(",") if v.startswith("iso_5p")]
@@ -369,9 +376,14 @@ def variant_to_5p(hairpin, pos, variant):
 def variant_to_3p(hairpin, pos, variant):
     """from a sequence and a end position get the nts
        +/- indicated by variants:
-           AAATTTT, 3, -1
-           return: A
-       pos option is 0-base-index
+        
+        pos option is 0-base-index
+
+    Args:    
+        AAATTTT, 3, -1
+    Returns:
+       A
+       
     """
     pos = pos[1]
     iso_t3 = [v for v in variant.split(",") if v.startswith("iso_3p")]
@@ -387,10 +399,15 @@ def variant_to_3p(hairpin, pos, variant):
 def variant_to_add(read, variant):
     """from a sequence and a end position get the nts
        +/- indicated by variants:
-           AAATTTT, 3, 2
-           return: TT
+    
        pos option is 0-base-index
        variant is always positive
+
+    Args:
+        AAATTTT, 3, 2
+    
+    Returns:
+       TT
     """
     add = [v for v in variant.split(",") if v.startswith("iso_add")]
     if add:

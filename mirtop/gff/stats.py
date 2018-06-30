@@ -15,7 +15,14 @@ logger = mylog.getLogger(__name__)
 
 def stats(args):
     """
-    From a list of files produce stats
+    From a list of GFF files produce general isomiRs stats.
+
+    Args:
+        *args (namedtupled)*: arguments parsed from command line with
+            *mirtop.libs.parse.add_subparser_stats()*.
+
+    Returns:
+        *(stdout) or (out_file)*: GFF general stats.
     """
     v = version.__version__
     message_info = ("# mirtop stats version {v}").format(**locals())

@@ -1,3 +1,5 @@
+"""GFF proxy converter"""
+
 import os.path as op
 
 from mirtop.mirna import fasta, mapper

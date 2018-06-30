@@ -20,11 +20,30 @@ from mirtop.bam import filter
 logger = mylog.getLogger(__name__)
 
 def header():
+    """
+    Custom header for PROST! importer.
+
+    Returns:
+        *(str)*: PROST! header string.
+    """
+
     return ""
 
 def read_file(fn, hairpins, database, mirna_gtf):
     """
-    read bam file and perform realignment of hits
+    Read PROST! file and convert to mirtop GFF format.
+
+    Args:
+        *fn(str)*: file name with PROST output information.
+
+        *database(str)*: database name.
+        
+        *args(namedtuple)*: arguments from command line.
+            See *mirtop.libs.parse.add_subparser_gff()*.
+
+    Returns:
+        *reads*: dictionary where keys are read_id and values are *mirtop.realign.hits*
+ 
     """
     reads = defaultdict(hits)
     sample = os.path.splitext(os.path.basename(fn))[0]
@@ -102,35 +121,6 @@ def _group_seqs_by_ann(fn):
             if hairpin:
                 ann_type[cols[4]][0] = hairpin
     return [ann, ann_type]
-
-def genomic2transcript(code, chrom, pos):
-    for ref in code:
-        if _is_chrom(chrom, code[ref][0]):
-            if _is_inside(pos, code[ref][1:3]):
-                return [ref, _transcript(pos, code[ref][1:4])]
-    return [None, None]
-
-def _is_chrom(chrom, annotated):
-    logger.debug("TRANSCRIPT::CHROM::read position %s and db position %s" % (chrom, annotated))
-    if chrom == annotated:
-        return True
-    if chrom == annotated.replace("chr", ""):
-        return True
-    return False
-
-def _is_inside(pos, annotated):
-    logger.debug("TRANSCRIPT::INSIDE::read position %s and db position %s" % (pos, annotated))
-    if pos > annotated[0] and pos < annotated[1]:
-        return True
-    return False
-
-def _transcript(pos, annotated):
-    logger.debug("TRANSCRIPT::TRANSCRIPT::read position %s and db position %s" % (pos, annotated))
-    if annotated[2] == "+":
-        return pos - annotated[0]
-    elif annotated[2] == "-":
-        return annotated[1] - pos
-    raise ValueError("Strand information is incorrect %s" % annotated[3])
 
 def _align_to_mature(seq, hairpin, mature):
     """Get alignment between seq and mature"""

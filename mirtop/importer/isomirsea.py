@@ -16,17 +16,37 @@ from mirtop.mirna import mapper
 from mirtop.mirna.realign import isomir, hits, expand_cigar, make_id
 from mirtop.gff.body import read_attributes, paste_columns, variant_with_nt, read_gff_line
 from mirtop.bam import filter
-from mirtop.importer.prost import genomic2transcript
 
 logger = mylog.getLogger(__name__)
 
 def header(fn):
+    """
+    Custom header for isomiR-SEA importer.
+
+    Args:
+        *fn (str)*: file name with isomiR-SEA GFF output
+
+    Returns:
+        *(str)*: isomiR-SEA header string.
+    """
     h = ""
     return h
 
 def read_file(fn, database, args):
     """
-    read bam file and perform realignment of hits
+    Read isomiR-SEA file and convert to mirtop GFF format.
+
+    Args:
+        *fn(str)*: file name with isomiR-SEA output information.
+
+        *database(str)*: database name.
+        
+        *args(namedtuple)*: arguments from command line.
+            See *mirtop.libs.parse.add_subparser_gff()*.
+
+    Returns:
+        *reads (nested dicts)*:gff_list has the format as defined in *mirtop.gff.body.read()*.
+ 
     """
     gtf = args.gtf
     sep = " " if args.out_format == "gtf" else "="
@@ -71,7 +91,7 @@ def read_file(fn, database, args):
             score = "."
             Filter = attr['FILTER']
             isotag = attr['ISO']
-            tchrom, tstart =  genomic2transcript(map_mir[mirName], chrom, start)
+            tchrom, tstart =  _genomic2transcript(map_mir[mirName], chrom, start)
             start = start if not tstart else tstart
             chrom = chrom if not tstart else tchrom
             end = start + len(query_sequence)
@@ -167,3 +187,33 @@ def _fix(n):
     if n > 0:
         return "+%s" % n
     return n
+
+def _genomic2transcript(code, chrom, pos):
+    for ref in code:
+        if _is_chrom(chrom, code[ref][0]):
+            if _is_inside(pos, code[ref][1:3]):
+                return [ref, _transcript(pos, code[ref][1:4])]
+    return [None, None]
+
+def _is_chrom(chrom, annotated):
+    logger.debug("TRANSCRIPT::CHROM::read position %s and db position %s" % (chrom, annotated))
+    if chrom == annotated:
+        return True
+    if chrom == annotated.replace("chr", ""):
+        return True
+    return False
+
+def _is_inside(pos, annotated):
+    logger.debug("TRANSCRIPT::INSIDE::read position %s and db position %s" % (pos, annotated))
+    if pos > annotated[0] and pos < annotated[1]:
+        return True
+    return False
+
+def _transcript(pos, annotated):
+    logger.debug("TRANSCRIPT::TRANSCRIPT::read position %s and db position %s" % (pos, annotated))
+    if annotated[2] == "+":
+        return pos - annotated[0]
+    elif annotated[2] == "-":
+        return annotated[1] - pos
+    raise ValueError("Strand information is incorrect %s" % annotated[3])
+

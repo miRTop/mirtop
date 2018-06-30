@@ -1,30 +1,18 @@
 import os
 from collections import Counter
-from classes import quality
 from itertools import product
 import gzip
 
 
-def collapse(in_file):
-    """collapse identical sequences and keep Q"""
-    keep = Counter()
-    with open_fastq(in_file) as handle:
-        for line in handle:
-            if line.startswith("@"):
-                line.strip()
-                seq = handle.next().strip()
-                handle.next().strip()
-                qual = handle.next().strip()
-                if seq in keep:
-                    keep[seq].update(qual)
-                else:
-                    keep[seq] = quality(qual)
-    return keep
-
-
 def open_fastq(in_file):
     """ open a fastq file, using gzip if it is gzipped
-    from bcbio package
+        (from bcbio package)
+
+    Args:
+        *in_file(str)*: file name, including full path.
+
+    Returns:
+        *(file)*:File instance to go into for loop.
     """
     _, ext = os.path.splitext(in_file)
     if ext == ".gz":
@@ -35,7 +23,14 @@ def open_fastq(in_file):
 
 
 def is_fastq(in_file):
-    """copy from bcbio package"""
+    """Check whether a file has the expected extension to be a fastq file
+        txt, fq, fast + gzip/gz (from bcbio package)
+    Args:
+        *in_file(str)*: file name, including full path.
+    
+    Returns:
+        *(boolean)*: True or False
+    """
     fastq_ends = [".txt", ".fq", ".fastq"]
     zip_ends = [".gzip", ".gz"]
     base, first_ext = os.path.splitext(in_file)
@@ -48,24 +43,20 @@ def is_fastq(in_file):
         return False
 
 
-def splitext_plus(f):
+def splitext_plus(fn):
     """Split on file extensions, allowing for zipped extensions.
-    copy from bcbio
+        (from bcbio package).
+    Args:
+        *in_file(str)*: file name, including full path.
+    
+    Returns:
+        *base, ext(character list)*: basename of the file and 
+            extension of the file.
+     
     """
-    base, ext = os.path.splitext(f)
+    base, ext = os.path.splitext(fn)
     if ext in [".gz", ".bz2", ".zip"]:
         base, ext2 = os.path.splitext(base)
         ext = ext2 + ext
     return base, ext
 
-
-def write_output(out_file, seqs, minimum=1):
-    idx =0
-    with open(out_file, 'w') as handle:
-        for seq in seqs:
-            idx += 1
-            qual = "".join(seqs[seq].get())
-            counts = seqs[seq].times
-            if int(counts) > minimum:
-                handle.write(("@seq_{idx}_x{counts}\n{seq}\n+\n{qual}\n").format(**locals()))
-    return out_file

@@ -4,7 +4,9 @@ from mirtop.libs.read import get_fasta
 
 
 def simulate(args):
-    """Main function that manage simulation of small RNAs"""
+    """Main function that manage simulation of small RNAs
+
+    """
     reads = dict()
     if args.fasta:
         name = None

@@ -15,7 +15,15 @@ logger = mylog.getLogger(__name__)
 
 def compare(args):
     """
-    From a list of files produce stats
+    From a list of GFF files produce comparison with a reference set.
+
+    Args:
+        *args(namedtuple)*: arguments parsed from command line with
+            *mirtop.libs.parse.add_subparser_compare()*.
+            First file will be considered the reference set.
+
+    Returns:
+        *(out_file)*: comparison of the GFF files with the reference.
     """
     out = list()
     result = dict()
@@ -35,7 +43,14 @@ def compare(args):
                     print >>outh, "%s\t%s\t%s\t%s\t%s\t%s" % (fn, line[0], read, line[1], line[2], acc)
 
 def read_reference(fn):
-    """Read GFF into UID:Variant key:value dict"""
+    """Read GFF into UID:Variant
+    
+    Args:
+        *fn (str)*: GFF file.
+
+    Returns:
+        *srna (dict)*: dict with >>> {'UID': 'iso_snp:-2,...'}
+    """
     srna = dict()
     with open(fn) as inh:
         for line in inh:

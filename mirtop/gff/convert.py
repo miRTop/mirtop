@@ -17,8 +17,15 @@ logger = mylog.getLogger(__name__)
 
 
 def convert_gff_counts(args):
-	""" Reads a GFF file, produces output file containing Expression counts of
-	the format : UID miRNA Variant Sample1 Sample2 ... Sample N
+	""" Reads a GFF file to produces output file containing Expression counts
+
+    Args:
+        *args(namedtuple)*: arguments parsed from command line with
+            *mirtop.libs.parse.add_subparser_counts()*.
+    
+    Returns:
+        *file (file)*: with columns like: 
+            UID miRNA Variant Sample1 Sample2 ... Sample N
 
 	"""
         sep = "\t"

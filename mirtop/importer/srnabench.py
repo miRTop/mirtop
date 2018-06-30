@@ -19,7 +19,19 @@ logger = mylog.getLogger(__name__)
 
 def read_file(folder, args):
     """
-    read srnabench file and perform realignment of hits
+    Read sRNAbench file and convert to mirtop GFF format.
+
+    Args:
+        *fn(str)*: file name with sRNAbench output information.
+
+        *database(str)*: database name.
+        
+        *args(namedtuple)*: arguments from command line.
+            See *mirtop.libs.parse.add_subparser_gff()*.
+
+    Returns:
+        *reads (nested dicts)*:gff_list has the format as defined in *mirtop.gff.body.read()*.
+ 
     """
     reads_anno = os.path.join(folder, "reads.annotation")
     reads_iso = os.path.join(folder, "microRNAannotation.txt")

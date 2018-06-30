@@ -9,6 +9,7 @@
 * mirtop/gff
   * __init.py__ wraps the convertion process to GFF3
   * __body.py__ `create` will create the line according GFF format established.
+    * `read_gff_line`: Inside a for loop to read line of the file. It'll return and structure key:value dictionary for each column.
   * __header.py__ generate header and read header section.
   * __check.py__ checks header and single lines to be valid according GFF format  (NOT IMPLEMENTED)
   * __stats.py__ GFF stats counting number of isomiR, their total and average expression
@@ -40,6 +41,8 @@
     * prost.py
     * srnabench.py
     * isomirsea.py
+ * mirtop/exporter:
+    * isomirs.py: export file to match [isomiRs BioC package](https://github.com/lpantano/isomiRs).
  * data/examples/
    * check gff files: example of correct, invalid, warning GFF files
    * check BAM file

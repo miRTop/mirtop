@@ -18,13 +18,31 @@ from mirtop.bam import filter
 logger = mylog.getLogger(__name__)
 
 def header():
+    """
+    Custom header for seqbuster importer.
+
+    Returns:
+        *(str)*: seqbuster header string.
+    """
     h = ("## CMD: seqbuster: http://seqcluster.readthedocs.io/mirna_annotation.html#mirna-isomir-annotation-with-java\n"
         "# iso_snp are not filtered yet. Use isomiRs R pacakge to correct for error sequencing\n")
     return h
 
 def read_file(fn, precursors):
     """
-    read bam file and perform realignment of hits
+    Read seqbuster file and convert to mirtop GFF format.
+
+    Args:
+        *fn(str)*: file name with seqbuster output information.
+
+        *database(str)*: database name.
+        
+        *args(namedtuple)*: arguments from command line.
+            See *mirtop.libs.parse.add_subparser_gff()*.
+
+    Returns:
+        *reads*: dictionary where keys are read_id and values are *mirtop.realign.hits*
+ 
     """
     reads = defaultdict(hits)
     with open(fn) as handle:
