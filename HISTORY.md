@@ -1,5 +1,6 @@
 - 0.3.*a
 
+ * Make GFF default.
  * Improve examples commands and test coverage.
  * Only counts sequences with Filter == Pass during stats.
  * Counts cmd add nucleotide information when --add-extra option is on.
@@ -36,7 +37,7 @@
  * Add PROST to supported tools
 
 - 0.1.7
- 
+
  * Remove deletion from addition isomiRs
  * Support for srnabench output
  * Fix bug mixing up source column
@@ -45,12 +46,12 @@
  * Adapt output format to https://github.com/miRTop/incubator/blob/master/format/definition.md
 
 - 0.1.5
- 
+
  * add function to check correct annotation
  * add test data for SAM parsing
  * add script to simulate isomiRs
  * parse indels from bam file
- 
+
 - 0.1.4
 
  * fix index BAM file command line
