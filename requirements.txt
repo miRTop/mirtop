@@ -2,3 +2,6 @@ pysam
 pybedtools
 pandas
 biopython
+dateutil
+pyyaml
+pybedtools
