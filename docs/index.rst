@@ -14,4 +14,5 @@ Welcome to mirtop's documentation!
    quick_start.md
    output.md
    code_structure.md
+   how_to_contribute.md
 
