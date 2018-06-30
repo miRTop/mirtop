@@ -10,6 +10,7 @@ from mirtop.gff.stats import stats
 from mirtop.gff.compare import compare
 from mirtop.gff.convert import convert_gff_counts
 from mirtop.exporter import isomirs
+from mirtop.gff import validator
 import mirtop.libs.logger as mylog
 
 import time
@@ -40,8 +41,9 @@ def main(**kwargs):
     elif "export" in kwargs:
         logger.info("Run export of GFF into other format.")
         isomirs.convert(kwargs["args"])
-    elif "check" in kwargs["args"]:
-        logger.info("Not yet ready: This will check GFF files.")
+    elif "validator" in kwargs:
+        logger.info("Run validator.")
+        validator.check_multiple(kwargs["args"])
     elif "query" in kwargs["args"]:
         logger.info("Not yet ready: This will allow queries to GFF files.")
     elif "convert" in kwargs["args"]:

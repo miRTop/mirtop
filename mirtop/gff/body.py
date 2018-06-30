@@ -149,7 +149,7 @@ def read_gff_line(line):
         return line
     cols = line.strip().split("\t")
     sep = guess_format(line)
-    if len(cols) < 9:
+    if len(cols) != 9:
         raise ValueError("Line has less than 9 elements: %s" % line)
     fields = {'chrom': cols[0],
               'source': cols[1],
