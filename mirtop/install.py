@@ -1,13 +1,9 @@
 """
 Some commands to install common databases like mirbase and some human/mouse annotation
 """
+
 import os.path as op
-import os
-import sys
-from argparse import ArgumentParser
 import subprocess
-import contextlib
-import yaml
 
 try:
     import bcbio
@@ -21,6 +17,7 @@ REMOTES = {
             "gitrepo": "https://github.com/lpantano/seqcluster.git",
             "gitrepo-bcbio": "https://github.com/chapmanb/bcbio-nextgen.git"
            }
+
 
 def _get_miraligner():
     try:

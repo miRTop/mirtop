@@ -6,6 +6,7 @@ from collections import defaultdict
 import mirtop.libs.logger as mylog
 from mirtop.gff.body import paste_columns, variant_with_nt, read_gff_line
 from mirtop.mirna.realign import make_cigar, make_id
+
 logger = mylog.getLogger(__name__)
 
 
@@ -22,7 +23,8 @@ def read_file(folder, args):
             See *mirtop.libs.parse.add_subparser_gff()*.
 
     Returns:
-        *reads (nested dicts)*:gff_list has the format as defined in *mirtop.gff.body.read()*.
+        *reads (nested dicts)*:gff_list has the format as
+            defined in *mirtop.gff.body.read()*.
 
     """
     reads_anno = os.path.join(folder, "reads.annotation")
@@ -35,6 +37,7 @@ def read_file(folder, args):
 
     n_out = 0
     n_in = 0
+    n_ns = 0
     n_notassign = 0
     n_notindb = 0
     reads = defaultdict(dict)
@@ -47,7 +50,7 @@ def read_file(folder, args):
             cols = sequence.strip().split("\t")
             query_name = cols[0]
             query_sequence = cols[0]
-            if query_name not in reads and query_sequence == None:
+            if query_name not in reads and not query_sequence:
                 continue
             if query_sequence and query_sequence.find("N") > -1:
                 n_ns += 1
@@ -65,7 +68,7 @@ def read_file(folder, args):
                 hit_info = nhit.split("#")
                 pos_info = hit_info[3].split(",")
                 start = int(pos_info[1]) - 1
-                end = start + len(query_sequence) #int(pos_info[2]) - 1
+                end = start + len(query_sequence)  # int(pos_info[2]) - 1
                 chrom = pos_info[0]
                 mirName = hit_info[1]
                 if chrom not in precursors or chrom not in matures:
@@ -106,18 +109,24 @@ def read_file(folder, args):
                 score = "."
                 strand = "+"
                 idu = make_id(query_sequence)
-                attrb = ("Read {query_sequence}; UID {idu}; Name {mirName}; Parent {preName}; Variant {isoformat}; Cigar {cigar}; Expression {counts}; Filter {Filter}; Hits {hit};").format(**locals())
-                line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+                attrb = ("Read {query_sequence}; UID {idu}; Name {mirName};"
+                         " Parent {preName}; Variant {isoformat};"
+                         " Cigar {cigar}; Expression {counts};"
+                         " Filter {Filter}; Hits {hit};").format(**locals())
+                line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t"
+                        "{score}\t{strand}\t.\t{attrb}").format(**locals())
                 if args.add_extra:
-                    extra = variant_with_nt(line, args.precursors, args.matures)
+                    extra = variant_with_nt(line, args.precursors,
+                                            args.matures)
                     line = "%s Changes %s;" % (line, extra)
 
-                line = paste_columns(read_gff_line(line), sep = sep)
+                line = paste_columns(read_gff_line(line), sep=sep)
                 if start not in reads[chrom]:
                     reads[chrom][start] = []
                 if Filter == "Pass":
-                   n_in += 1
-                   reads[chrom][start].append([idu, chrom, counts, sample, line])
+                    n_in += 1
+                    reads[chrom][start].append([idu, chrom, counts,
+                                                sample, line])
 
     logger.info("Loaded %s reads with %s hits" % (len(reads), n_in))
     logger.info("Reads without precursor information: %s" % n_notindb)
@@ -126,13 +135,14 @@ def read_file(folder, args):
 
     return reads
 
+
 def _read_iso(fn):
     """
     Read definitions of isomiRs by srnabench
     """
     iso = dict()
     with open(fn) as inh:
-        h = inh.readline()
+        inh.readline()
         for line in inh:
             cols = line.strip().split("\t")
             label = cols[3].split("$")
@@ -147,6 +157,7 @@ def _read_iso(fn):
                 iso[(cols[0], m)] = _translate(anno[m], cols[4])
                 logger.debug("TRANSLATE::code %s" % iso[(cols[0], m)])
     return iso
+
 
 def _translate(isomirs, description):
     iso = []
@@ -178,6 +189,7 @@ def _translate(isomirs, description):
                 iso.extend(_iso_snp(int(nt.split(":")[0])))
         logger.debug("TRANSLATE::iso:%s" % iso)
     return ",".join(iso)
+
 
 def _iso_snp(pos):
     iso = []

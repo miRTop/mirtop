@@ -47,7 +47,7 @@ def read_file(fn, args):
             query_sequence = cols[0]
             reference_start = int(cols[4]) - 1
             seqbuster_iso = ":".join(cols[6:10])
-            if query_name not in reads and query_sequence == None:
+            if query_name not in reads and query_sequence==None:
                 continue
             if query_sequence and query_sequence.find("N") > -1:
                 continue
@@ -75,6 +75,7 @@ def read_file(fn, args):
                 reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))
     return reads
+
 
 def _get_freq(name):
     """

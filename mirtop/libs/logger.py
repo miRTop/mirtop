@@ -9,6 +9,7 @@ import os
 def getLogger(name):
     return logging.getLogger(__name__)
 
+
 def set_format(frmt, frmt_col=None, datefmt=None):
     if frmt_col:
         try:
@@ -18,6 +19,7 @@ def set_format(frmt, frmt_col=None, datefmt=None):
             pass
     formatter = logging.Formatter(frmt)
     return formatter
+
 
 def initialize_logger(output_dir, debug, level=False):
     NOTE = 15
@@ -53,7 +55,8 @@ def initialize_logger(output_dir, debug, level=False):
     logger.addHandler(handler)
 
     # create error file handler and set level to error
-    handler = logging.FileHandler(os.path.join(output_dir, "error.log"), "w", encoding=None, delay="true")
+    handler = logging.FileHandler(os.path.join(output_dir, "error.log"),
+                                  "w", encoding=None, delay="true")
     handler.setLevel(logging.ERROR)
     formatter = set_format(FORMAT, COLOR_FORMAT, datefmt=DATE_FRT)
     handler.setFormatter(formatter)
@@ -67,7 +70,7 @@ def initialize_logger(output_dir, debug, level=False):
     logger.addHandler(handler)
 
     # create debug file handler and set level to debug
-    handler = logging.FileHandler(os.path.join(output_dir, "trace.log"),"w")
+    handler = logging.FileHandler(os.path.join(output_dir, "trace.log"), "w")
     handler.setLevel(NOTE)
     formatter = logging.Formatter("%(levelname)s - %(message)s")
     handler.setFormatter(formatter)

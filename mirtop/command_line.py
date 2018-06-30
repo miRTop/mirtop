@@ -18,7 +18,8 @@ import time
 
 def main(**kwargs):
     kwargs = parse_cl(sys.argv[1:])
-    initialize_logger(kwargs['args'].out, kwargs['args'].debug, kwargs['args'].print_debug)
+    initialize_logger(kwargs['args'].out, kwargs['args'].debug,
+                      kwargs['args'].print_debug)
     logger = mylog.getLogger(__name__)
     start = time.time()
 
@@ -45,6 +46,4 @@ def main(**kwargs):
         validator.check_multiple(kwargs["args"])
     elif "query" in kwargs["args"]:
         logger.info("Not yet ready: This will allow queries to GFF files.")
-    elif "convert" in kwargs["args"]:
-        logger.info("Not yet ready: This will output tabular format from GFF files.")
     logger.info('It took %.3f minutes' % ((time.time()-start)/60))

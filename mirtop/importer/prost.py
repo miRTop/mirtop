@@ -1,23 +1,15 @@
 """ Read prost! files"""
 
-import traceback
-import os.path as op
 import os
-import re
-import shutil
-import pandas as pd
-import pysam
 from collections import defaultdict
 
 from mirtop.mirna import mapper
-from mirtop.mirna.fasta import read_precursor
-from mirtop.libs import do
-from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
-from mirtop.mirna.realign import isomir, hits, make_id, get_mature_sequence, align
+from mirtop.mirna.realign import isomir, hits, get_mature_sequence, align
 from mirtop.bam import filter
 
 logger = mylog.getLogger(__name__)
+
 
 def header():
     """
@@ -29,6 +21,7 @@ def header():
 
     return ""
 
+
 def read_file(fn, hairpins, database, mirna_gtf):
     """
     Read PROST! file and convert to mirtop GFF format.
@@ -37,13 +30,13 @@ def read_file(fn, hairpins, database, mirna_gtf):
         *fn(str)*: file name with PROST output information.
 
         *database(str)*: database name.
-        
+
         *args(namedtuple)*: arguments from command line.
             See *mirtop.libs.parse.add_subparser_gff()*.
 
     Returns:
         *reads*: dictionary where keys are read_id and values are *mirtop.realign.hits*
- 
+
     """
     reads = defaultdict(hits)
     sample = os.path.splitext(os.path.basename(fn))[0]
@@ -66,7 +59,7 @@ def read_file(fn, hairpins, database, mirna_gtf):
                 continue
             miRNA = ann_type[ann[query_sequence]][1]
             preNames = ann_type[ann[query_sequence]][0]
-            if query_name not in reads and query_sequence == None:
+            if query_name not in reads and query_sequence==None:
                 continue
             if query_sequence and query_sequence.find("N") > -1:
                 continue
@@ -90,18 +83,22 @@ def read_file(fn, hairpins, database, mirna_gtf):
                 logger.debug("PROST!:: start %s end %s" % (iso.start, iso.end))
                 if len(hairpins[preName]) < reference_start + len(reads[query_name].sequence):
                     continue
-                iso.subs, iso.add, iso.cigar = filter.tune(reads[query_name].sequence,
-                                                           hairpins[preName],
-                                                           reference_start, None)
-                logger.debug("PROST!::After tune start %s end %s" % (iso.start, iso.end))
+                iso.subs, iso.add, iso.cigar = filter.tune(
+                    reads[query_name].sequence,
+                    hairpins[preName],
+                    reference_start, None)
+                logger.debug("PROST!::After tune start %s end %s" % (
+                    iso.start, iso.end))
                 if len(iso.subs) < 2:
                     reads[query_name].set_precursor(preName, iso)
     logger.info("Lines loaded: %s" % lines_read)
     logger.info("Skipped lines because non miRNA in line: %s" % non_mirna)
-    logger.info("Skipped lines because non chromosome in GTF: %s" % non_chromosome_mirna)
+    logger.info("Skipped lines because non chromosome in GTF:"
+                " %s" % non_chromosome_mirna)
     logger.info("Skipped lines because outside precursor: %s" % outside_mirna)
     logger.info("Hits: %s" % len(reads))
     return reads
+
 
 def _group_seqs_by_ann(fn):
     """Read file once to group sequences to same miRNA sequence"""
@@ -122,18 +119,21 @@ def _group_seqs_by_ann(fn):
                 ann_type[cols[4]][0] = hairpin
     return [ann, ann_type]
 
+
 def _align_to_mature(seq, hairpin, mature):
     """Get alignment between seq and mature"""
     mirna = get_mature_sequence(hairpin, mature)
-    hit =  align(seq, mirna)
+    hit = align(seq, mirna)
     start = hit[0][:8].count("-") - 4 + int(mature[0])
     logger.debug("PROST::align:sequence to mature %s" % hit[0])
     logger.debug("PROST::align:start: %s -> %s" % (mature[0], start))
     return start
 
+
 def _cigar_to_variants(seq, mature, cigar):
     """From mature based cigar get variants"""
     return None
+
 
 def _make_variant(cols):
     logger.debug("PROST::variant: %s" % cols)
@@ -157,4 +157,3 @@ def _make_variant(cols):
     if not variant:
         return "NA"
     return ",".join(variant)
-

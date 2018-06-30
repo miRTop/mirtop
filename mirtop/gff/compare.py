@@ -3,15 +3,13 @@ Compare multiple GFF files to a reference
 """
 
 import os
-import pandas as pd
 
-from mirtop.gff import header
-from mirtop.gff.body import read_attributes, read_gff_line
+from mirtop.gff.body import read_gff_line
 from mirtop.mirna.realign import read_id
 import mirtop.libs.logger as mylog
+
 logger = mylog.getLogger(__name__)
 
-# Add check first
 
 def compare(args):
     """
@@ -42,6 +40,7 @@ def compare(args):
                     acc = "\t".join([line[3][v] for v in line[3]])
                     print >>outh, "%s\t%s\t%s\t%s\t%s\t%s" % (fn, line[0], read, line[1], line[2], acc)
 
+
 def read_reference(fn):
     """Read GFF into UID:Variant
 
@@ -60,6 +59,7 @@ def read_reference(fn):
             attr = cols['attrb']
             srna[attr['UID']] = [_simplify(attr['Variant']), attr]
     return srna
+
 
 def _compare_to_reference(fn, reference):
     same = 0
@@ -99,9 +99,11 @@ def _compare_to_reference(fn, reference):
     logger.info("Number of sequences missed sequences: %s" % len(miss))
     return results
 
+
 def _simplify(variant):
     simple = [v.split(":")[0] for v in variant.split(",")]
     return ",".join(simple)
+
 
 def _get_samples(fn):
     with open(fn) as inh:
@@ -109,6 +111,7 @@ def _get_samples(fn):
             if line.startswith("## COLDATA"):
                 return line.strip().split(": ")[1].strip().split(",")
     raise ValueError("%s doesn't contain COLDATA header." % fn)
+
 
 def _accuracy(target, reference):
     """Compare each isomir label in Variant field

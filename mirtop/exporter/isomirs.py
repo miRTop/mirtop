@@ -1,22 +1,15 @@
 """ Read GFF files and output isomiRs compatible format"""
 
-import traceback
-import os.path as op
 import os
-import re
-import shutil
-from collections import defaultdict
 
-from mirtop.libs import do
-from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 from mirtop.mirna import fasta, mapper
-from mirtop.mirna.realign import isomir, hits
 from mirtop.gff.body import read_attributes
 from mirtop.gff.header import read_samples
 from mirtop.mirna.realign import get_mature_sequence, align_from_variants, read_id, variant_to_5p, variant_to_3p, variant_to_add
 
 logger = mylog.getLogger(__name__)
+
 
 def convert(args):
     """

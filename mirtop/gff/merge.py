@@ -2,7 +2,9 @@ from collections import defaultdict
 
 from mirtop.gff.body import read_gff_line, paste_columns, guess_format
 import mirtop.libs.logger as mylog
+
 logger = mylog.getLogger(__name__)
+
 
 def merge(dts, samples):
     """
@@ -15,7 +17,7 @@ def merge(dts, samples):
 
         *samples(list)*: character list with sample names.
 
-    Returns: 
+    Returns:
         *merged_lines (nested dicts)*:gff_list has the format as defined in *mirtop.gff.body.read()*.
     """
     logger.debug("MERGE::SAMPLES::given %s" % samples)
@@ -42,6 +44,7 @@ def merge(dts, samples):
                                                              _fix(line, expression)])
     return merged_lines
 
+
 def _format_samples_counts(samples, expression):
     """Return a dictionary of samples counts"""
     if isinstance(samples, list):
@@ -53,20 +56,22 @@ def _format_samples_counts(samples, expression):
         expression = [expression]
     return dict(zip(samples, expression))
 
+
 def _fix(line, expression):
-# Need to fix Read attribute since not usefull when multiple sample in a line.
+    # Need to fix Read attribute since not usefull when multiple sample in a line.
     cols = read_gff_line(line)
     cols['attrb']['Expression'] = expression
     return paste_columns(cols, guess_format(line))
+
 
 def _convert_to_string(d, s):
     v = [str(d[ss]) if ss in d else "0" for ss in s]
     return "%s" % ",".join(v)
 
+
 def _chrom(string):
     return string.split("\t")[0]
 
+
 def _start(string):
     return string.split("\t")[3]
-
-
