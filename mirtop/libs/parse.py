@@ -10,7 +10,8 @@ def parse_cl(in_args):
                 "target": add_subparser_target,
                 "simulator": add_subparser_simulator,
                 "counts": add_subparser_counts,
-                "export": add_subparser_export
+                "export": add_subparser_export,
+                "validator": add_subparser_validator
                 }
     parser = argparse.ArgumentParser(description="small RNA analysis")
     sub_cmd = None
@@ -134,3 +135,10 @@ def add_subparser_counts(subparsers):
     parser = _add_debug_option(parser)
     return parser
 
+def add_subparser_validator(subparsers):
+    parser = subparsers.add_parser("validator", help="validate if the file has the correct format")
+    parser.add_argument("files", nargs="*", help="GFF files")
+    parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
+                        help="folder of output files")
+    parser = _add_debug_option(parser)
+    return parser
