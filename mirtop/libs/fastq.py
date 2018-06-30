@@ -1,18 +1,13 @@
+"""Helpers to work with fastq files"""
+
 import os
-from collections import Counter
 from itertools import product
 import gzip
 
 
 def open_fastq(in_file):
     """ open a fastq file, using gzip if it is gzipped
-        (from bcbio package)
-
-    Args:
-        *in_file(str)*: file name, including full path.
-
-    Returns:
-        *(file)*:File instance to go into for loop.
+    from bcbio package
     """
     _, ext = os.path.splitext(in_file)
     if ext == ".gz":
@@ -23,14 +18,7 @@ def open_fastq(in_file):
 
 
 def is_fastq(in_file):
-    """Check whether a file has the expected extension to be a fastq file
-        txt, fq, fast + gzip/gz (from bcbio package)
-    Args:
-        *in_file(str)*: file name, including full path.
-    
-    Returns:
-        *(boolean)*: True or False
-    """
+    """copy from bcbio package"""
     fastq_ends = [".txt", ".fq", ".fastq"]
     zip_ends = [".gzip", ".gz"]
     base, first_ext = os.path.splitext(in_file)
@@ -43,20 +31,24 @@ def is_fastq(in_file):
         return False
 
 
-def splitext_plus(fn):
+def splitext_plus(f):
     """Split on file extensions, allowing for zipped extensions.
-        (from bcbio package).
-    Args:
-        *in_file(str)*: file name, including full path.
-    
-    Returns:
-        *base, ext(character list)*: basename of the file and 
-            extension of the file.
-     
+    copy from bcbio
     """
-    base, ext = os.path.splitext(fn)
+    base, ext = os.path.splitext(f)
     if ext in [".gz", ".bz2", ".zip"]:
         base, ext2 = os.path.splitext(base)
         ext = ext2 + ext
     return base, ext
 
+
+def write_output(out_file, seqs, minimum=1):
+    idx = 0
+    with open(out_file, 'w') as handle:
+        for seq in seqs:
+            idx += 1
+            qual = "".join(seqs[seq].get())
+            counts = seqs[seq].times
+            if int(counts) > minimum:
+                handle.write(("@seq_{idx}_x{counts}\n{seq}\n+\n{qual}\n").format(**locals()))
+    return out_file
