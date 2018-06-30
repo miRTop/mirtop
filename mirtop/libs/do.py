@@ -21,12 +21,16 @@ def run(cmd, data=None, checks=None, region=None, log_error=True,
         raise
 
 def find_bash():
+    """Find bash full path
+    """
     for test_bash in [find_cmd("bash"), "/bin/bash", "/usr/bin/bash", "/usr/local/bin/bash"]:
         if test_bash and os.path.exists(test_bash):
             return test_bash
     raise IOError("Could not find bash in any standard location. Needed for unix pipes")
 
 def find_cmd(cmd):
+    """Find comand in session
+    """
     try:
         return subprocess.check_output(["which", cmd]).strip()
     except subprocess.CalledProcessError:

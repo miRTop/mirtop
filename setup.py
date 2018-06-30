@@ -3,11 +3,13 @@
 import os
 from setuptools import setup, find_packages
 
-version = '0.3.14a'
+version = '0.3.17a'
+
 
 def readme():
     with open('README.md') as f:
         return f.read()
+
 
 def write_version_py():
     version_py = os.path.join(os.path.dirname(__file__), 'mirtop',

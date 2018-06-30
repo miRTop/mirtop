@@ -11,18 +11,26 @@ from mirtop.mirna.realign import read_id
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
-# Add check first 
+# Add check first
 
 def compare(args):
     """
-    From a list of files produce stats
+    From a list of GFF files produce comparison with a reference set.
+
+    Args:
+        *args(namedtuple)*: arguments parsed from command line with
+            *mirtop.libs.parse.add_subparser_compare()*.
+            First file will be considered the reference set.
+
+    Returns:
+        *(out_file)*: comparison of the GFF files with the reference.
     """
     out = list()
     result = dict()
     reference = read_reference(args.files[0])
     for fn in args.files[1:]:
         if not os.path.exists(fn):
-            raise IOError("%s doesn't exist" %s)
+            raise IOError("%s doesn't exist" % fn)
         result[os.path.basename(fn)] = _compare_to_reference(fn, reference)
     if args.out != "tmp_mirtop":
         fn_out = os.path.join(args.out, "summary.txt")
@@ -35,7 +43,14 @@ def compare(args):
                     print >>outh, "%s\t%s\t%s\t%s\t%s\t%s" % (fn, line[0], read, line[1], line[2], acc)
 
 def read_reference(fn):
-    """Read GFF into UID:Variant key:value dict"""
+    """Read GFF into UID:Variant
+
+    Args:
+        *fn (str)*: GFF file.
+
+    Returns:
+        *srna (dict)*: dict with >>> {'UID': 'iso_snp:-2,...'}
+    """
     srna = dict()
     with open(fn) as inh:
         for line in inh:

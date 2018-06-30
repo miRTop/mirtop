@@ -1,25 +1,8 @@
+"""Helpers to work with fastq files"""
+
 import os
-from collections import Counter
-from classes import quality
 from itertools import product
 import gzip
-
-
-def collapse(in_file):
-    """collapse identical sequences and keep Q"""
-    keep = Counter()
-    with open_fastq(in_file) as handle:
-        for line in handle:
-            if line.startswith("@"):
-                line.strip()
-                seq = handle.next().strip()
-                handle.next().strip()
-                qual = handle.next().strip()
-                if seq in keep:
-                    keep[seq].update(qual)
-                else:
-                    keep[seq] = quality(qual)
-    return keep
 
 
 def open_fastq(in_file):
@@ -60,7 +43,7 @@ def splitext_plus(f):
 
 
 def write_output(out_file, seqs, minimum=1):
-    idx =0
+    idx = 0
     with open(out_file, 'w') as handle:
         for seq in seqs:
             idx += 1

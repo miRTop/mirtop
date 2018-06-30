@@ -17,7 +17,9 @@ def _coord(sequence, start, mirna, precursor, iso):
     if iso.subs:
         deletion = 1 if iso.subs[0][1] == "-" else 0
     end = (iso.end - len(iso.add) - insertion + deletion)
-    logger.debug("COOR:: s:%s len:%s end:%s fixedEnd:%s mirna:%s iso:%s" % (start, len(sequence), iso.end, end, mirna, iso.format()))
+    logger.debug("COOR:: s:%s len:%s end:%s fixedEnd:%s mirna:%s iso:%s" % (
+        start, len(sequence), iso.end, end, mirna, iso.format())
+        )
     dif = abs(mirna[0] - start)
     if start < mirna[0]:
         iso.t5 = sequence[:dif].upper()
@@ -26,7 +28,9 @@ def _coord(sequence, start, mirna, precursor, iso):
     elif start == mirna[0]:
         iso.t5 = 0
     if dif > 4:
-        logger.debug("COOR::start > 3 %s %s %s %s %s" % (start, len(sequence), dif, mirna, iso.format()))
+        logger.debug("COOR::start > 3 %s %s %s %s %s" % (
+                        start, len(sequence),
+                        dif, mirna, iso.format()))
         return None
 
     dif = abs(mirna[1] - end)
@@ -42,20 +46,30 @@ def _coord(sequence, start, mirna, precursor, iso):
     elif end == mirna[1]:
         iso.t3 = 0
     if dif > 4:
-        logger.debug("COOR::end > 3 %s %s %s %s %s" % (len(sequence), end, dif, mirna, iso.format()))
+        logger.debug("COOR::end > 3 %s %s %s %s %s" % (
+            len(sequence), end, dif, mirna, iso.format()))
         return None
-    # logger.debug("coor end:%s %s %s %s %s iso:%s" % (start, len(sequence), end, dif, mirna, iso.format()))
     return True
+
 
 def annotate(reads, mature_ref, precursors):
     """
     Using coordinates, mismatches and realign to annotate isomiRs
 
-    reads: dict object that comes from read_bam fn
-    mirbase_ref: dict object that comers from mirtop.mirna.read_mature
-    precursors: dict object (key : fasta) that comes from mirtop.mirna.fasta.read_precursor
+    Args:
+        *reads(dicts of hits)*:
+            dict object that comes from *mirotp.bam.bam.read_bam()*
 
-    Return: dict object with reasd as Keys and...
+        *mirbase_ref (dict of mirna positions)*:
+            dict object that comers from *mirtop.mirna.read_mature()*
+
+        *precursors dict object (key : fasta)*:
+            that comes from *mirtop.mirna.fasta.read_precursor()*
+
+    Return:
+        *reads (dict)*:
+            dictionary where keys are read_id and
+            values are *mirtop.realign.hits*
     """
     n_iso = 0
     for r in reads:

@@ -1,6 +1,8 @@
 - 0.3.*a
 
- * Make GFF default.
+ * Normalize the read of the tool outputs.
+ * Add docs with autodoc plugin.
+ * Validator by @Vbarrera.
  * Improve examples commands and test coverage.
  * Only counts sequences with Filter == Pass during stats.
  * Counts cmd add nucleotide information when --add-extra option is on.

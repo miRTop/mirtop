@@ -30,6 +30,7 @@ def make_workdir():
     finally:
         os.chdir(orig_dir)
 
+
 def expected_failure(test):
     """Small decorator to mark tests as expected failure.
     Useful for tests that are work-in-progress.
@@ -44,9 +45,11 @@ def expected_failure(test):
             raise AssertionError('Failure expected')
     return inner
 
+
 class AutomatedAnalysisTest(unittest.TestCase):
     """Setup a full automated analysis and run the pipeline.
     """
+
     def setUp(self):
         self.data_dir = os.path.join(os.path.dirname(__file__), "data", "automated")
 
@@ -175,7 +178,6 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print " ".join(clcode)
             subprocess.check_call(clcode)
 
-
     @attr(complete=True)
     @attr(cmd_stats=True)
     def test_srnaseq_stats(self):
@@ -216,15 +218,15 @@ class AutomatedAnalysisTest(unittest.TestCase):
         Run export command
         """
         with make_workdir():
-          clcode = ["mirtop",
-                    "export",
-                    "-o", "test_out_mirs",
-                    "--hairpin", "../../data/examples/annotate/hairpin.fa",
-                    "--gtf", "../../data/examples/annotate/hsa.gff3",
-                    "../../data/examples/gff/correct_file.gff"]
-          print ""
-          print " ".join(clcode)
-          subprocess.check_call(clcode)
+            clcode = ["mirtop",
+                      "export",
+                      "-o", "test_out_mirs",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "../../data/examples/gff/correct_file.gff"]
+            print ""
+            print " ".join(clcode)
+            subprocess.check_call(clcode)
 
     @attr(complete=True)
     @attr(cmd_count=True)
@@ -233,12 +235,12 @@ class AutomatedAnalysisTest(unittest.TestCase):
         Run count command
         """
         with make_workdir():
-          clcode = ["mirtop",
-                    "count",
-                    "-o", "test_out_mirs",
-                    "--hairpin", "../../data/examples/annotate/hairpin.fa",
-                    "--gtf", "../../data/examples/annotate/hsa.gff3",
-                    "../../data/examples/synthetic/let7a-5p.gtf"]
-          print ""
-          print " ".join(clcode)
-          subprocess.check_call(clcode)
+            clcode = ["mirtop",
+                      "count",
+                      "-o", "test_out_mirs",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "../../data/examples/synthetic/let7a-5p.gtf"]
+            print ""
+            print " ".join(clcode)
+            subprocess.check_call(clcode)

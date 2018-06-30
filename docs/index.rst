@@ -10,6 +10,7 @@ Welcome to mirtop's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   competition.rst
    installation.md
    quick_start.md
    output.md

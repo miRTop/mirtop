@@ -1,3 +1,5 @@
+"""GFF proxy converter"""
+
 import os.path as op
 
 from mirtop.mirna import fasta, mapper
@@ -13,17 +15,15 @@ def reader(args):
     """
     Realign BAM hits to miRBAse to get better accuracy and annotation
     """
-    sep = " " if args.out_format == "gtf" else "="
     samples = []
     database = mapper.guess_database(args.gtf)
     args.database = database
-    # hairpin, mirna = download_mirbase(args)
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     args.precursors = precursors
     matures = mapper.read_gtf_to_precursor(args.gtf)
     args.matures = matures
-    # check numnbers of miRNA and precursors read
-    # print message if numbers mismatch
+    # TODO check numbers of miRNA and precursors read
+    # TODO print message if numbers mismatch
     out_dts = dict()
     for fn in args.files:
         if args.format != "gff":
@@ -31,16 +31,15 @@ def reader(args):
             samples.append(sample)
             fn_out = op.join(args.out, sample + ".%s" % args.out_format)
         if args.format == "BAM":
-            reads = _read_bam(fn, precursors)
+            reads = _read_bam(fn, args)
         elif args.format == "seqbuster":
-            reads = seqbuster.read_file(fn, precursors)
-            custom = seqbuster.header()
+            reads = seqbuster.read_file(fn, args)
         elif args.format == "srnabench":
             out_dts[fn] = srnabench.read_file(fn, args)
         elif args.format == "prost":
             reads = prost.read_file(fn, precursors, database, args.gtf)
         elif args.format == "isomirsea":
-            out_dts[fn] = isomirsea.read_file(fn, database, args)
+            out_dts[fn] = isomirsea.read_file(fn, args)
         elif args.format == "gff":
             samples.extend(header.read_samples(fn))
             out_dts[fn] = body.read(fn, args)
@@ -55,6 +54,7 @@ def reader(args):
     fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
     _write(merged, header.create(samples, database, ""), fn_merged_out)
 
+
 def _write(lines, header, fn):
     out_handle = open(fn, 'w')
     print >>out_handle, header
@@ -63,6 +63,7 @@ def _write(lines, header, fn):
             for hit in lines[m][s]:
                 print >>out_handle, hit[4]
     out_handle.close()
+
 
 def _read_bam(bam_fn, precursors):
     if bam_fn.endswith("bam") or bam_fn.endswith("sam"):

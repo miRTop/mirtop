@@ -1,31 +1,43 @@
 """ Read seqbuster files"""
 
-import traceback
-import os.path as op
-import os
-import re
-import shutil
-import pandas as pd
-import pysam
 from collections import defaultdict
 
-from mirtop.libs import do
-from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 from mirtop.mirna.realign import isomir, hits
 from mirtop.bam import filter
 
 logger = mylog.getLogger(__name__)
 
+
 def header():
+    """
+    Custom header for seqbuster importer.
+
+    Returns:
+        *(str)*: seqbuster header string.
+    """
     h = ("## CMD: seqbuster: http://seqcluster.readthedocs.io/mirna_annotation.html#mirna-isomir-annotation-with-java\n"
         "# iso_snp are not filtered yet. Use isomiRs R pacakge to correct for error sequencing\n")
     return h
 
-def read_file(fn, precursors):
+
+def read_file(fn, args):
     """
-    read bam file and perform realignment of hits
+    Read seqbuster file and convert to mirtop GFF format.
+
+    Args:
+        *fn(str)*: file name with seqbuster output information.
+
+        *database(str)*: database name.
+
+        *args(namedtuple)*: arguments from command line.
+            See *mirtop.libs.parse.add_subparser_gff()*.
+
+    Returns:
+        *reads*: dictionary where keys are read_id and values are *mirtop.realign.hits*
+
     """
+    precursors = args.precursors
     reads = defaultdict(hits)
     with open(fn) as handle:
         handle.readline()
@@ -73,4 +85,3 @@ def _get_freq(name):
     except:
         return 0
     return counts
-

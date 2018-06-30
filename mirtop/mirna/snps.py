@@ -113,7 +113,7 @@ def create_vcf(isomirs, matures, gtf, vcf_file=None):
     """
     Create vcf file of changes for all samples.
     PASS will be ones with > 3 isomiRs supporting the position
-         and > 30% of reads, otherwise LOW
+    and > 30% of reads, otherwise LOW
     """
     global STDOUT
     isomirs['sv'] = [_get_reference_position(m) for m in isomirs["isomir"]]

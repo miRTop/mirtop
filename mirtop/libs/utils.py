@@ -6,6 +6,11 @@ import contextlib
 
 @contextlib.contextmanager
 def chdir(p):
+    """Change dir temporaly using `with`:
+
+    >>> with chdir(temporal):
+            do_something()
+    """
     cur_dir =  os.getcwd()
     os.chdir(p)
     try:
@@ -14,25 +19,20 @@ def chdir(p):
         os.chdir(cur_dir)
 
 def safe_dirs(dirs):
+    """Create folder if not exitsts 
+    """
     if not os.path.exists(dirs):
         os.makedirs(dirs)
     return dirs
 
 def safe_remove(fn):
+    """Remove file skipping 
+    """
     if os.path.exists(fn):
         if os.path.isfile(fn):
             os.remove(fn)
         elif os.path.isdir(fn):
             shutil.rmtree(fn)
-
-@contextlib.contextmanager
-def safe_run(fn):
-    safe_remove(fn)
-    try:
-        yield
-    except:
-        safe_remove(fn)
-        raise
 
 def file_exists(fname):
     """Check if a file exists and is non-empty.

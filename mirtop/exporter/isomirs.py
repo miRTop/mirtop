@@ -19,15 +19,22 @@ from mirtop.mirna.realign import get_mature_sequence, align_from_variants, read_
 logger = mylog.getLogger(__name__)
 
 def convert(args):
+    """
+    Main function to convert from GFF3 to isomiRs Bioc Package.
+
+    Args:
+      *args*: supported options for this sub-command.
+        See *mirtop.libs.parse.add_subparser_export()*.
+    """
     samples = []
     database = mapper.guess_database(args.gtf)
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     matures = mapper.read_gtf_to_precursor(args.gtf)
     for fn in args.files:
         logger.info("Reading %s" % fn)
-        read_file(fn, precursors, matures, args.out)
+        _read_file(fn, precursors, matures, args.out)
 
-def read_file(fn, precursors, matures, out_dir):
+def _read_file(fn, precursors, matures, out_dir):
     samples = read_samples(fn)
     for sample in samples:
         with open(os.path.join(out_dir, "%s.mirna" % sample), 'w') as outh:

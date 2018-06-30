@@ -1,25 +1,29 @@
 """ Read sRNAbench files"""
 
-import traceback
-import os.path as op
 import os
-import re
-import shutil
-import pandas as pd
-import pysam
 from collections import defaultdict
 
-from mirtop.libs import do
-from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
-from mirtop.gff.body import read_attributes, paste_columns, variant_with_nt, read_gff_line
-from mirtop.mirna.realign import make_cigar, get_mature_sequence, make_id
+from mirtop.gff.body import paste_columns, variant_with_nt, read_gff_line
+from mirtop.mirna.realign import make_cigar, make_id
 logger = mylog.getLogger(__name__)
 
 
 def read_file(folder, args):
     """
-    read srnabench file and perform realignment of hits
+    Read sRNAbench file and convert to mirtop GFF format.
+
+    Args:
+        *fn(str)*: file name with sRNAbench output information.
+
+        *database(str)*: database name.
+
+        *args(namedtuple)*: arguments from command line.
+            See *mirtop.libs.parse.add_subparser_gff()*.
+
+    Returns:
+        *reads (nested dicts)*:gff_list has the format as defined in *mirtop.gff.body.read()*.
+
     """
     reads_anno = os.path.join(folder, "reads.annotation")
     reads_iso = os.path.join(folder, "microRNAannotation.txt")
@@ -35,7 +39,7 @@ def read_file(folder, args):
     n_notindb = 0
     reads = defaultdict(dict)
     seen = set()
-    
+
     source_iso = _read_iso(reads_iso)
     logger.info("Reads with isomiR information %s" % len(source_iso))
     with open(reads_anno) as handle:
@@ -51,7 +55,7 @@ def read_file(folder, args):
             if cols[3].find("mature") == -1:
                 n_in += 1
                 continue
-            
+
             counts = int(cols[1])
 
             hit = len(set([mirna.split("#")[1] for mirna in cols[4].split("$")]))
@@ -94,7 +98,7 @@ def read_file(folder, args):
                 if len(precursors[chrom]) < start + len(query_sequence):
                     n_out += 1
                     continue
-                
+
                 Filter = "Pass"
                 cigar = make_cigar(query_sequence,
                                    precursors[chrom][start:end])

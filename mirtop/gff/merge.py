@@ -6,7 +6,17 @@ logger = mylog.getLogger(__name__)
 
 def merge(dts, samples):
     """
-    For dict with samples lines merge into one file
+    For dictionary with sample as keys and values as lines
+    merge them into one GFF file.
+
+    Args:
+        *dts(dict)*: dictionary as >>> {'file': {'mirna': {start: gff_list}}}.
+        gff_list has the format as defined in *mirtop.gff.body.read()*.
+
+        *samples(list)*: character list with sample names.
+
+    Returns: 
+        *merged_lines (nested dicts)*:gff_list has the format as defined in *mirtop.gff.body.read()*.
     """
     logger.debug("MERGE::SAMPLES::given %s" % samples)
     all_data = defaultdict(dict)
