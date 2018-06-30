@@ -87,7 +87,7 @@ def create(reads, database, sample, args):
 
                 line = paste_columns(read_gff_line(line), sep = sep)
                 if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:
-                    logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, res, seen_ann[annotation]))
+                    logger.warning("Same isomir %s from different sequence: \n%s and \n%s" % (annotation, line, seen_ann[annotation]))
                 seen_ann[annotation] = line
                 logger.debug("GFF::external %s" % iso.external)
                 if start not in lines[chrom]:
