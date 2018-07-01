@@ -152,7 +152,7 @@ class FunctionsTest(unittest.TestCase):
         if expression != "1,2":
             raise ValueError("This is wrong: %s" % expression)
 
-    @attr(variant=True)
+    @attr(mature=True)
     def test_variant(self):
         """testing get mature sequence"""
         from mirtop.mirna import fasta, mapper
@@ -304,3 +304,17 @@ class FunctionsTest(unittest.TestCase):
         """testing stats function"""
         from mirtop.gff import stats
         print stats._calc_stats("data/examples/gff/correct_file.gff")
+
+    @attr(variant=True)
+    def test_rvariant(self):
+        """testing parsing string variant"""
+        from mirtop.gff import body
+        gff = body.read_variant("iso_5p:-1,iso_add:2,iso_snp_central_supp")
+        if len(gff) != 3:
+            raise ValueError("Error size of output. Expectd 3.")
+        if cmp(["iso_5p", "iso_add", "iso_snp_central_supp"], gff.keys()):
+            raise ValueError("Not found expected keys.")
+        if not isinstance(gff["iso_snp_central_supp"], bool):
+            raise ValueError("iso_snp_central_supp should be boolean.")
+        if cmp([-1, 2, True], gff.values()):
+            raise ValueError("Not found expected Values.")

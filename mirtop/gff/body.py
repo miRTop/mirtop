@@ -1,7 +1,8 @@
 """GFF reader and creator helpers"""
 
 from collections import defaultdict, OrderedDict
-from mirtop.mirna.realign import get_mature_sequence, align_from_variants, variant_to_5p, variant_to_3p, variant_to_add, read_id
+from mirtop.mirna.realign import get_mature_sequence, align_from_variants, read_id
+from mirtop.mirna.realign import variant_to_5p, variant_to_3p, variant_to_add
 from mirtop.gff.header import read_samples
 
 import mirtop.libs.logger as mylog
@@ -90,7 +91,8 @@ def create(reads, database, sample, args):
                     line = "%s Changes %s;" % (line, extra)
 
                 line = paste_columns(read_gff_line(line), sep=sep)
-                if annotation in seen_ann and seq.find("N") < 0 and seen_ann[annotation].split("\t")[0].find("N") < 0:
+                if annotation in seen_ann and seq.find("N") < 0 and (
+                        seen_ann[annotation].split("\t")[0].find("N") < 0):
                     logger.warning(
                         "Same isomir %s from different sequence:"
                         " \n%s and \n%s" % (annotation, line,
@@ -99,7 +101,8 @@ def create(reads, database, sample, args):
                 logger.debug("GFF::external %s" % iso.external)
                 if start not in lines[chrom]:
                     lines[chrom][start] = []
-                lines[chrom][start].append([annotation, chrom, counts, sample, line])
+                lines[chrom][start].append([annotation, chrom,
+                                            counts, sample, line])
                 logger.debug("GFF::%s" % line)
                 n_hits += 1
             else:
@@ -135,6 +138,30 @@ def read_attributes(gff_line, sep=" "):
         item_pair = gff_item.strip().split(sep)
         if len(item_pair) > 1:
             gff_dict[item_pair[0].strip()] = item_pair[1].strip()
+    return gff_dict
+
+
+def read_variant(attrb, sep=" "):
+    """
+    Read string in variants attribute.
+
+    Args:
+        *attrb(str)*: string in Variant attribute.
+
+    Returns:
+        *(gff_dict)*: dictionary with:
+            >>> {'iso_3p': -3, ...}
+    """
+    gff_dict = OrderedDict()
+    logger.debug("variant: %s" % attrb)
+    for gff_item in attrb.strip().split(","):
+        item_pair = gff_item.strip().split(":")
+        if len(item_pair) > 1:
+            gff_dict[item_pair[0].strip()] = int(item_pair[1].strip())
+        else:
+            gff_dict[item_pair[0].strip()] = True
+    logger.debug("Keys found: %s" % gff_dict.keys())
+    logger.debug("Values found: %s" % gff_dict.values())
     return gff_dict
 
 

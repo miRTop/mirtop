@@ -9,6 +9,7 @@ logger = mylog.getLogger(__name__)
 
 
 class hits:
+    """"Class with alignment information."""
 
     def __init__(self):
         self.sequence = ""
@@ -30,6 +31,9 @@ class hits:
 
 
 class isomir:
+    """
+    Class to represent isomiRs information.
+    """
 
     def __init__(self):
         self.t5 = []
@@ -47,6 +51,7 @@ class isomir:
         self.strand = "+"
 
     def set_pos(self, start, l, strand="+"):
+        """Set end position"""
         self.strand = strand
         self.start = start
         self.end = start + l - 1
@@ -55,6 +60,7 @@ class isomir:
             self.end = start
 
     def formatGFF(self):
+        """Create Variant attribute."""
         value = ""
         subs = self.subs
         if self.external != "notsure" and self.external != "":
@@ -87,6 +93,7 @@ class isomir:
         return value[:-1]
 
     def format(self, sep="\t"):
+        """Create tabular line from variant fields."""
         subs = "".join(["".join(map(str, mism)) for mism in self.subs])
         if not subs:
             subs = "0"
@@ -95,6 +102,7 @@ class isomir:
                                    self.t5, sep, self.t3)
 
     def format_id(self, sep="\t"):
+        """Create simple identifier from variant fields."""
         subs = ["".join(["".join([c[2], str(c[0]), c[1]]) for c in self.subs])]
         if not subs:
             subs = []
@@ -105,6 +113,7 @@ class isomir:
         return sep.join([f for f in full if f])
 
     def get_score(self, sc):
+        """Get score from variant fields."""
         for a in self.add:
             if a in ['A', 'T']:
                 sc -= 0.25
@@ -115,6 +124,7 @@ class isomir:
         return sc
 
     def is_iso(self):
+        """Define whether element is isomiR or not."""
         if self.external == "NA":
             return False
         if self.t5 or self.t3 or self.add or self.subs or self.external != "":
@@ -124,8 +134,20 @@ class isomir:
 
 def read_id(idu):
     """
+    Read a unique identifier for the sequence and
+    converte it to the nucleotides,
+    replacing an unique character for 3 nts.
+
+    It uses the code from *mirtop.mirna.keys()*.
+
     Inspared in MINTplate: https://cm.jefferson.edu/MINTbase
     https://github.com/TJU-CMC-Org/MINTmap/tree/master/MINTplates
+
+    Args:
+        *idu(str)*: unique identifier for the sequence.
+
+    Returns:
+        *seq(str)*: nucleotides sequences.
     """
     seq = ""
     for i in idu:
@@ -138,35 +160,57 @@ def read_id(idu):
 
 def make_id(seq):
     """
+    Create a unique identifier for the sequence from the nucleotides,
+    replacing 3 nts for another unique character.
+
+    It uses the code from *mirtop.mirna.keys()*.
+
     Inspared in MINTplate: https://cm.jefferson.edu/MINTbase
     https://github.com/TJU-CMC-Org/MINTmap/tree/master/MINTplates
+
+    Args:
+        *seq(str)*: nucleotides sequences.
+
+    Returns:
+        *idName(str)*: unique identifier for the sequence.
     """
     start = 0
-    idName = ""
+    idu = ""
     if not seq:
         raise ValueError("Length of sequence is Empty.")
     for i in range(0, len(seq) + 1, 3):
         if i == 0:
             continue
         trint = seq[start:i]
-        idName += NT2CODE[trint]
+        idu += NT2CODE[trint]
         start = i
     if len(seq) > i:
         dummy = "A" * (3 - (len(seq) - i))
         trint = seq[i:len(seq)]
-        idName += NT2CODE["%s%s" % (trint, dummy)]
-        idName += str(len(dummy))
-    return idName
+        idu += NT2CODE["%s%s" % (trint, dummy)]
+        idu += str(len(dummy))
+    return idu
 
 
-def align(x, y, local = False):
+def align(x, y, local=False):
     """
+    Pairwise alignments between two sequenes.
     https://medium.com/towards-data-science/pairwise-sequence-alignment-using-biopython-d1a9d0ba861f
+
+    Args:
+        *x(str)*: short sequence.
+
+        *y(str)*: long sequence.
+
+        *local(boolean)*: local or global alignment.
+
+    Returns:
+        *aligned_x(hit)*: alignment information, socre and positions.
     """
     if local:
         aligned_x = pairwise2.align.localxx(x, y)[0]
     else:
-        aligned_x =  pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
+        aligned_x = pairwise2.align.globalms(x, y, 1, -1, -1, -0.5)[0]
     aligned_x = list(aligned_x)
     n_x = aligned_x[0]
     if "N" in n_x:
@@ -191,9 +235,17 @@ def make_cigar(seq, mature):
     """
     Function that will create CIGAR string from aligment
     between read and reference sequence.
+
+    Args:
+        *seq(str)*: read sequence.
+
+        *mature(str)*: short sequence.
+
+    Return:
+        *short(str)*: CIGAR string.
     """
     cigar = ""
-    for pos in range(0,len(seq)):
+    for pos in range(0, len(seq)):
         if seq[pos] == mature[pos]:
             cigar += "M"
         elif seq[pos] != mature[pos] and seq[pos] != "-" and mature[pos] != "-":
@@ -223,22 +275,34 @@ def make_cigar(seq, mature):
 
 
 def cigar_correction(cigarLine, query, target):
-    """Read from cigar in BAM file to define mismatches"""
+    """
+    Read from CIGAR in BAM file to define mismatches.
+
+    Args:
+        *cirgarLine(str)*: CIGAR string from BAM file.
+
+        *query(str)*: read sequence.
+
+        *target(str)*: target sequence.
+
+    Returns:
+        *(list)*: [query_nts, target_nts]
+    """
     query_pos = 0
     target_pos = 0
     query_fixed = []
     target_fixed = []
     for (cigarType, cigarLength) in cigarLine:
-        if cigarType == 0: #match
+        if cigarType == 0:  # match
             query_fixed.append(query[query_pos:query_pos+cigarLength])
             target_fixed.append(target[target_pos:target_pos+cigarLength])
             query_pos = query_pos + cigarLength
             target_pos = target_pos + cigarLength
-        elif cigarType == 1: #insertions
+        elif cigarType == 1:  # insertions
             query_fixed.append(query[query_pos:query_pos+cigarLength])
             target_fixed.append("".join(["-"] * cigarLength))
             query_pos = query_pos + cigarLength
-        elif cigarType == 2: #deletion
+        elif cigarType == 2:  # deletion
             target_fixed.append(target[target_pos:target_pos+cigarLength])
             query_fixed.append("".join(["-"] * cigarLength))
             target_pos = target_pos + cigarLength
@@ -248,7 +312,17 @@ def cigar_correction(cigarLine, query, target):
 def expand_cigar(cigar):
     """
     From short CIGAR version to long CIGAR version
-    where each character is each nts in the sequence
+    where each character is each nts in the sequence.
+
+    Args:
+        *cigar(str)*: CIGAR string.
+
+        >>> 10MA3M
+
+    Returns:
+        *cigar_long(str)*: CIGAR long.
+
+        >>> MMMMMMMMMMAMMM
     """
     cigar_long = ""
     n = 0
@@ -270,10 +344,18 @@ def expand_cigar(cigar):
 def cigar2snp(cigar, reference):
     """
     From a CIGAR string and reference sequence
+    detect mistmatches positions and reference and
+    target nucleotides.
+
+    Args:
+        *cigar(str)*: CIGAR string.
+
+        *reference(str)*: reference sequence.
 
     Returns:
-        position of mismatches (indels included) as
-        [pos, seq_nt, ref_nt]
+        *snp(list)*: position of mismatches (indels included) as:
+
+        >>> [pos, seq_nt, ref_nt]
     """
     snp = []
     pos_seq = 0
@@ -297,12 +379,35 @@ def cigar2snp(cigar, reference):
 
 
 def reverse_complement(seq):
+    """Get reverse complement of a sequences
+
+    Args:
+        *seq(str)*: sequence.
+
+        >>> GCAT
+
+    Returns:
+        *(str)*: reverse complemente sequence:
+
+        >>> ATGC
+    """
     return Seq(seq).reverse_complement()
 
 
-def get_mature_sequence(precursor, mature, exact = False):
-    """From precursor FASTA and mature positions
-       Get mature sequence +- 4 flanking nts
+def get_mature_sequence(precursor, mature, exact=False):
+    """
+    From precursor and mature positions
+       get mature sequence with +/- 4 flanking nts.
+
+    Args:
+       *precursor(str)*: long sequence.
+
+       *mature(list)*: [start, end].
+
+       *exact(boolean)*: not add 4+/- flanking nts.
+
+    Returns:
+        *(str)*: mature sequence.
     """
     p = "NNNNN%s" % precursor
     s = mature[0] + 5
@@ -313,10 +418,22 @@ def get_mature_sequence(precursor, mature, exact = False):
 
 
 def align_from_variants(sequence, mature, variants):
-    """Giving the sequence read,
+    """
+    Giving the sequence read,
        the mature from get_mature_sequence,
        and the variant GFF annotation:
-       Get a list of substitutions
+       get a list of substitutions
+
+    Args:
+        *sequence(str)*: read sequence.
+
+        *mature(str)*: mature sequence from
+            *mirtop.mirna.realing.get_mature_sequence()*.
+
+        *variants(str)*: string from Variant attribute in GFF file.
+
+    Returns:
+        *snp(list)*: [[pos, target, reference]]
     """
     init_log = "iso:%s -> %s\nref:%s" % (sequence, variants, mature)
     snps = []
@@ -367,16 +484,21 @@ def align_from_variants(sequence, mature, variants):
 
 
 def variant_to_5p(hairpin, pos, variant):
-    """from a sequence and a start position get the nts
-       +/- indicated by variants:
-
-       pos option is 0-base-index
+    """
+    From a sequence and a start position get the nts
+       +/- indicated by iso_5p. Pos option is 0-base-index
 
     Args:
-       AAATTTT, 3, -1
-    Returns:
-       T
+       *hairpin(str)*: long sequence:
+            >>> AAATTTT
 
+       *position(int)*: >>> 3
+
+       *variant(int)*: number of nts involved in the variant:
+            >>> -1
+    Returns:
+       *(str)*: nucleotide involved in the variant:
+            >>> T
     """
     pos = pos[0]
     iso_t5 = [v for v in variant.split(",") if v.startswith("iso_5p")]
@@ -391,16 +513,21 @@ def variant_to_5p(hairpin, pos, variant):
 
 
 def variant_to_3p(hairpin, pos, variant):
-    """from a sequence and a end position get the nts
-       +/- indicated by variants:
-
-        pos option is 0-base-index
+    """
+    From a sequence and a start position get the nts
+       +/- indicated by iso_3p. Pos option is 0-base-index
 
     Args:
-        AAATTTT, 3, -1
-    Returns:
-       A
+       *hairpin(str)*: long sequence:
+            >>> AAATTTT
 
+       *position(int)*: >>> 3
+
+       *variant(int)*: number of nts involved in the variant:
+            >>> -1
+    Returns:
+       *(str)*: nucleotide involved in the variant:
+            >>> A
     """
     pos = pos[1]
     iso_t3 = [v for v in variant.split(",") if v.startswith("iso_3p")]
@@ -415,17 +542,21 @@ def variant_to_3p(hairpin, pos, variant):
 
 
 def variant_to_add(read, variant):
-    """from a sequence and a end position get the nts
-       +/- indicated by variants:
-
-       pos option is 0-base-index
-       variant is always positive
+    """
+    From a sequence and a start position get the nts
+       +/- indicated by iso_3p. Pos option is 0-base-index
 
     Args:
-        AAATTTT, 3, 2
+       *hairpin(str)*: long sequence:
+            >>> AAATTTT
 
+       *position(int)*: >>> 3
+
+       *variant(int)*: number of nts involved in the variant:
+            >>> 2
     Returns:
-       TT
+       *(str)*: nucleotide involved in the variant:
+            >>> TT
     """
     add = [v for v in variant.split(",") if v.startswith("iso_add")]
     if add:

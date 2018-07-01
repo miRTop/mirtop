@@ -6,7 +6,8 @@ import mirtop.libs.logger as mylog
 from mirtop.mirna import fasta, mapper
 from mirtop.gff.body import read_attributes
 from mirtop.gff.header import read_samples
-from mirtop.mirna.realign import get_mature_sequence, align_from_variants, read_id, variant_to_5p, variant_to_3p, variant_to_add
+from mirtop.mirna.realign import get_mature_sequence, align_from_variants
+from mirtop.mirna.realign import read_id, variant_to_5p, variant_to_3p, variant_to_add
 
 logger = mylog.getLogger(__name__)
 
@@ -19,21 +20,21 @@ def convert(args):
       *args*: supported options for this sub-command.
         See *mirtop.libs.parse.add_subparser_export()*.
     """
-    samples = []
-    database = mapper.guess_database(args.gtf)
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     matures = mapper.read_gtf_to_precursor(args.gtf)
     for fn in args.files:
         logger.info("Reading %s" % fn)
         _read_file(fn, precursors, matures, args.out)
 
+
 def _read_file(fn, precursors, matures, out_dir):
     samples = read_samples(fn)
     for sample in samples:
         with open(os.path.join(out_dir, "%s.mirna" % sample), 'w') as outh:
-            print >>outh, "\t".join(["seq", "name", "freq", "mir", "start", "end",
-                                     "mism", "add", "t5", "t3", "s5", "s3", "DB",
-                                     "precursor", "ambiguity"])
+            print >>outh, "\t".join(
+                ["seq", "name", "freq", "mir", "start", "end",
+                 "mism", "add", "t5", "t3", "s5", "s3", "DB",
+                 "precursor", "ambiguity"])
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
@@ -49,8 +50,9 @@ def _read_file(fn, precursors, matures, out_dir):
                                attr["Variant"])
             add = variant_to_add(read,
                                  attr["Variant"])
-            mature_sequence = get_mature_sequence(precursors[attr["Parent"]],
-                                                  matures[attr["Parent"]][attr["Name"]])
+            mature_sequence = get_mature_sequence(
+                precursors[attr["Parent"]],
+                matures[attr["Parent"]][attr["Name"]])
             mm = align_from_variants(read,
                                      mature_sequence,
                                      attr["Variant"])
@@ -61,58 +63,13 @@ def _read_file(fn, precursors, matures, out_dir):
             else:
                 mm = "0"
             hit = attr["Hits"] if "Hits" in attr else "1"
-            logger.debug("exporter::isomir::decode %s" % [attr["Variant"], t5, t3, add, mm])
-# Error if attr["Read"] doesn't exist
-            line = [read, attr["Read"], "0", attr["Name"], cols[1], cols[2], mm, add, t5, t3, "NA", "NA", "miRNA",  attr["Parent"], hit]
+            logger.debug("exporter::isomir::decode %s" % [attr["Variant"],
+                                                          t5, t3, add, mm])
+            # Error if attr["Read"] doesn't exist
+            line = [read, attr["Read"], "0", attr["Name"], cols[1], cols[2],
+                    mm, add, t5, t3, "NA", "NA", "miRNA",  attr["Parent"], hit]
             for sample, counts in zip(samples, attr["Expression"].split(",")):
-                with open(os.path.join(out_dir, "%s.mirna" % sample), 'a') as outh:
+                with open(os.path.join(out_dir, "%s.mirna" % sample),
+                          'a') as outh:
                     line[2] = counts
                     print >>outh, "\t".join(line)
-
-def _get_5p(hairpin, pos, variant):
-    """from a sequence and a start position get the nts
-       +/- indicated by variants:
-           AAATTTT, 3, -1
-           return: T
-       pos option is 0-base-index
-    """
-    pos = pos[0]
-    t5 = [v for v in variant.split(",") if v.startswith("iso_5p")]
-    if t5:
-        t5 = int(t5[0].split(":")[-1][-1])
-        if t5 > 0:
-            return hairpin[pos - t5:pos]
-        elif t5 < 0:
-            return hairpin[pos:pos + t5].lower()
-    return "0"
-
-def _get_3p(hairpin, pos, variant):
-    """from a sequence and a end position get the nts
-       +/- indicated by variants:
-           AAATTTT, 3, -1
-           return: A
-       pos option is 0-base-index
-    """
-    pos = pos[1]
-    t3 = [v for v in variant.split(",") if v.startswith("iso_3p")]
-    if t3:
-        t3 = int(t3[0].split(":")[-1][-1])
-        if t3 > 0:
-            return hairpin[pos:pos + t3]
-        elif t3 < 0:
-            return hairpin[pos - t3:pos].lower()
-    return "0"
-
-def _get_add(read, variant):
-    """from a sequence and a end position get the nts
-       +/- indicated by variants:
-           AAATTTT, 3, 2
-           return: TT
-       pos option is 0-base-index
-       variant is always positive
-    """
-    add = [v for v in variant.split(",") if v.startswith("iso_add")]
-    if add:
-        add = int(add[0].split(":")[-1][-1]) * -1
-        return read[add:]
-    return "0"
