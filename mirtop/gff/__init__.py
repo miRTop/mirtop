@@ -70,5 +70,6 @@ def _read_bam(bam_fn, precursors):
         logger.info("Reading %s" % bam_fn)
         reads = read_bam(bam_fn, precursors)
     else:
-        raise ValueError("Format not recognized. Only working with BAM/SAM files.")
+        raise ValueError("Format not recognized."
+                         " Only working with BAM/SAM files.")
     return reads

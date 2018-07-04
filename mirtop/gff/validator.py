@@ -1,5 +1,7 @@
 from mirtop.gff.body import read_gff_line
 import mirtop.libs.logger as mylog
+from mirtop.gff import gff_versions as version
+
 logger = mylog.getLogger(__name__)
 
 
@@ -68,9 +70,7 @@ def _check_line(line, num, num_samples):
     # Check attribute-variant
     variant = (fields['attrb']['Variant']).lower()
     valid_variant = False
-    valid_variants = ["iso_5p", "iso_3p", "iso_add", "iso_snp_seed",
-                      "iso_snp_central_offset", "iso_snp_central",
-                      "iso_snp_central_supp", "iso_snp", "NA"]
+    valid_variants = version.GFFv[version.current]
     if (any(s.lower() in variant for s in valid_variants)):
         valid_variant = True
 

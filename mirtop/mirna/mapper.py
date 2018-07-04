@@ -56,14 +56,17 @@ def read_gtf_to_mirna(gtf):
             if line.startswith("#"):
                 continue
             cols = line.strip().split("\t")
-            name = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("Name")]
-            idname = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("ID")]
+            name = [n.split("=")[1] for n in cols[-1].split(";")
+                    if n.startswith("Name")]
+            idname = [n.split("=")[1] for n in cols[-1].split(";")
+                      if n.startswith("ID")]
             chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
             id_dict[idname[0]] = name[0]
             if cols[2] == "miRNA_primary_transcript":
                 db[idname[0]] = [chrom, int(start), int(end), strand]
             if cols[2] == "miRNA":
-                parent = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("Derives_from")]
+                parent = [n.split("=")[1] for n in cols[-1].split(";")
+                          if n.startswith("Derives_from")]
                 db_mir[name[0]].update({id_dict[parent[0]]: db[parent[0]]})
                 logger.debug("MAP:: mirna:%s" % name[0])
                 logger.debug("MAP:: precursor:%s" % id_dict[parent[0]])
@@ -98,14 +101,17 @@ def read_gtf_to_precursor(gtf):
             if line.startswith("#"):
                 continue
             cols = line.strip().split("\t")
-            name = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("Name")]
-            idname = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("ID")]
+            name = [n.split("=")[1] for n in cols[-1].split(";")
+                    if n.startswith("Name")]
+            idname = [n.split("=")[1] for n in cols[-1].split(";")
+                      if n.startswith("ID")]
             chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
             id_dict[idname[0]] = name[0]
             if cols[2] == "miRNA_primary_transcript":
                 db[name[0]] = [chrom, int(start), int(end), strand]
             if cols[2] == "miRNA":
-                parent = [n.split("=")[1] for n in cols[-1].split(";") if n.startswith("Derives_from")]
+                parent = [n.split("=")[1] for n in cols[-1].split(";")
+                          if n.startswith("Derives_from")]
                 db_mir[(parent[0], name[0])] = [chrom,
                                                 int(start), int(end),
                                                 strand, parent[0]]
@@ -114,7 +120,8 @@ def read_gtf_to_precursor(gtf):
     for mir in db_mir:
         parent = db_mir[mir][4]
         precursor = db[id_dict[parent]]
-        logger.debug("MAP::%s %s %s" % (id_dict[parent], precursor[1], precursor[2]))
+        logger.debug("MAP::%s %s %s" % (
+            id_dict[parent], precursor[1], precursor[2]))
         logger.debug("MAP::%s %s %s" % (mir, db_mir[mir][1], db_mir[mir][2]))
         if precursor[3] != db_mir[mir][3]:
             logger.warning("%s -> %s" % (id_dict[parent], mir))

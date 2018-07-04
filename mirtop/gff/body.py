@@ -1,8 +1,8 @@
 """GFF reader and creator helpers"""
 
 from collections import defaultdict, OrderedDict
-from mirtop.mirna.realign import get_mature_sequence, align_from_variants, read_id
-from mirtop.mirna.realign import variant_to_5p, variant_to_3p, variant_to_add
+from mirtop.mirna.realign import get_mature_sequence, align_from_variants, \
+    read_id, variant_to_5p, variant_to_3p, variant_to_add
 from mirtop.gff.header import read_samples
 
 import mirtop.libs.logger as mylog
@@ -48,7 +48,8 @@ def create(reads, database, sample, args):
         matures = args.matures
     for r, read in reads.iteritems():
         hits = set()
-        [hits.add(mature.mirna) for mature in read.precursors.values() if mature.mirna]
+        [hits.add(mature.mirna) for mature in read.precursors.values()
+            if mature.mirna]
         hits = len(hits)
         if len(read.precursors) > 0:
             n_reads += 1
@@ -125,7 +126,8 @@ def paste_columns(cols, sep=" "):
     """
     Create GFF/GTF line from read_gff_line
     """
-    cols['attrb'] = "; ".join("%s%s%s" % (a, sep, cols['attrb'][a]) for a in cols['attrb'])
+    cols['attrb'] = "; ".join(
+        "%s%s%s" % (a, sep, cols['attrb'][a]) for a in cols['attrb'])
     return "\t".join([cols['chrom'], cols['source'], cols['type'],
                       cols['start'], cols['end'], cols['score'],
                       cols['strand'], cols['ext'], cols['attrb']])
