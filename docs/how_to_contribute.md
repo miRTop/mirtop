@@ -104,8 +104,8 @@ Add to the end of `test/test_function.py`, but inside `class AutomatedAnalysisTe
             clcode = ["mirtop",
                       "test",
                       "../../data/examples/gff/correct_file.gff"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
 
 ```

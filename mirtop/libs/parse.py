@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import sys
 
@@ -5,7 +7,7 @@ import sys
 def parse_cl(in_args):
     """Function to parse the subcommands arguments.
     """
-    print in_args
+    print(in_args)
     sub_cmds = {"gff": _add_subparser_gff,
                 "stats": _add_subparser_stats,
                 "compare": _add_subparser_compare,
@@ -22,12 +24,12 @@ def parse_cl(in_args):
         sub_cmds[in_args[0]](subparsers)
         sub_cmd = in_args[0]
     else:
-        print "use %s" % sub_cmds.keys()
+        print("use %s" % sub_cmds.keys())
         sys.exit(0)
     args = parser.parse_args()
     if "files" in args:
         if not args.files:
-            print "use %s -h to see help." % in_args[0]
+            print("use %s -h to see help." % in_args[0])
             sys.exit(1)
 
     assert sub_cmd is not None

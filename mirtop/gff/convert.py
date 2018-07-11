@@ -1,5 +1,7 @@
 """Convert GFF file into count matrix"""
 
+from __future__ import print_function
+
 import os.path as op
 
 from mirtop.mirna import fasta, mapper
@@ -46,7 +48,7 @@ def convert_gff_counts(args):
                 samples = sep.join(samples_line.strip().split("COLDATA:")[1].strip().split(","))
                 header = sep.join(['UID', 'Read', 'miRNA', 'Variant',
                                    variant_header, samples])
-                print >>outh, header
+                print(header, file=outh, end="")
                 break
 
         for mirna_line in gff_file:
@@ -81,7 +83,7 @@ def convert_gff_counts(args):
             summary = sep.join([UID, Read,  mirna, variant,
                                 cols_variants, expression])
             logger.debug(summary)
-            print >>outh, summary
+            print(summary, file=outh, end="")
 
     gff_file.close()
     logger.info("Missing Parents in hairpin file: %s" % missing_parent)

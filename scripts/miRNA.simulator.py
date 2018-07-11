@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from optparse import OptionParser
 import sys
 import os
@@ -17,18 +19,18 @@ def write_collapse_fastq(reads, out_fn):
     with open(out_fn, 'a') as outh:
         for r in reads:
             idx += 1
-            print >>outh, ">name%s_x%s" % (idx, r[1])
-            print >>outh, r[0]
+            print(">name%s_x%s" % (idx, r[1]), file=outh, end="")
+            print(r[0], file=outh, end="")
 
 def write_fastq(reads, out_fn):
     idx = 0
     with open(out_fn, 'a') as outh:
         for r in reads:
             idx += 1
-            print >>outh, "@name_read:%s" % idx
-            print >>outh, r
-            print >>outh, "+"
-            print >>outh, "I" * len(r)
+            print("@name_read:%s" % idx, file=outh, end="")
+            print(r, file=outh, end="")
+            print("+", file=outh, end="")
+            print("I" * len(r), file=outh, end="")
 
 def create_read(read, count, adapter="TGGAATTCTCGGGTGCCAAGGAACTC", size=36):
     reads = list()
@@ -71,12 +73,12 @@ def variation(info, seq):
         posAdd = random.randint(1, 3)
         for numadd in range(posAdd):
             ntAdd = random.randint(0, 1)
-            print [randSeq, seq[randS + len(randSeq)]]
+            print([randSeq, seq[randS + len(randSeq)]])
             if nt[ntAdd] == seq[randS + len(randSeq)]:
                 ntAdd = 1 if ntAdd == 0 else 0
             randSeq += nt[ntAdd]
             addTag += nt[ntAdd]
-            print [randSeq, randE, info[1]]
+            print([randSeq, randE, info[1]])
     return [randSeq, randS, t5Lab, t3Lab, mutLab, addTag]
 
 def create_iso(name, mir, seq, numsim, exp):
@@ -111,7 +113,7 @@ def create_iso(name, mir, seq, numsim, exp):
             reads[query_name].set_precursor(name, iso)
             full_read.extend(create_read(randSeq, e))
             clean_read.append([randSeq, e,])
-            # print [randSeq, mutLab, addTag, t5Lab, t3Lab, mirSeq]
+            # print([randSeq, mutLab, addTag, t5Lab, t3Lab, mirSeq])
             # data[randSeq] = [exp, iso] # create real object used in code to generate GFF
     write_fastq(full_read, full_fq)
     write_collapse_fastq(clean_read, clean_fq)
@@ -120,11 +122,11 @@ def create_iso(name, mir, seq, numsim, exp):
 
 def _write(lines, header, fn):
     out_handle = open(fn, 'w')
-    print >>out_handle, header
+    print(header, file=out_handle, end="")
     for m in lines:
         for s in sorted(lines[m].keys()):
             for hit in lines[m][s]:
-                print >>out_handle, hit[4]
+                print(hit[4], file=out_handle, end="")
     out_handle.close()
 
 usagetxt = "usage: %prog  --fa precurso.fa --gtf miRNA.gtf -n 10"

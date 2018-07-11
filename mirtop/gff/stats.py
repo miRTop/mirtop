@@ -2,6 +2,8 @@
 Produce stats from GFF3 format
 """
 
+from __future__ import print_function
+
 import os
 import pandas as pd
 from mirtop.gff.body import read_gff_line
@@ -34,12 +36,12 @@ def stats(args):
     outfn = os.path.join(args.out, "mirtop_stats.txt")
     if args.out != "tmp_mirtop":
         with open(outfn, 'w') as outh:
-            print >>outh, message_info
+            print(message_info, file=outh, end="")
             df_final.to_csv(outh)
         logger.info("Stats saved at %s" % outfn)
     else:
-        print message_info
-        print df_final
+        print(message_info)
+        print(df_final)
 
 
 def _get_samples(fn):
