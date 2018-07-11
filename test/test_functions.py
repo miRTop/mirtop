@@ -51,13 +51,16 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna import mapper, fasta
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
-        map_mir = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        map_mir = mapper.read_gtf_to_precursor(
+            "data/examples/annotate/hsa.gff3")
         print map_mir
         if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 5:
             raise ValueError("GFF is not loaded correctly.")
-        fasta_precursor = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        fasta_precursor = fasta.read_precursor(
+            "data/examples/annotate/hairpin.fa", "hsa")
         print fasta_precursor
-        fasta_precursor2 = fasta.read_precursor("data/examples/annotate/hairpin.fa", None)
+        fasta_precursor2 = fasta.read_precursor(
+            "data/examples/annotate/hairpin.fa", None)
         print fasta_precursor2
         if fasta_precursor != fasta_precursor2:
             raise ValueError("species value generates two different dicts.")
@@ -91,7 +94,8 @@ class FunctionsTest(unittest.TestCase):
         def _convert(s, test, reverse=False):
             code = read_id(s) if reverse else make_id(s)
             if code != test:
-                raise ValueError("%s didn't result on %s but in %s" % (s, test, code))
+                raise ValueError("%s didn't result on %s but in %s" %
+                                 (s, test, code))
 
         _convert("AAACCCTTTGGG", "@#%$")
         _convert("AAACCCTTTGGGA", "@#%$@2")
@@ -104,20 +108,25 @@ class FunctionsTest(unittest.TestCase):
     def test_cigar(self):
         """testing cigar correction function"""
         cigar = [[0, 14], [1, 1], [0, 5]]
-        from mirtop.mirna.realign import cigar_correction, make_cigar, cigar2snp, expand_cigar
-        fixed = cigar_correction(cigar, "AAAAGCTGGGTTGAGGAGGA", "AAAAGCTGGGTTGAGAGGA")
+        from mirtop.mirna.realign import cigar_correction, make_cigar, \
+            cigar2snp, expand_cigar
+        fixed = cigar_correction(cigar, "AAAAGCTGGGTTGAGGAGGA",
+                                 "AAAAGCTGGGTTGAGAGGA")
         if not fixed[0] == "AAAAGCTGGGTTGAGGAGGA":
             raise ValueError("Sequence 1 is not right.")
         if not fixed[1] == "AAAAGCTGGGTTGA-GAGGA":
             raise ValueError("Sequence 2 is not right.")
         if not make_cigar("AAA-AAATAAA", "AGACAAA-AAA") == "MAMD3MI3M":
-            raise ValueError("Cigar not eq to MAMD3MI3M: %s" % make_cigar("AAA-AAATAAA", "AGACAAA-AAA"))
+            raise ValueError("Cigar not eq to MAMD3MI3M: %s" %
+                             make_cigar("AAA-AAATAAA", "AGACAAA-AAA"))
         # test expand cigar
         if not expand_cigar("3MA3M") == "MMMAMMM":
-            raise ValueError("Cigar 3MA3M not eqaul to MMMAMMM but to %s" % expand_cigar("3MA3M"))
+            raise ValueError("Cigar 3MA3M not eqaul to MMMAMMM but to %s" %
+                             expand_cigar("3MA3M"))
         # test cigar to snp
         if not cigar2snp("3MA3M", "AAATCCC")[0] == [3, "A", "T"]:
-            raise ValueError("3MA3M not equal AAATCCC but %s" % cigar2snp("3MA3M", "AAATCCC"))
+            raise ValueError("3MA3M not equal AAATCCC but %s" %
+                             cigar2snp("3MA3M", "AAATCCC"))
 
     @attr(locala=True)
     def test_locala(self):
@@ -137,18 +146,25 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna.realign import reverse_complement
         print "Testing ATGC complement"
         if "GCAT" != reverse_complement("ATGC"):
-            raise ValueError("ATGC complement is not: %s" % reverse_complement("ATGC"))
+            raise ValueError("ATGC complement is not: %s" %
+                             reverse_complement("ATGC"))
 
     @attr(merge=True)
     def test_merge(self):
         """Test merge functions"""
         from mirtop.gff import merge
-        if merge._chrom("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25") != "hsa-let-7a-5p":
+        example_line = "hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25"
+        if merge._chrom(example_line) != "hsa-let-7a-5p":
             raise ValueError("Chrom should be hsa-let-7a-5p.")
-        if merge._start("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25") != "4":
+        if merge._start(example_line) != "4":
             raise ValueError("Start should be 4.")
         expression = merge._convert_to_string({'s': 1, 'x': 2}, ['s', 'x'])
-        print merge._fix("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\tRead hsa-let-7a-1_hsa-let-7a-5p_5:26_-1:-1_mut:null_add:null_x861; UID bhJJ5WJL2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:-1; Cigar 22M; Expression 861; Filter Pass; Hits 1;", expression)
+        print merge._fix("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\t"
+                         "Read hsa-let-7a-1_hsa-let-7a-5p_5:26_-1:-1_mut:"
+                         "null_add:null_x861; UID bhJJ5WJL2;"
+                         " Name hsa-let-7a-5p; Parent hsa-let-7a-1;"
+                         " Variant iso_5p:+1,iso_3p:-1; Cigar 22M;"
+                         " Expression 861; Filter Pass; Hits 1;", expression)
         if expression != "1,2":
             raise ValueError("This is wrong: %s" % expression)
 
@@ -156,9 +172,12 @@ class FunctionsTest(unittest.TestCase):
     def test_variant(self):
         """testing get mature sequence"""
         from mirtop.mirna import fasta, mapper
-        from mirtop.mirna.realign import get_mature_sequence, align_from_variants
-        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
-        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        from mirtop.mirna.realign import get_mature_sequence, \
+            align_from_variants
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa",
+                                          "hsa")
+        matures = mapper.read_gtf_to_precursor(
+            "data/examples/annotate/hsa.gff3")
         res = get_mature_sequence("GAAAATTTTTTTTTTTAAAAG", [5, 15])
         if res != "AAAATTTTTTTTTTTAAAA":
             raise ValueError("Results for GAAAATTTTTTTTTTTAAAAG was %s" % res)
@@ -167,29 +186,37 @@ class FunctionsTest(unittest.TestCase):
         if mature != "GGGATGAGGTAGTAGGTTGTATAGTTTTAG":
             raise ValueError("Results for hsa-let-7a-5p is %s" % mature)
 
-        res = align_from_variants("AGGTAGTAGGTTGTATAGTT", mature, "iso_5p:-2")
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTT", mature,
+                                  "iso_5p:-2")
         if res:
             raise ValueError("Wrong alignment for test 1 %s" % res)
-        res = align_from_variants("GATGAGGTAGTAGGTTGTATAGTT", mature, "iso_5p:+2")
+        res = align_from_variants("GATGAGGTAGTAGGTTGTATAGTT", mature,
+                                  "iso_5p:+2")
         if res:
             raise ValueError("Wrong alignment for test 2 %s" % res)
-        res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature, "iso_5p:-2,iso_add:2")
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature,
+                                  "iso_5p:-2,iso_add:2")
         if res:
             raise ValueError("Wrong alignment for test 3 %s" % res)
-        res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature, "iso_5p:-2,iso_3p:2")
+        res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature,
+                                  "iso_5p:-2,iso_3p:2")
         if res:
             raise ValueError("Wrong alignment for test 4 %s" % res)
-        res = align_from_variants("AGGTAGTAGGTTGTATAG", mature, "iso_5p:-2,iso_3p:-2")
+        res = align_from_variants("AGGTAGTAGGTTGTATAG", mature,
+                                  "iso_5p:-2,iso_3p:-2")
         if res:
             raise ValueError("Wrong alignment for test 5 %s" % res)
-        res = align_from_variants("AGGTAGTAGGTTGTATAGAA", mature, "iso_5p:-2,iso_3p:-2,iso_add:2")
+        res = align_from_variants("AGGTAGTAGGTTGTATAGAA", mature,
+                                  "iso_5p:-2,iso_3p:-2,iso_add:2")
         if res:
             raise ValueError("Wrong alignment for test 6 %s" % res)
-        res =  align_from_variants("AGGTAGTAGGATGTATAGTT", mature, "iso_5p:-2,iso_snp_central")
+        res = align_from_variants("AGGTAGTAGGATGTATAGTT", mature,
+                                  "iso_5p:-2,iso_snp_central")
         if not res:
             if res[0][0] != 10:
                 raise ValueError("Wrong alignment for test 7 %s" % res)
-        res = align_from_variants("AGGTAGTAGGATGTATAGAA", mature, "iso_5p:-2,iso_3p:-2,iso_add:2")
+        res = align_from_variants("AGGTAGTAGGATGTATAGAA", mature,
+                                  "iso_5p:-2,iso_3p:-2,iso_add:2")
         if res:
             raise ValueError("Wrong alignment for test 8 %s" % res)
 
@@ -199,24 +226,24 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.bam import bam
         print "\nlast1D\n"
         print annotate("data/aligments/let7-last1D.sam", bam.read_bam)
-        #mirna TGAGGTAGTAGGTTGTATAGTT
-        #seq   AGAGGTAGTAGGTTGTA
+        # mirna TGAGGTAGTAGGTTGTATAGTT
+        # seq   AGAGGTAGTAGGTTGTA
         print "\n1D\n"
         print annotate("data/aligments/let7-1D.sam", bam.read_bam)
-        #mirna TGAGGTAG-TAGGTTGTATAGTT
-        #seq   TGAGGTAGGTAGGTTGTATAGTTA
+        # mirna TGAGGTAG-TAGGTTGTATAGTT
+        # seq   TGAGGTAGGTAGGTTGTATAGTTA
         print "\nlast7M1I\n"
         print annotate("data/aligments/let7-last7M1I.sam", bam.read_bam)
-        #mirna TGAGGTAGTAGGTTGTATAGTT
-        #seq   TGAGGTAGTAGGTTGTA-AGT
+        # mirna TGAGGTAGTAGGTTGTATAGTT
+        # seq   TGAGGTAGTAGGTTGTA-AGT
         print "\nmiddle1D\n"
         print annotate("data/aligments/let7-middle1D.sam", bam.read_bam)
-        #mirna TGAGGTAGTAGGTTGTATAGTT
-        #seq   TGAGGTAGTAGGTTGTATAGTT
+        # mirna TGAGGTAGTAGGTTGTATAGTT
+        # seq   TGAGGTAGTAGGTTGTATAGTT
         print "\nperfect\n"
         print annotate("data/aligments/let7-perfect.sam", bam.read_bam)
-        #mirna TGAGGTAGTAGGTTGTATAGTT
-        #seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
+        # mirna TGAGGTAGTAGGTTGTATAGTT
+        # seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
         print "\ntriming\n"
         print annotate("data/aligments/let7-triming.sam", bam.read_bam)
 
@@ -248,7 +275,8 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.mirna import fasta
-        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa",
+                                          "hsa")
         fn = "data/examples/prost/prost.example.txt"
         from mirtop.importer import prost
         reads = prost.read_file(
@@ -318,3 +346,11 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("iso_snp_central_supp should be boolean.")
         if cmp([-1, 2, True], gff.values()):
             raise ValueError("Not found expected Values.")
+
+    @attr(validator=True)
+    def test_validator(self):
+        """test validator functions"""
+        from mirtop.gff.validator import _check_file
+        _check_file("data/examples/gff/2samples.gff")
+        _check_file("data/examples/gff/coldata_missing.gff")
+        _check_file("data/examples/gff/3wrong_type.gff")

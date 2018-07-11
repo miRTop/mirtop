@@ -130,7 +130,8 @@ def read_file(folder, args):
 
     logger.info("Loaded %s reads with %s hits" % (len(reads), n_in))
     logger.info("Reads without precursor information: %s" % n_notindb)
-    logger.info("Reads with MV as variant definition, not supported by GFF: %s" % n_notassign)
+    logger.info("Reads with MV as variant definition,"
+                " not supported by GFF: %s" % n_notassign)
     logger.info("Hit Filtered by having > 3 changes: %s" % n_out)
 
     return reads
