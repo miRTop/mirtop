@@ -2,6 +2,8 @@
 Produce stats from GFF3 format
 """
 
+from __future__ import print_function
+
 import os
 import pandas as pd
 
@@ -28,7 +30,7 @@ def stats(args):
         df_final.to_csv(outfn)
         logger.info("Stats saved at %s" % outfn)
     else:
-        print df_final
+        print(df_final)
 
 def _get_samples(fn):
     with open(fn) as inh:

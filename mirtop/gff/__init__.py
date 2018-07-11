@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os.path as op
 
 from mirtop.mirna import fasta, mapper
@@ -18,7 +19,7 @@ def reader(args):
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     matures = mapper.read_gtf_to_precursor(args.gtf)
     # check numnbers of miRNA and precursors read
-    # print message if numbers mismatch
+    # print(message) if numbers mismatch
     out_dts = dict()
     for fn in args.files:
         sample = op.splitext(op.basename(fn))[0]
@@ -47,11 +48,11 @@ def reader(args):
 
 def _write(lines, header, fn):
     out_handle = open(fn, 'w')
-    print >>out_handle, header
+    print(header, file=out_handle, end="")
     for m in lines:
         for s in sorted(lines[m].keys()):
             for hit in lines[m][s]:
-                print >>out_handle, hit[4]
+                print(hit[4], file=out_handle, end="")
     out_handle.close()
 
 def _read_bam(bam_fn, precursors):
