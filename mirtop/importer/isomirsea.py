@@ -38,7 +38,8 @@ def read_file(fn, args):
             See *mirtop.libs.parse.add_subparser_gff()*.
 
     Returns:
-        *reads (nested dicts)*:gff_list has the format as defined in *mirtop.gff.body.read()*.
+        *reads (nested dicts)*:gff_list has the format as
+            defined in *mirtop.gff.body.read()*.
 
     """
     database = args.database
@@ -85,18 +86,23 @@ def read_file(fn, args):
             score = "."
             Filter = attr['FILTER']
             isotag = attr['ISO']
-            tchrom, tstart = _genomic2transcript(map_mir[mirName], chrom, start)
+            tchrom, tstart = _genomic2transcript(map_mir[mirName],
+                                                 chrom, start)
             start = start if not tstart else tstart
             chrom = chrom if not tstart else tchrom
             end = start + len(query_sequence)
             hit = hits[idu]
-            attrb = ("Read {query_sequence}; UID {idu}; Name {mirName}; Parent {preName}; Variant {isoformat}; Isocode {isotag}; Cigar {cigar}; Expression {counts}; Filter {Filter}; Hits {hit};").format(**locals())
-            line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+            attrb = ("Read {query_sequence}; UID {idu}; Name {mirName};"
+                     " Parent {preName}; Variant {isoformat};"
+                     " Isocode {isotag}; Cigar {cigar}; Expression {counts};"
+                     " Filter {Filter}; Hits {hit};").format(**locals())
+            line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t"
+                    "{score}\t{strand}\t.\t{attrb}").format(**locals())
             if args.add_extra:
                 extra = variant_with_nt(line, args.precursors, args.matures)
                 line = "%s Changes %s;" % (line, extra)
 
-            line = paste_columns(read_gff_line(line), sep = sep)
+            line = paste_columns(read_gff_line(line), sep=sep)
             if start not in reads[chrom]:
                 reads[chrom][start] = []
             if Filter == "Pass":
@@ -111,7 +117,6 @@ def _get_hits(fn):
     hits = Counter()
     with open(fn) as handle:
         for line in handle:
-            cols = line.strip().split("\t")
             attr = read_attributes(line, "=")
             query_sequence = attr['TS'].replace("U", "T")
             if query_sequence and query_sequence.find("N") > -1:
