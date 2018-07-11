@@ -58,11 +58,11 @@ def reader(args):
 
 def _write(lines, header, fn):
     out_handle = open(fn, 'w')
-    print(header, file=out_handle, end="")
+    print(header, file=out_handle)
     for m in lines:
         for s in sorted(lines[m].keys()):
             for hit in lines[m][s]:
-                print(hit[4], file=out_handle, end="")
+                print(hit[4], file=out_handle)
     out_handle.close()
 
 

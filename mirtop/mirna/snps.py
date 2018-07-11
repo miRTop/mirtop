@@ -66,16 +66,16 @@ def _print_header(data):
     Create vcf header to make
     a valid vcf.
     """
-    print("##fileformat=VCFv4.2", file=STDOUT, end="")
-    print("##source=seqbuster2.3", file=STDOUT, end="")
-    print("##reference=mirbase", file=STDOUT, end="")
+    print("##fileformat=VCFv4.2", file=STDOUT)
+    print("##source=seqbuster2.3", file=STDOUT)
+    print("##reference=mirbase", file=STDOUT)
     for pos in data:
-        print("##contig=<ID=%s>" % pos["chrom"], file=STDOUT, end="")
-    print('##INFO=<ID=ID,Number=1,Type=String,Description="miRNA name">', file=STDOUT, end="")
-    print('##FORMAT=<ID=GT,Number=1,Type=Integer,Description="Genotype">', file=STDOUT, end="")
-    print('##FORMAT=<ID=NR,Number=A,Type=Integer,Description="Total reads supporting the variant">', file=STDOUT, end="")
-    print('##FORMAT=<ID=NS,Number=A,Type=Float,Description="Total number of different sequences supporting the variant">', file=STDOUT, end="")
-    print("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMP001",file=STDOUT, end="")
+        print("##contig=<ID=%s>" % pos["chrom"], file=STDOUT)
+    print('##INFO=<ID=ID,Number=1,Type=String,Description="miRNA name">', file=STDOUT)
+    print('##FORMAT=<ID=GT,Number=1,Type=Integer,Description="Genotype">', file=STDOUT)
+    print('##FORMAT=<ID=NR,Number=A,Type=Integer,Description="Total reads supporting the variant">', file=STDOUT)
+    print('##FORMAT=<ID=NS,Number=A,Type=Float,Description="Total number of different sequences supporting the variant">', file=STDOUT)
+    print("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMP001",file=STDOUT)
 
 def print_vcf(data):
     """Print vcf line following rules."""
@@ -89,7 +89,7 @@ def print_vcf(data):
     info = "ID=%s" % data['mature']
     frmt = "GT:NR:NS"
     gntp = "%s:%s:%s" % (_genotype(data), data["counts"], data["diff"])
-    print("\t".join(map(str, [chrom, pos, id_name, nt_ref, nt_snp, qual, flt, info, frmt, gntp])),file=STDOUT,end="")
+    print("\t".join(map(str, [chrom, pos, id_name, nt_ref, nt_snp, qual, flt, info, frmt, gntp])),file=STDOUT)
 
 def _make_header():
     """

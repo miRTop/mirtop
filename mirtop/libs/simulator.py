@@ -78,14 +78,14 @@ def _write_reads(reads, prefix):
     out_fasta = prefix + ".fasta"
     out_real = prefix + ".txt"
     with open(out_ma, 'w') as ma_handle:
-        print("id\tseq\tsample", file=ma_handle, end="")
+        print("id\tseq\tsample", file=ma_handle)
         with open(out_fasta, 'w') as fa_handle:
             with open(out_real, 'w') as read_handle:
                 for idx, r in enumerate(reads):
                     info = r.split("_")
-                    print("seq_%s\t%s\t%s" % (idx, reads[r][0], reads[r][1]), file=ma_handle, end="")
-                    print(">seq_%s\n%s" % (idx, reads[r][0]), file=fa_handle, end="")
-                    print("%s\t%s\t%s\t%s\t%s\t%s\t%s" % (idx, r, reads[r][0], reads[r][1], info[1], info[2], info[3]), file=read_handle, end="")
+                    print("seq_%s\t%s\t%s" % (idx, reads[r][0], reads[r][1]), file=ma_handle)
+                    print(">seq_%s\n%s" % (idx, reads[r][0]), file=fa_handle)
+                    print("%s\t%s\t%s\t%s\t%s\t%s\t%s" % (idx, r, reads[r][0], reads[r][1], info[1], info[2], info[3]), file=read_handle)
 
 
 def _get_precursor(bed_file, reference, out_fa):

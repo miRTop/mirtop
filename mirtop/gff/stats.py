@@ -36,7 +36,7 @@ def stats(args):
     outfn = os.path.join(args.out, "mirtop_stats.txt")
     if args.out != "tmp_mirtop":
         with open(outfn, 'w') as outh:
-            print(message_info, file=outh, end="")
+            print(message_info, file=outh)
             df_final.to_csv(outh)
         logger.info("Stats saved at %s" % outfn)
     else:

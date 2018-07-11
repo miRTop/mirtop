@@ -35,7 +35,7 @@ def _read_file(fn, precursors, matures, out_dir):
             print("\t".join(
                 ["seq", "name", "freq", "mir", "start", "end",
                  "mism", "add", "t5", "t3", "s5", "s3", "DB",
-                 "precursor", "ambiguity"]), file=outh, end="")
+                 "precursor", "ambiguity"]), file=outh)
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
@@ -73,4 +73,4 @@ def _read_file(fn, precursors, matures, out_dir):
                 with open(os.path.join(out_dir, "%s.mirna" % sample),
                           'a') as outh:
                     line[2] = counts
-                    print("\t".join(line), file=outh, end="")
+                    print("\t".join(line), file=outh)

@@ -19,18 +19,18 @@ def write_collapse_fastq(reads, out_fn):
     with open(out_fn, 'a') as outh:
         for r in reads:
             idx += 1
-            print(">name%s_x%s" % (idx, r[1]), file=outh, end="")
-            print(r[0], file=outh, end="")
+            print(">name%s_x%s" % (idx, r[1]), file=outh)
+            print(r[0], file=outh)
 
 def write_fastq(reads, out_fn):
     idx = 0
     with open(out_fn, 'a') as outh:
         for r in reads:
             idx += 1
-            print("@name_read:%s" % idx, file=outh, end="")
-            print(r, file=outh, end="")
-            print("+", file=outh, end="")
-            print("I" * len(r), file=outh, end="")
+            print("@name_read:%s" % idx, file=outh)
+            print(r, file=outh)
+            print("+", file=outh)
+            print("I" * len(r), file=outh)
 
 def create_read(read, count, adapter="TGGAATTCTCGGGTGCCAAGGAACTC", size=36):
     reads = list()
@@ -122,11 +122,11 @@ def create_iso(name, mir, seq, numsim, exp):
 
 def _write(lines, header, fn):
     out_handle = open(fn, 'w')
-    print(header, file=out_handle, end="")
+    print(header, file=out_handle)
     for m in lines:
         for s in sorted(lines[m].keys()):
             for hit in lines[m][s]:
-                print(hit[4], file=out_handle, end="")
+                print(hit[4], file=out_handle)
     out_handle.close()
 
 usagetxt = "usage: %prog  --fa precurso.fa --gtf miRNA.gtf -n 10"

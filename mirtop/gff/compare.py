@@ -36,11 +36,11 @@ def compare(args):
         fn_out = os.path.join(args.out, "summary.txt")
         with open(fn_out, 'w') as outh:
             for fn in result:
-                print("sample\tidu\tseq\ttag\tsame_mirna\t%s" % "\t".join(result[fn][0][3].keys()), file=outh, end="")
+                print("sample\tidu\tseq\ttag\tsame_mirna\t%s" % "\t".join(result[fn][0][3].keys()), file=outh)
                 for line in result[fn]:
                     read = read_id(line[0])
                     acc = "\t".join([line[3][v] for v in line[3]])
-                    print("%s\t%s\t%s\t%s\t%s\t%s" % (fn, line[0], read, line[1], line[2], acc), file=outh, end="")
+                    print("%s\t%s\t%s\t%s\t%s\t%s" % (fn, line[0], read, line[1], line[2], acc), file=outh)
 
 
 def read_reference(fn):

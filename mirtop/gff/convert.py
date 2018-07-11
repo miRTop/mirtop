@@ -48,7 +48,7 @@ def convert_gff_counts(args):
                 samples = sep.join(samples_line.strip().split("COLDATA:")[1].strip().split(","))
                 header = sep.join(['UID', 'Read', 'miRNA', 'Variant',
                                    variant_header, samples])
-                print(header, file=outh, end="")
+                print(header, file=outh)
                 break
 
         for mirna_line in gff_file:
@@ -83,7 +83,7 @@ def convert_gff_counts(args):
             summary = sep.join([UID, Read,  mirna, variant,
                                 cols_variants, expression])
             logger.debug(summary)
-            print(summary, file=outh, end="")
+            print(summary, file=outh)
 
     gff_file.close()
     logger.info("Missing Parents in hairpin file: %s" % missing_parent)
