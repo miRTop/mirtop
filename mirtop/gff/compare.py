@@ -2,6 +2,8 @@
 Compare multiple GFF files to a reference
 """
 
+from __future__ import print_function
+
 import os
 import pandas as pd
 
@@ -27,11 +29,11 @@ def compare(args):
         with open(fn_out, 'w') as outh:
             for fn in result:
                 for line in result[fn]['different']:
-                    print >>outh, "%s\t%s" % (fn, line)
+                    print("%s\t%s" % (fn, line),file=outh, end="")
                 for line in result[fn]['extra']:
-                    print >>outh, "%s\t%s" % (fn, line)
+                    print("%s\t%s" % (fn, line),file=outh, end="")
                 for line in result[fn]['miss']:
-                    print >>outh, "%s\t%s" % (fn, line)
+                    print("%s\t%s" % (fn, line),file=outh, end="")
 
 def read_reference(fn):
     """Read GFF into UID:Variant key:value dict"""

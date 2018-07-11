@@ -1,3 +1,4 @@
+from __future__ import print_function
 import traceback
 import os.path as op
 import os
@@ -19,8 +20,8 @@ def convert_gff_counts(args):
 
 	"""
 	
-	print "INFO Reading GFF file ", args.gff
-	print "INFO Writing TSV file to directory ", args.out
+	print("INFO Reading GFF file ", args.gff)
+	print("INFO Writing TSV file to directory ", args.out)
 	
 	gff_file = open(args.gff,'r')
 	out_file = op.join(args.out,"gff_tsv_expression_counts.tsv")

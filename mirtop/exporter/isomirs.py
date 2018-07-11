@@ -1,4 +1,5 @@
 """ Read GFF files and output isomiRs compatible format"""
+from __future__ import print_function
 
 import traceback
 import os.path as op
@@ -39,7 +40,7 @@ def read_file(fn, precursors, matures):
                          attr["Variant"])
             add = _get_add(attr["Read"],
                            attr["Variant"])
-            print [attr["Variant"], t5, t3, add]
+            print([attr["Variant"], t5, t3, add])
 
 def _get_5p(hairpin, pos, variant):
     """from a sequence and a start position get the nts

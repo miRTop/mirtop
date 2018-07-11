@@ -56,7 +56,7 @@ def read_bam(bam_fn, precursors, clean = True):
             logger.debug("Sequence is reverse: %s" % line.query_name)
             continue
         chrom = handle.getrname(line.reference_id)
-        #  print "%s %s %s %s" % (line.query_name, line.reference_start, line.query_sequence, chrom)
+        #  print("%s %s %s %s" % (line.query_name, line.reference_start, line.query_sequence, chrom))
         cigar = line.cigartuples
         iso = isomir()
         iso.align = line
