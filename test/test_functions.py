@@ -3,6 +3,7 @@ This directory is setup with configurations to run the main functional test.
 
 Inspired in bcbio-nextgen code
 """
+from __future__ import print_function;
 import os
 import unittest
 
@@ -42,7 +43,7 @@ class FunctionsTest(unittest.TestCase):
     def test_database(self):
         from mirtop.mirna import mapper
         db = mapper.guess_database("data/examples/annotate/hsa.gff3")
-        print "Database is %s" % db
+        print("Database is %s" % db)
         if db != "miRBasev21":
             raise ValueError("%s not eq to miRBasev21" % db)
 
@@ -53,15 +54,15 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test_read_files", True, True)
         map_mir = mapper.read_gtf_to_precursor(
             "data/examples/annotate/hsa.gff3")
-        print map_mir
+        print(map_mir)
         if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 5:
             raise ValueError("GFF is not loaded correctly.")
         fasta_precursor = fasta.read_precursor(
             "data/examples/annotate/hairpin.fa", "hsa")
-        print fasta_precursor
+        print(fasta_precursor)
         fasta_precursor2 = fasta.read_precursor(
             "data/examples/annotate/hairpin.fa", None)
-        print fasta_precursor2
+        print(fasta_precursor2)
         if fasta_precursor != fasta_precursor2:
             raise ValueError("species value generates two different dicts.")
         # read data/aligments/let7-perfect.bam
@@ -73,7 +74,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = mapper.read_gtf_to_mirna("data/examples/annotate/hsa.gff3")
-        print map_mir
+        print(map_mir)
         # if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 5:
         #    raise ValueError("GFF is not loaded correctly.")
         return True
@@ -84,7 +85,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.gff.body import read_gff_line
         with open("data/examples/gff/2samples.gff") as inh:
             for line in inh:
-                print read_gff_line(line)
+                print(read_gff_line(line))
 
     @attr(code=True)
     def test_code(self):
@@ -132,19 +133,19 @@ class FunctionsTest(unittest.TestCase):
     def test_locala(self):
         """testing pairwise alignment"""
         from mirtop.mirna.realign import align
-        print "\nExamples of perfect match, deletion, mutation"
-        print align("TGAGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
-        print align("TGAGGTGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
-        print align("TGAGGTAGTAGGCTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0]
-        print align("TGANTAGTAGNTTGTATNGTT", "TGAGTAGTAGGTTGTATAGTTT")[0]
-        print align("TGANTAGTNGNTTGTATNGTT", "TGAGTATAGGCCTTGTATAGTT")[0]
-        print align("NCANAGTCCAAGNTCATN", "TCATAGTCCAAGGTCATG")[0]
+        print("\nExamples of perfect match, deletion, mutation")
+        print(align("TGAGTAGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0])
+        print(align("TGAGGTGTAGGTTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0])
+        print(align("TGAGGTAGTAGGCTGTATAGTT", "TGAGGTAGTAGGTTGTATAGTT")[0])
+        print(align("TGANTAGTAGNTTGTATNGTT", "TGAGTAGTAGGTTGTATAGTTT")[0])
+        print(align("TGANTAGTNGNTTGTATNGTT", "TGAGTATAGGCCTTGTATAGTT")[0])
+        print(align("NCANAGTCCAAGNTCATN", "TCATAGTCCAAGGTCATG")[0])
 
     @attr(reverse=True)
     def test_reverse(self):
         """Test reverse complement function"""
         from mirtop.mirna.realign import reverse_complement
-        print "Testing ATGC complement"
+        print("Testing ATGC complement")
         if "GCAT" != reverse_complement("ATGC"):
             raise ValueError("ATGC complement is not: %s" %
                              reverse_complement("ATGC"))
@@ -159,12 +160,12 @@ class FunctionsTest(unittest.TestCase):
         if merge._start(example_line) != "4":
             raise ValueError("Start should be 4.")
         expression = merge._convert_to_string({'s': 1, 'x': 2}, ['s', 'x'])
-        print merge._fix("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\t"
+        print(merge._fix("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\t"
                          "Read hsa-let-7a-1_hsa-let-7a-5p_5:26_-1:-1_mut:"
                          "null_add:null_x861; UID bhJJ5WJL2;"
                          " Name hsa-let-7a-5p; Parent hsa-let-7a-1;"
                          " Variant iso_5p:+1,iso_3p:-1; Cigar 22M;"
-                         " Expression 861; Filter Pass; Hits 1;", expression)
+                         " Expression 861; Filter Pass; Hits 1;", expression))
         if expression != "1,2":
             raise ValueError("This is wrong: %s" % expression)
 
@@ -224,28 +225,28 @@ class FunctionsTest(unittest.TestCase):
     def test_alignment(self):
         """testing alignments function"""
         from mirtop.bam import bam
-        print "\nlast1D\n"
-        print annotate("data/aligments/let7-last1D.sam", bam.read_bam)
+        print("\nlast1D\n")
+        print(annotate("data/aligments/let7-last1D.sam", bam.read_bam))
         # mirna TGAGGTAGTAGGTTGTATAGTT
         # seq   AGAGGTAGTAGGTTGTA
-        print "\n1D\n"
-        print annotate("data/aligments/let7-1D.sam", bam.read_bam)
+        print("\n1D\n")
+        print(annotate("data/aligments/let7-1D.sam", bam.read_bam))
         # mirna TGAGGTAG-TAGGTTGTATAGTT
         # seq   TGAGGTAGGTAGGTTGTATAGTTA
-        print "\nlast7M1I\n"
-        print annotate("data/aligments/let7-last7M1I.sam", bam.read_bam)
+        print("\nlast7M1I\n")
+        print(annotate("data/aligments/let7-last7M1I.sam", bam.read_bam))
         # mirna TGAGGTAGTAGGTTGTATAGTT
         # seq   TGAGGTAGTAGGTTGTA-AGT
-        print "\nmiddle1D\n"
-        print annotate("data/aligments/let7-middle1D.sam", bam.read_bam)
+        print("\nmiddle1D\n")
+        print(annotate("data/aligments/let7-middle1D.sam", bam.read_bam))
         # mirna TGAGGTAGTAGGTTGTATAGTT
         # seq   TGAGGTAGTAGGTTGTATAGTT
-        print "\nperfect\n"
-        print annotate("data/aligments/let7-perfect.sam", bam.read_bam)
+        print("\nperfect\n")
+        print(annotate("data/aligments/let7-perfect.sam", bam.read_bam))
         # mirna TGAGGTAGTAGGTTGTATAGTT
         # seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
-        print "\ntriming\n"
-        print annotate("data/aligments/let7-triming.sam", bam.read_bam)
+        print("\ntriming\n")
+        print(annotate("data/aligments/let7-triming.sam", bam.read_bam))
 
     @attr(seqbuster=True)
     def test_seqbuster(self):
@@ -254,9 +255,9 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.importer import seqbuster
-        print "\nperfect\n"
+        print("\nperfect\n")
         annotate("data/examples/seqbuster/reads20.mirna", seqbuster.read_file)
-        print "\naddition\n"
+        print("\naddition\n")
         annotate("data/examples/seqbuster/readsAdd.mirna", seqbuster.read_file)
 
     @attr(srnabench=True)
@@ -331,7 +332,7 @@ class FunctionsTest(unittest.TestCase):
     def test_stats(self):
         """testing stats function"""
         from mirtop.gff import stats
-        print stats._calc_stats("data/examples/gff/correct_file.gff")
+        print(stats._calc_stats("data/examples/gff/correct_file.gff"))
 
     @attr(variant=True)
     def test_rvariant(self):

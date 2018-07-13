@@ -1,4 +1,5 @@
 """ Read GFF files and output isomiRs compatible format"""
+from __future__ import print_function
 
 import os
 
@@ -31,10 +32,10 @@ def _read_file(fn, precursors, matures, out_dir):
     samples = read_samples(fn)
     for sample in samples:
         with open(os.path.join(out_dir, "%s.mirna" % sample), 'w') as outh:
-            print >>outh, "\t".join(
+            print("\t".join(
                 ["seq", "name", "freq", "mir", "start", "end",
                  "mism", "add", "t5", "t3", "s5", "s3", "DB",
-                 "precursor", "ambiguity"])
+                 "precursor", "ambiguity"]), file=outh)
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
@@ -72,4 +73,4 @@ def _read_file(fn, precursors, matures, out_dir):
                 with open(os.path.join(out_dir, "%s.mirna" % sample),
                           'a') as outh:
                     line[2] = counts
-                    print >>outh, "\t".join(line)
+                    print("\t".join(line), file=outh)

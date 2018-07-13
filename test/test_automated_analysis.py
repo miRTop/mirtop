@@ -2,6 +2,7 @@
 
 Inspired in bcbio-nextgen code
 """
+from __future__ import print_function
 import os
 import subprocess
 import unittest
@@ -59,7 +60,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
         #       self._download_to_dir(url, dirname)
 
     def _download_to_dir(self, url, dirname):
-        print dirname
+        print(dirname)
         cl = ["wget", url]
         subprocess.check_call(cl)
         cl = ["tar", "-xzvpf", os.path.basename(url)]
@@ -99,9 +100,9 @@ class AutomatedAnalysisTest(unittest.TestCase):
                 if seq == mirna:
                     correct += 1
                 else:
-                    print "\nerror:\n%s\n%s" % (seq, mirna)
+                    print("\nerror:\n%s\n%s" % (seq, mirna))
                 n += 1
-        print "rate %s/%s" % (correct, n)
+        print("rate %s/%s" % (correct, n))
 
     @attr(complete=True)
     @attr(annotate=True)
@@ -117,8 +118,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "-o", "test_out_mirs",
                       "../../data/examples/annotate/sim_isomir.sam"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
 
     @attr(complete=True)
@@ -135,8 +136,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "-o", "test_out_mirs",
                       "../../data/examples/seqbuster/reads.mirna"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
 
 
@@ -155,8 +156,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "-o", "test_out_mirs",
                       "../../data/examples/isomir-sea/tagMir-all.gff",
                       "-d", "-vd"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
 
     @attr(complete=True)
@@ -174,8 +175,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "-o", "test_out_mirs",
                       "../../data/examples/srnabench",
                       "-d", "-vd"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
 
     @attr(complete=True)
@@ -188,8 +189,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "stats",
                       "-o", "test_out_mirs",
                       "../../data/examples/gff/correct_file.gff"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
 
     @attr(complete=True)
@@ -207,8 +208,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "-o", "test_out_mirs",
                       "../../data/merge/samples1.sam",
                       "../../data/merge/samples2.sam"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
 
     @attr(complete=True)
@@ -224,8 +225,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "../../data/examples/gff/correct_file.gff"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
 
     @attr(complete=True)
@@ -241,6 +242,6 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "../../data/examples/synthetic/let7a-5p.gtf"]
-            print ""
-            print " ".join(clcode)
+            print("")
+            print(" ".join(clcode))
             subprocess.check_call(clcode)
