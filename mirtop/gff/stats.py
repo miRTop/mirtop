@@ -2,33 +2,47 @@
 Produce stats from GFF3 format
 """
 
+from __future__ import print_function
+
 import os
 import pandas as pd
+from mirtop.gff.body import read_gff_line
+from mirtop import version
 
-from mirtop.gff import header
-from mirtop.gff.body import read_attributes
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
-# Add check first 
 
 def stats(args):
     """
-    From a list of files produce stats
+    From a list of GFF files produce general isomiRs stats.
+
+    Args:
+        *args (namedtupled)*: arguments parsed from command line with
+            *mirtop.libs.parse.add_subparser_stats()*.
+
+    Returns:
+        *(stdout) or (out_file)*: GFF general stats.
     """
+    v = version.__version__
+    message_info = ("# mirtop stats version {v}").format(**locals())
     out = list()
     for fn in args.files:
         if not os.path.exists(fn):
-            raise IOError("%s doesn't exist" %s)
+            raise IOError("%s doesn't exist" % fn)
         logger.info("Reading: %s" % fn)
         out.append(_calc_stats(fn))
     df_final = pd.concat(out)
     outfn = os.path.join(args.out, "mirtop_stats.txt")
     if args.out != "tmp_mirtop":
-        df_final.to_csv(outfn)
+        with open(outfn, 'w') as outh:
+            print(message_info, file=outh)
+            df_final.to_csv(outh)
         logger.info("Stats saved at %s" % outfn)
     else:
-        print df_final
+        print(message_info)
+        print(df_final)
+
 
 def _get_samples(fn):
     with open(fn) as inh:
@@ -36,6 +50,7 @@ def _get_samples(fn):
             if line.startswith("## COLDATA"):
                 return line.strip().split(": ")[1].strip().split(",")
     raise ValueError("%s doesn't contain COLDATA header." % fn)
+
 
 def _calc_stats(fn):
     """
@@ -48,15 +63,18 @@ def _calc_stats(fn):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = line.strip().split("\t")
-            logger.debug("## STATS: attribute %s" % cols[8])
-            attr = read_attributes(line)
-            if "-".join([attr['Variant'], attr['Name']]) in seen:
+            cols = read_gff_line(line)
+            logger.debug("## STATS: attribute %s" % cols['attrb'])
+            attr = cols['attrb']
+            if attr['Filter'] != "Pass":
                 continue
-            seen.add("-".join([attr['Variant'], attr['Name']]))
-            lines.extend(_classify(cols[2], attr, samples))
+            if "-".join([attr['UID'], attr['Variant'], attr['Name']]) in seen:
+                continue
+            seen.add("-".join([attr['UID'], attr['Variant'], attr['Name']]))
+            lines.extend(_classify(cols['type'], attr, samples))
     df = _summary(lines)
     return df
+
 
 def _classify(srna_type, attr, samples):
     """
@@ -68,12 +86,15 @@ def _classify(srna_type, attr, samples):
     lines = []
     counts = dict(zip(samples, attr['Expression'].split(",")))
     for s in counts:
-        lines.append([srna_type, s, counts[s]])
+        if int(counts[s]) > 0:
+            lines.append([srna_type, s, counts[s]])
         if attr['Variant'].find("iso") == -1:
             continue
         for v in attr['Variant'].split(","):
-            lines.append([v.split(":")[0], s, counts[s]])
+            if int(counts[s]) > 0:
+                lines.append([v.split(":")[0], s, counts[s]])
     return lines
+
 
 def _summary(lines):
     """

@@ -16,7 +16,27 @@ logger = mylog.getLogger(__name__)
 
 def tune(seq, precursor, start, cigar):
     """
-    The actual fn that will realign the sequence
+    The actual fn that will realign the sequence to find the nt changes
+    at 5', 3' sequence and nt variations.
+
+    Args:
+        *seq (str)*: sequence of the read.
+
+        *precursor (str)*: sequence of the precursor.
+
+        *start (int)*: start position of sequence on the precursor, +1.
+
+        *cigar (str)*: similar to SAM CIGAR attribute.
+
+    Returns:
+
+        *list* with:
+
+            subs (list): substitutions
+
+            add (list): nt added to the end
+
+            cigar (str): updated cigar
     """
     if cigar:
         seq, mature = cigar_correction(cigar, seq, precursor[start:])
@@ -58,7 +78,16 @@ def tune(seq, precursor, start, cigar):
 
 def clean_hits(reads):
     """
-    Select only best matches
+    Select only best matches from a list of hits from the same read.
+
+    Args:
+        *reads*: dictionary as:
+
+        >>> {'read_id': mirtop.realign.hits, ...}
+
+    Returns:
+
+        *reads*: same than input but with best hits only.
     """
     new_reads = defaultdict(hits)
     for r in reads:

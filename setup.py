@@ -1,17 +1,27 @@
 """small RNA-seq annotation"""
 
+import os
 from setuptools import setup, find_packages
+
+version = '0.3.17'
+
 
 def readme():
     with open('README.md') as f:
         return f.read()
 
-# with open("reqs.txt", "r") as f:
-#     install_requires = [x.strip() for x in f.readlines() if not x.startswith("#")]
 
+def write_version_py():
+    version_py = os.path.join(os.path.dirname(__file__), 'mirtop',
+                              'version.py')
+    with open(version_py, "w") as out_handle:
+        out_handle.write("\n".join(['__version__ = "%s"' % version]))
+
+
+write_version_py()
 
 setup(name='mirtop',
-      version='0.2.11',
+      version=version,
       description='Small RNA-seq annotation',
       long_description=readme(),
       classifiers=[

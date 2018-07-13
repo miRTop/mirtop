@@ -1,6 +1,11 @@
 # data
+*res*
 *test_out_mirs_fasta*
+*test_out*
 *bam
+
+# instalation
+mirtop/version.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -12,6 +17,7 @@ __pycache__/
 *.swp
 *.swo
 *.Rhistory
+*.DS_Store
 
 # Distribution / packaging
 .Python

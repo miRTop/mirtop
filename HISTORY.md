@@ -1,4 +1,31 @@
-- 0.1.*a
+- 0.3.*a
+
+ * Normalize the read of the tool outputs.
+ * Add docs with autodoc plugin.
+ * Validator by @Vbarrera.
+ * Improve examples commands and test coverage.
+ * Only counts sequences with Filter == Pass during stats.
+ * Counts cmd add nucleotide information when --add-extra option is on.
+ * Fix error in stats that open the file in addition mode.
+ * Importer for sRNAbench just convert lines from input to GFF format.
+ * Skip lines with non-valid UID or miRNAs not in reference at counts cmd.
+ * Fix separators in counts cmd.
+ * Make --sps optional.
+ * Add synthetic data with known isomiRs to data set.
+ * Allow extra columns when converting to counts TSV file.
+ * Allow extra attributes for isomir-sea as well.
+ * Allow extra attributes to show the nts
+   that change in each isomiR type.
+ * Fix Expression attrb when join gff files.Thanks @AlisR.
+ * Print help when no files are giving to any subcommand.
+ * Fix bug for duplicated isomiRs tags. Thanks @AlisR.
+ * Fix bug in order of merged gff file. Thanks @AlisR.
+ * Add module to read GFF/GTF line in body.py
+ * Add version line to stats output
+ * Improve PROST! importer
+ * Fix output for isomiRs package
+
+- 0.2.*
 
  * Make GTF default output
  * Add function to get SNPs from Variant attribute
@@ -11,8 +38,8 @@
  * Improve isomiR reading from srnabench tool
  * Add PROST to supported tools
 
-- 0.1.7a
- 
+- 0.1.7
+
  * Remove deletion from addition isomiRs
  * Support for srnabench output
  * Fix bug mixing up source column
@@ -20,14 +47,14 @@
  * Functin to guess database used from GTF file through --mirna parameter
  * Adapt output format to https://github.com/miRTop/incubator/blob/master/format/definition.md
 
-- 0.1.5a
- 
+- 0.1.5
+
  * add function to check correct annotation
  * add test data for SAM parsing
  * add script to simulate isomiRs
  * parse indels from bam file
- 
-- 0.1.4a
+
+- 0.1.4
 
  * fix index BAM file command line
  * add function to accept indels and test unit

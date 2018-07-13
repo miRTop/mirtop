@@ -1,3 +1,5 @@
+from __future__ import print_function;
+
 import sys
 
 import mirtop.libs.logger as mylog
@@ -31,8 +33,8 @@ def _get_reference_position(isomir):
         off = len(trim5)
     if trim5 == "NA" or trim5 == "0":
         off = 0
-    # print isomir
-    # print [mut, pos, off, nt]
+    # print(isomir)
+    # print([mut, pos, off, nt])
     return "%s%s" % (pos + off, nt)
 
 def _get_pct(isomirs, mirna):
@@ -64,16 +66,16 @@ def _print_header(data):
     Create vcf header to make
     a valid vcf.
     """
-    print >>STDOUT, "##fileformat=VCFv4.2"
-    print >>STDOUT, "##source=seqbuster2.3"
-    print >>STDOUT, "##reference=mirbase"
+    print("##fileformat=VCFv4.2", file=STDOUT)
+    print("##source=seqbuster2.3", file=STDOUT)
+    print("##reference=mirbase", file=STDOUT)
     for pos in data:
-        print >>STDOUT, "##contig=<ID=%s>" % pos["chrom"]
-    print >>STDOUT, '##INFO=<ID=ID,Number=1,Type=String,Description="miRNA name">'
-    print >>STDOUT, '##FORMAT=<ID=GT,Number=1,Type=Integer,Description="Genotype">'
-    print >>STDOUT, '##FORMAT=<ID=NR,Number=A,Type=Integer,Description="Total reads supporting the variant">'
-    print >>STDOUT, '##FORMAT=<ID=NS,Number=A,Type=Float,Description="Total number of different sequences supporting the variant">'
-    print >>STDOUT, "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMP001"
+        print("##contig=<ID=%s>" % pos["chrom"], file=STDOUT)
+    print('##INFO=<ID=ID,Number=1,Type=String,Description="miRNA name">', file=STDOUT)
+    print('##FORMAT=<ID=GT,Number=1,Type=Integer,Description="Genotype">', file=STDOUT)
+    print('##FORMAT=<ID=NR,Number=A,Type=Integer,Description="Total reads supporting the variant">', file=STDOUT)
+    print('##FORMAT=<ID=NS,Number=A,Type=Float,Description="Total number of different sequences supporting the variant">', file=STDOUT)
+    print("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tSAMP001",file=STDOUT)
 
 def print_vcf(data):
     """Print vcf line following rules."""
@@ -87,7 +89,7 @@ def print_vcf(data):
     info = "ID=%s" % data['mature']
     frmt = "GT:NR:NS"
     gntp = "%s:%s:%s" % (_genotype(data), data["counts"], data["diff"])
-    print >>STDOUT, "\t".join(map(str, [chrom, pos, id_name, nt_ref, nt_snp, qual, flt, info, frmt, gntp]))
+    print("\t".join(map(str, [chrom, pos, id_name, nt_ref, nt_snp, qual, flt, info, frmt, gntp])),file=STDOUT)
 
 def _make_header():
     """
@@ -102,7 +104,7 @@ def liftover(pass_pos, matures):
         mir = pos["mature"]
         db_pos = matures[pos["chrom"]]
         mut = _parse_mut(pos["sv"])
-        print [db_pos[mir], mut, pos["sv"]]
+        print([db_pos[mir], mut, pos["sv"]])
         pos['pre_pos'] = db_pos[mir][0] + mut[1] - 1
         pos['nt'] = list(mut[0])
         fixed_pos.append(pos)
@@ -113,7 +115,7 @@ def create_vcf(isomirs, matures, gtf, vcf_file=None):
     """
     Create vcf file of changes for all samples.
     PASS will be ones with > 3 isomiRs supporting the position
-         and > 30% of reads, otherwise LOW
+    and > 30% of reads, otherwise LOW
     """
     global STDOUT
     isomirs['sv'] = [_get_reference_position(m) for m in isomirs["isomir"]]
@@ -141,7 +143,7 @@ def liftover_to_genome(pass_pos, gtf):
             continue
         db_pos = gtf[pos["chrom"]][0]
         mut = _parse_mut(pos["sv"])
-        print [db_pos, pos]
+        print([db_pos, pos])
         if db_pos[3] == "+":
             pos['pre_pos'] = db_pos[1] + pos["pre_pos"] + 1
         else:

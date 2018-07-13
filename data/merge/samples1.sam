@@ -1,0 +1,8 @@
+@HD	VN:1.4	SO:coordinate
+@PG	ID:razers3	VN:3.3	PN:razers3	CL:-dr 0 -i 80 -rr 90 -f -o /n/scratch2/hsph_bioinformatic_core/lp113/mirtop/example-merged/work2/bcbiotx/tmplRFN4e/SRR5756178.bam /n/app/bcbio/dev/genomes/Hsapiens/hg19/srnaseq/hairpin.fa /n/scratch2/hsph_bioinformatic_core/lp113/mirtop/example-merged/work2/trimmed/SRR5756178/SRR5756178.clean.trimming.fastq
+@SQ	SN:hsa-let-7a-1	LN:80
+@SQ	SN:hsa-let-7a-2	LN:72
+@SQ	SN:hsa-let-7a-3	LN:74
+seq_1010_x33	0	hsa-let-7a-1	6	255	19M	*	0	0	TGAGGTAGTAGGTTGTATA	@@?CEDDDGFFGEHHFFGF	NM:i:0	MD:Z:19
+seq_1156_x2	0	hsa-let-7a-1	6	255	22M	*	0	0	TGAGGTAGTAGGTTGGATAGTT	<<7<@6==7=:@6?5,5/2.4?	NM:i:1	MD:Z:15T6
+seq_1711_x4	0	hsa-let-7a-1	5	255	1D22M	*	0	0	AGAGGTAGTAGGTTGTATAGTT	04<CDADDEGHGGHIHGHIIII	NM:i:1	MD:Z:^A0T21

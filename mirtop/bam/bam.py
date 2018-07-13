@@ -1,11 +1,7 @@
 """ Read bam files"""
 
-import traceback
 import os.path as op
 import os
-import re
-import shutil
-import pandas as pd
 import pysam
 from collections import defaultdict
 
@@ -17,24 +13,25 @@ from mirtop.bam import filter
 
 logger = mylog.getLogger(__name__)
 
-def _sam_to_bam(bam_fn):
-    if not bam_fn.endswith("bam"):
-        bam_out = "%s.bam" % os.path.splitext(bam_fn)[0]
-        cmd = "samtools view -Sbh {bam_fn} -o {bam_out}"
-        do.run(cmd.format(**locals()))
-        return bam_out
-    return bam_fn
 
-def _bam_sort(bam_fn):
-    bam_sort_by_n = op.splitext(bam_fn)[0] + "_sort.bam"
-    if not file_exists(bam_sort_by_n):
-        do.run(("samtools sort -n -o {bam_sort_by_n} {bam_fn}").format(**locals()))
-    return bam_sort_by_n
+def read_bam(bam_fn, args, clean=True):
+    """
+    Read bam file and perform realignment of hits
 
-def read_bam(bam_fn, precursors, clean = True):
+    Args:
+        *bam_fn*: a BAM file with alignments to the precursor
+
+        *precursors*: dict with keys being precursor names and values
+            being sequences. Come from mirtop.mirna.fasta.read_precursor().
+
+        *clean*: Use mirtop.filter.clean_hits() to remove lower score hits.
+
+    Returns:
+        *reads (dict)*:
+             keys are read_id and values are *mirtop.realign.hits*
+
     """
-    read bam file and perform realignment of hits
-    """
+    precursors = args.precursors
     bam_fn = _sam_to_bam(bam_fn)
     bam_fn = _bam_sort(bam_fn)
     mode = "r" if bam_fn.endswith("sam") else "rb"
@@ -45,8 +42,8 @@ def read_bam(bam_fn, precursors, clean = True):
             logger.debug("Sequence not mapped: %s" % line.reference_id)
             continue
         query_name = line.query_name
-        if query_name not in reads and line.query_sequence == None:
-            continue
+        # if query_name not in reads and line.query_sequence:
+        #     continue
         if line.query_sequence and line.query_sequence.find("N") > -1:
             continue
         if query_name not in reads:
@@ -56,7 +53,6 @@ def read_bam(bam_fn, precursors, clean = True):
             logger.debug("Sequence is reverse: %s" % line.query_name)
             continue
         chrom = handle.getrname(line.reference_id)
-        #  print "%s %s %s %s" % (line.query_name, line.reference_start, line.query_sequence, chrom)
         cigar = line.cigartuples
         iso = isomir()
         iso.align = line
@@ -64,7 +60,9 @@ def read_bam(bam_fn, precursors, clean = True):
         logger.debug("READ::From BAM start %s end %s" % (iso.start, iso.end))
         if len(precursors[chrom]) < line.reference_start + len(reads[query_name].sequence):
             continue
-        iso.subs, iso.add, iso.cigar = filter.tune(reads[query_name].sequence, precursors[chrom], line.reference_start, cigar)
+        iso.subs, iso.add, iso.cigar = filter.tune(
+            reads[query_name].sequence, precursors[chrom],
+            line.reference_start, cigar)
         logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
         if len(iso.subs) < 2:
             reads[query_name].set_precursor(chrom, iso)
@@ -73,6 +71,24 @@ def read_bam(bam_fn, precursors, clean = True):
         reads = filter.clean_hits(reads)
         logger.info("Hits after clean: %s" % len(reads))
     return reads
+
+
+def _sam_to_bam(bam_fn):
+    if not bam_fn.endswith("bam"):
+        bam_out = "%s.bam" % os.path.splitext(bam_fn)[0]
+        cmd = "samtools view -Sbh {bam_fn} -o {bam_out}"
+        do.run(cmd.format(**locals()))
+        return bam_out
+    return bam_fn
+
+
+def _bam_sort(bam_fn):
+    bam_sort_by_n = op.splitext(bam_fn)[0] + "_sort.bam"
+    if not file_exists(bam_sort_by_n):
+        do.run(("samtools sort -n -o {bam_sort_by_n} {bam_fn}").format(
+            **locals()))
+    return bam_sort_by_n
+
 
 def _get_freq(name):
     """
@@ -83,5 +99,3 @@ def _get_freq(name):
     except:
         return 0
     return counts
-
-

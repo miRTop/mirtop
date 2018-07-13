@@ -1,38 +1,56 @@
 """ Read isomiR GFF files"""
 
-import traceback
-import os.path as op
 import os
-import re
-import shutil
-import pandas as pd
-import pysam
 from collections import defaultdict, Counter
 
-from mirtop.libs import do
-from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 from mirtop.mirna import mapper
-from mirtop.mirna.realign import isomir, hits, expand_cigar, make_id
-from mirtop.gff.body import read_attributes
-from mirtop.bam import filter
-from mirtop.importer.prost import genomic2transcript
+from mirtop.mirna.realign import expand_cigar, make_id
+from mirtop.gff.body import read_attributes, paste_columns
+from mirtop.gff.body import variant_with_nt, read_gff_line
 
 logger = mylog.getLogger(__name__)
 
-def header():
+
+def header(fn):
+    """
+    Custom header for isomiR-SEA importer.
+
+    Args:
+        *fn (str)*: file name with isomiR-SEA GFF output
+
+    Returns:
+        *(str)*: isomiR-SEA header string.
+    """
     h = ""
     return h
 
-def read_file(fn, database, gtf):
+def read_file(fn, args):
     """
-    read bam file and perform realignment of hits
+    Read isomiR-SEA file and convert to mirtop GFF format.
+
+    Args:
+        *fn(str)*: file name with isomiR-SEA output information.
+
+        *database(str)*: database name.
+
+        *args(namedtuple)*: arguments from command line.
+            See *mirtop.libs.parse.add_subparser_gff()*.
+
+    Returns:
+        *reads (nested dicts)*:gff_list has the format as
+            defined in *mirtop.gff.body.read()*.
+
     """
+    database = args.database
+    gtf = args.gtf
+    sep = " " if args.out_format == "gtf" else "="
     map_mir = mapper.read_gtf_to_mirna(gtf)
     reads = defaultdict(dict)
     reads_in = 0
-    sample = os.path.splitext(os.path.basename(gtf))[0]
+    sample = os.path.splitext(os.path.basename(fn))[0]
     hits = _get_hits(fn)
+    logger.debug("ISOMIRSEA::SAMPLE::%s" % sample)
     with open(fn) as handle:
         for line in handle:
             cols = line.strip().split("\t")
@@ -52,7 +70,7 @@ def read_file(fn, database, gtf):
             cigar = attr['CI'].replace("U", "T")
             idu = make_id(query_sequence)
             isoformat = cigar2variants(cigar, query_sequence, attr['ISO'])
-            logger.debug("\nSOMIRSEA::NEW::query: {query_sequence}\n"
+            logger.debug("\nISOMIRSEA::NEW::query: {query_sequence}\n"
                          "  precursor {chrom}\n"
                          "  name: {query_name}\n"
                          "  idu: {idu}\n"
@@ -68,27 +86,37 @@ def read_file(fn, database, gtf):
             score = "."
             Filter = attr['FILTER']
             isotag = attr['ISO']
-            tchrom, tstart =  genomic2transcript(map_mir[mirName], chrom, start)
+            tchrom, tstart = _genomic2transcript(map_mir[mirName],
+                                                 chrom, start)
             start = start if not tstart else tstart
             chrom = chrom if not tstart else tchrom
             end = start + len(query_sequence)
             hit = hits[idu]
-            attrb = ("Read {query_sequence}; UID {idu}; Name {mirName}; Parent {preName}; Variant {isoformat}; Isocode {isotag}; Cigar {cigar}; Expression {counts}; Filter {Filter}; Hits {hit};").format(**locals())
-            res = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+            attrb = ("Read {query_sequence}; UID {idu}; Name {mirName};"
+                     " Parent {preName}; Variant {isoformat};"
+                     " Isocode {isotag}; Cigar {cigar}; Expression {counts};"
+                     " Filter {Filter}; Hits {hit};").format(**locals())
+            line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t"
+                    "{score}\t{strand}\t.\t{attrb}").format(**locals())
+            if args.add_extra:
+                extra = variant_with_nt(line, args.precursors, args.matures)
+                line = "%s Changes %s;" % (line, extra)
+
+            line = paste_columns(read_gff_line(line), sep=sep)
             if start not in reads[chrom]:
                 reads[chrom][start] = []
             if Filter == "Pass":
                 reads_in += 1
-                reads[chrom][start].append([idu, chrom, counts, sample, res])
+                reads[chrom][start].append([idu, chrom, counts, sample, line])
 
     logger.info("Hits: %s" % reads_in)
     return reads
+
 
 def _get_hits(fn):
     hits = Counter()
     with open(fn) as handle:
         for line in handle:
-            cols = line.strip().split("\t")
             attr = read_attributes(line, "=")
             query_sequence = attr['TS'].replace("U", "T")
             if query_sequence and query_sequence.find("N") > -1:
@@ -96,6 +124,7 @@ def _get_hits(fn):
             idu = make_id(query_sequence)
             hits[idu] += 1
     return hits
+
 
 def cigar2variants(cigar, sequence, tag):
     """From cigar to Variants in GFF format"""
@@ -155,7 +184,41 @@ def _define_snp(subs):
                 value += "iso_snp,"
     return value[:-1]
 
+
 def _fix(n):
     if n > 0:
         return "+%s" % n
     return n
+
+
+def _genomic2transcript(code, chrom, pos):
+    for ref in code:
+        if _is_chrom(chrom, code[ref][0]):
+            if _is_inside(pos, code[ref][1:3]):
+                return [ref, _transcript(pos, code[ref][1:4])]
+    return [None, None]
+
+
+def _is_chrom(chrom, annotated):
+    logger.debug("TRANSCRIPT::CHROM::read position %s and db position %s" % (chrom, annotated))
+    if chrom == annotated:
+        return True
+    if chrom == annotated.replace("chr", ""):
+        return True
+    return False
+
+
+def _is_inside(pos, annotated):
+    logger.debug("TRANSCRIPT::INSIDE::read position %s and db position %s" % (pos, annotated))
+    if pos > annotated[0] and pos < annotated[1]:
+        return True
+    return False
+
+
+def _transcript(pos, annotated):
+    logger.debug("TRANSCRIPT::TRANSCRIPT::read position %s and db position %s" % (pos, annotated))
+    if annotated[2] == "+":
+        return pos - annotated[0]
+    elif annotated[2] == "-":
+        return annotated[1] - pos
+    raise ValueError("Strand information is incorrect %s" % annotated[3])

@@ -2,7 +2,7 @@ mirtop
 ---------
 
 [![](https://travis-ci.org/miRTop/mirtop.svg?branch=master)](https://travis-ci.org/miRTop/mirtop#)
-[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
 Command line tool to annotate with a standard naming miRNAs e isomiRs.
 
@@ -24,7 +24,7 @@ Contributing
 
 Everybody is welcome to contribute, fork the `devel` branch and start working!
 
-If you are interesting in miRNA or small RNA analysis, you can jump into the incubator issue pages to propose/ask or say hi: 
+If you are interesting in miRNA or small RNA analysis, you can jump into the incubator issue pages to propose/ask or say hi:
 
 https://github.com/miRTop/incubator/issues
 
@@ -73,7 +73,7 @@ Read complete commands at: https://mirtop.readthedocs.org
 
 ```
 git clone mirtop
-cd mirtop/data/example/annotate
+cd mirtop/data/examples/annotate
 mirtop gff --sps hsa --hairpin hairpin.fa --gtf hsa.gff3 -o test_out sim_isomir.bam
 ```
 
@@ -87,3 +87,7 @@ Contributors
 
 * [Lorena Pantano](https://github.com/lpantano) (Bioinformatic Core, Harvard Chan School, Boston, USA)
 * [Shruthi Bhat Bandyadka](https://github.com/sbb25) (Partners Personalized Medicine, Cambridge MA, USA)
+* [Iñaki Martínez de Ilarduya](http://www.germanstrias.org/technology-services/high-performance-computing/contact/)(HPC core, IGTP, Badalona, Spain)
+* Rafael Alis
+* [Victor Barrera]((https://github.com/vbarrera) (Bioinformatic Core, Harvard Chan School, Boston, USA)
+* [Steffen Möller](https://github.com/smoe) (University of Rostock)

@@ -10,6 +10,7 @@ from mirtop.gff.stats import stats
 from mirtop.gff.compare import compare
 from mirtop.gff.convert import convert_gff_counts
 from mirtop.exporter import isomirs
+from mirtop.gff import validator
 import mirtop.libs.logger as mylog
 
 import time
@@ -17,9 +18,11 @@ import time
 
 def main(**kwargs):
     kwargs = parse_cl(sys.argv[1:])
-    initialize_logger(kwargs['args'].out, kwargs['args'].debug, kwargs['args'].print_debug)
+    initialize_logger(kwargs['args'].out, kwargs['args'].debug,
+                      kwargs['args'].print_debug)
     logger = mylog.getLogger(__name__)
     start = time.time()
+
     if "gff" in kwargs:
         logger.info("Run annotation")
         reader(kwargs["args"])
@@ -38,12 +41,9 @@ def main(**kwargs):
     elif "export" in kwargs:
         logger.info("Run export of GFF into other format.")
         isomirs.convert(kwargs["args"])
-    elif "join" in kwargs["args"]:
-        logger.info("Not yet ready: This will join multiple GFF files.")
-    elif "check" in kwargs["args"]:
-        logger.info("Not yet ready: This will check GFF files.")
+    elif "validator" in kwargs:
+        logger.info("Run validator.")
+        validator.check_multiple(kwargs["args"])
     elif "query" in kwargs["args"]:
         logger.info("Not yet ready: This will allow queries to GFF files.")
-    elif "convert" in kwargs["args"]:
-        logger.info("Not yet ready: This will output tabular format from GFF files.")
     logger.info('It took %.3f minutes' % ((time.time()-start)/60))

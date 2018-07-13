@@ -2,3 +2,5 @@ pysam
 pybedtools
 pandas
 biopython
+pyyaml
+pybedtools

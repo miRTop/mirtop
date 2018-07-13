@@ -1,10 +1,13 @@
 """simulate cluster over the genome"""
+from __future__ import print_function
 import random
 from mirtop.libs.read import get_fasta
 
 
 def simulate(args):
-    """Main function that manage simulation of small RNAs"""
+    """Main function that manage simulation of small RNAs
+
+    """
     reads = dict()
     if args.fasta:
         name = None
@@ -27,7 +30,7 @@ def simulate(args):
 def _generate_reads(seq, name):
     """Main function that create reads from precursors"""
     reads = dict()
-    if len(seq) < 130 and len(seq) > 70:
+    if len(seq) < 150 and len(seq) > 70:
         reads.update(_mature(seq[:40], 0, name))
         reads.update(_mature(seq[-40:], len(seq) - 40, name))
         reads.update(_noise(seq, name))
@@ -75,14 +78,14 @@ def _write_reads(reads, prefix):
     out_fasta = prefix + ".fasta"
     out_real = prefix + ".txt"
     with open(out_ma, 'w') as ma_handle:
-        print >>ma_handle, "id\tseq\tsample"
+        print("id\tseq\tsample", file=ma_handle)
         with open(out_fasta, 'w') as fa_handle:
             with open(out_real, 'w') as read_handle:
                 for idx, r in enumerate(reads):
                     info = r.split("_")
-                    print >>ma_handle, "seq_%s\t%s\t%s" % (idx, reads[r][0], reads[r][1])
-                    print >>fa_handle, ">seq_%s\n%s" % (idx, reads[r][0])
-                    print >>read_handle, "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (idx, r, reads[r][0], reads[r][1], info[1], info[2], info[3])
+                    print("seq_%s\t%s\t%s" % (idx, reads[r][0], reads[r][1]), file=ma_handle)
+                    print(">seq_%s\n%s" % (idx, reads[r][0]), file=fa_handle)
+                    print("%s\t%s\t%s\t%s\t%s\t%s\t%s" % (idx, r, reads[r][0], reads[r][1], info[1], info[2], info[3]), file=read_handle)
 
 
 def _get_precursor(bed_file, reference, out_fa):
