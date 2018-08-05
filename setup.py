@@ -3,7 +3,8 @@
 import os
 from setuptools import setup, find_packages
 
-version = '0.4.1a'
+version = '0.4.2a'
+url = 'http://github.com/mirtop/mirtop'
 
 
 def readme():
@@ -15,7 +16,8 @@ def write_version_py():
     version_py = os.path.join(os.path.dirname(__file__), 'mirtop',
                               'version.py')
     with open(version_py, "w") as out_handle:
-        out_handle.write("\n".join(['__version__ = "%s"' % version]))
+        out_handle.write("\n".join(['__version__ = "%s"' % version,
+                                    '__url__ = "%s"' % url]))
 
 
 write_version_py()
@@ -30,7 +32,7 @@ setup(name='mirtop',
         'Topic :: Scientific/Engineering :: Bio-Informatics'
       ],
       keywords='RNA-seq miRNA isomiRs annotation',
-      url='http://github.com/mirtop/mirtop',
+      url=url,
       author='Lorena Pantano',
       author_email='lorena.pantano@gmail.com',
       license='MIT',
