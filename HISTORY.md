@@ -1,5 +1,7 @@
-- 0.3.*a
+- 0.4.*a
+ * Add JSON log for stats command.
 
+- 0.3.17
  * Normalize the read of the tool outputs.
  * Add docs with autodoc plugin.
  * Validator by @Vbarrera.

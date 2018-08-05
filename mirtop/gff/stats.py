@@ -6,6 +6,8 @@ from __future__ import print_function
 
 import os
 import pandas as pd
+import json
+from collections import defaultdict
 from mirtop.gff.body import read_gff_line
 from mirtop import version
 
@@ -33,6 +35,7 @@ def stats(args):
         logger.info("Reading: %s" % fn)
         out.append(_calc_stats(fn))
     df_final = pd.concat(out)
+    _dump_log(df_final, version, os.path.join(args.out, "mirtop_stats.log"))
     outfn = os.path.join(args.out, "mirtop_stats.txt")
     if args.out != "tmp_mirtop":
         with open(outfn, 'w') as outh:
@@ -112,3 +115,18 @@ def _summary(lines):
     df_mean['category'] = ["%s_mean" % r for r in df_mean['category']]
     df = pd.concat([df_sum, df_count, df_mean])
     return df
+
+
+def _dump_log(df, version, out_file):
+    """Function to dump the table into a json log file."""
+    json_dict = defaultdict(dict)
+    for index, row in df.iterrows():
+        json_dict[row['sample']][row['category']] = row['counts']
+    log = {'meta': {'tool': 'mirtop',
+                    'version': 'v%s' % version.__version__,
+                    'homepage': version.__url__},
+           'metrics': json_dict}
+    logger.debug(log)
+    if out_file:
+        with open(out_file, 'w') as outh:
+            json.dump(log, outh)

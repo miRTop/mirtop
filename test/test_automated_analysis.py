@@ -194,6 +194,19 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
+    @attr(cmd_stats2=True)
+    def test_srnaseq_stats(self):
+        """Run stats analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "stats",
+                      "../../data/examples/gff/correct_file.gff"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
     @attr(cmd_merge=True)
     def test_merge_bam(self):
         """
