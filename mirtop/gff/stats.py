@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import os
 import pandas as pd
-import json, io
+import json
 from collections import defaultdict
 from mirtop.gff.body import read_gff_line
 from mirtop import version
@@ -126,5 +126,7 @@ def _dump_log(df, version, out_file):
                     'version': 'v%s' % version.__version__,
                     'homepage': version.__url__},
            'metrics': json_dict}
-    with open(out_file, 'w') as outh:
-        json.dump(log, outh)
+    logger.debug(log)
+    if out_file:
+        with open(out_file, 'w') as outh:
+            json.dump(log, outh)
