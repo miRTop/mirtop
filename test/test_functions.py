@@ -332,7 +332,10 @@ class FunctionsTest(unittest.TestCase):
     def test_stats(self):
         """testing stats function"""
         from mirtop.gff import stats
-        print(stats._calc_stats("data/examples/gff/correct_file.gff"))
+        from mirtop import version
+        df = stats._calc_stats("data/examples/gff/correct_file.gff")
+        stats._dump_log(df, version, None)
+        print(df)
 
     @attr(variant=True)
     def test_rvariant(self):
