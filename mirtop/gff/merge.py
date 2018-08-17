@@ -1,7 +1,8 @@
 from collections import defaultdict
 
-from mirtop.gff.body import read_gff_line, paste_columns, guess_format
+from mirtop.gff.body import paste_columns, guess_format
 import mirtop.libs.logger as mylog
+from mirtop.gff.classgff import feature
 
 logger = mylog.getLogger(__name__)
 
@@ -59,9 +60,10 @@ def _format_samples_counts(samples, expression):
 
 def _fix(line, expression):
     # Need to fix Read attribute since not usefull when multiple sample in a line.
-    cols = read_gff_line(line)
-    cols['attrb']['Expression'] = expression
-    return paste_columns(cols, guess_format(line))
+    gff = feature(line)
+    attr = gff.attributes
+    attr['Expression'] = expression
+    return paste_columns(gff, guess_format(line))
 
 
 def _convert_to_string(d, s):

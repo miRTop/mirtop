@@ -4,6 +4,7 @@ from collections import defaultdict, OrderedDict
 from mirtop.mirna.realign import get_mature_sequence, align_from_variants, \
     read_id, variant_to_5p, variant_to_3p, variant_to_add
 from mirtop.gff.header import read_samples
+from mirtop.gff.classgff import feature
 
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
@@ -17,16 +18,18 @@ def read(fn, args):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = read_gff_line(line)
+            gff = feature(line)
+            cols = gff.columns
+            attr = gff.attributes
             if cols['start'] not in lines[cols['chrom']]:
                 lines[cols['chrom']][cols['start']] = []
-            uid = "%s-%s-%s" % (cols['attrb']['UID'],
-                                cols['attrb']['Variant'],
-                                cols['attrb']['Name'])
+            uid = "%s-%s-%s" % (attr['UID'],
+                                attr['Variant'],
+                                attr['Name'])
             lines[cols['chrom']][cols['start']].append(
                 [uid,
                  cols['chrom'],
-                 cols['attrb']['Expression'].strip().split(","),
+                 attr['Expression'].strip().split(","),
                  samples,
                  line.strip()])
     return lines
@@ -91,7 +94,7 @@ def create(reads, database, sample, args):
                     extra = variant_with_nt(line, precursors, matures)
                     line = "%s Changes %s;" % (line, extra)
 
-                line = paste_columns(read_gff_line(line), sep=sep)
+                line = paste_columns(feature(line), sep=sep)
                 if annotation in seen_ann and seq.find("N") < 0 and (
                         seen_ann[annotation].split("\t")[0].find("N") < 0):
                     logger.warning(
@@ -122,25 +125,17 @@ def guess_format(line):
     return "=" if line.find("Name=") > -1 else " "
 
 
-def paste_columns(cols, sep=" "):
+def paste_columns(line, sep=" "):
     """
     Create GFF/GTF line from read_gff_line
     """
-    cols['attrb'] = "; ".join(
-        "%s%s%s" % (a, sep, cols['attrb'][a]) for a in cols['attrb'])
+    cols = line.columns
+    attr = line.attributes
+    attr_paste = "; ".join(
+        "%s%s%s" % (a, sep, attr[a]) for a in attr)
     return "\t".join([cols['chrom'], cols['source'], cols['type'],
                       cols['start'], cols['end'], cols['score'],
-                      cols['strand'], cols['ext'], cols['attrb']])
-
-
-def read_attributes(gff_line, sep=" "):
-    gff_line = gff_line.strip().split("\t")[8]
-    gff_dict = OrderedDict()
-    for gff_item in gff_line.strip().split(";"):
-        item_pair = gff_item.strip().split(sep)
-        if len(item_pair) > 1:
-            gff_dict[item_pair[0].strip()] = item_pair[1].strip()
-    return gff_dict
+                      cols['strand'], cols['ext'], attr_paste])
 
 
 def read_variant(attrb, sep=" "):
@@ -164,6 +159,16 @@ def read_variant(attrb, sep=" "):
             gff_dict[item_pair[0].strip()] = True
     logger.debug("Keys found: %s" % gff_dict.keys())
     logger.debug("Values found: %s" % gff_dict.values())
+    return gff_dict
+
+
+def read_attributes(gff_line, sep=" "):
+    gff_line = gff_line.strip().split("\t")[8]
+    gff_dict = OrderedDict()
+    for gff_item in gff_line.strip().split(";"):
+        item_pair = gff_item.strip().split(sep)
+        if len(item_pair) > 1:
+            gff_dict[item_pair[0].strip()] = item_pair[1].strip()
     return gff_dict
 
 
@@ -195,8 +200,8 @@ def variant_with_nt(line, precursors, matures):
     using Variant attribute, precursor sequences and
     mature position.
     """
-    cols = read_gff_line(line)
-    attr = cols["attrb"]
+    gff = feature(line)
+    attr = gff.attributes
     read = read_id(attr["UID"])
     logger.debug("GFF::BODY::precursors %s" % precursors[attr["Parent"]])
     logger.debug("GFF:BODY::mature %s" % matures[attr["Parent"]][attr["Name"]])

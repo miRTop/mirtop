@@ -6,7 +6,8 @@ import os.path as op
 
 from mirtop.mirna import fasta, mapper
 from mirtop.mirna.realign import read_id
-from mirtop.gff.body import read_gff_line, variant_with_nt
+from mirtop.gff.classgff import feature
+from mirtop.gff.body import variant_with_nt
 import mirtop.libs.logger as mylog
 
 logger = mylog.getLogger(__name__)
@@ -52,19 +53,20 @@ def convert_gff_counts(args):
                 break
 
         for mirna_line in gff_file:
-            mirna_values = read_gff_line(mirna_line)
-            Read = mirna_values["attrb"]["Read"]
-            UID = mirna_values["attrb"]["UID"]
-            mirna = mirna_values["attrb"]["Name"]
-            parent = mirna_values["attrb"]["Parent"]
-            variant = mirna_values["attrb"]["Variant"]
+            gff = feature(mirna_line)
+            attr = gff.attributes
+            Read = attr["Read"]
+            UID = attr["UID"]
+            mirna = attr["Name"]
+            parent = attr["Parent"]
+            variant = attr["Variant"]
             try:
                 read_id(UID)
             except KeyError:
                 unvalid_uid += 1
                 continue
 
-            expression = sep.join(mirna_values["attrb"]["Expression"].strip().split(","))
+            expression = sep.join(attr["Expression"].strip().split(","))
             cols_variants = sep.join(_expand(variant))
             logger.debug("COUNTS::Read:%s" % Read)
             logger.debug("COUNTS::EXTRA:%s" % variant)

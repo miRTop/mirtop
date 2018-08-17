@@ -1,4 +1,6 @@
 - 0.4.*a
+
+ * Add class to parse GFF line as a first move toward isolation
  * Add JSON log for stats command.
 
 - 0.3.17

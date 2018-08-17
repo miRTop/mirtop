@@ -6,8 +6,9 @@ from collections import defaultdict, Counter
 import mirtop.libs.logger as mylog
 from mirtop.mirna import mapper
 from mirtop.mirna.realign import expand_cigar, make_id
-from mirtop.gff.body import read_attributes, paste_columns
-from mirtop.gff.body import variant_with_nt, read_gff_line
+from mirtop.gff.body import paste_columns, read_attributes
+from mirtop.gff.body import variant_with_nt
+from mirtop.gff.classgff import feature
 
 logger = mylog.getLogger(__name__)
 
@@ -24,6 +25,7 @@ def header(fn):
     """
     h = ""
     return h
+
 
 def read_file(fn, args):
     """
@@ -102,7 +104,7 @@ def read_file(fn, args):
                 extra = variant_with_nt(line, args.precursors, args.matures)
                 line = "%s Changes %s;" % (line, extra)
 
-            line = paste_columns(read_gff_line(line), sep=sep)
+            line = paste_columns(feature(line), sep=sep)
             if start not in reads[chrom]:
                 reads[chrom][start] = []
             if Filter == "Pass":

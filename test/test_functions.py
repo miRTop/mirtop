@@ -150,6 +150,19 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("ATGC complement is not: %s" %
                              reverse_complement("ATGC"))
 
+    @attr(class_gff=True)
+    def test_class(self):
+        """Test class to read GFF line"""
+        from mirtop.gff.classgff import feature
+        gff = feature("hsa-let-7a-5p\tmiRBasev21\tisomiR\t4\t25\t0\t+\t.\t"
+                      "Read hsa-let-7a-1_hsa-let-7a-5p_5:26_-1:-1_mut:"
+                      "null_add:null_x861; UID bhJJ5WJL2;"
+                      " Name hsa-let-7a-5p; Parent hsa-let-7a-1;"
+                      " Variant iso_5p:+1,iso_3p:-1; Cigar 22M;"
+                      " Expression 861; Filter Pass; Hits 1;")
+        print(gff.columns)
+        print(gff.attributes)
+
     @attr(merge=True)
     def test_merge(self):
         """Test merge functions"""

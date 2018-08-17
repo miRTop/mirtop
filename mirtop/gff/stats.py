@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import json
 from collections import defaultdict
-from mirtop.gff.body import read_gff_line
+from mirtop.gff.classgff import feature
 from mirtop import version
 
 import mirtop.libs.logger as mylog
@@ -66,9 +66,10 @@ def _calc_stats(fn):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = read_gff_line(line)
-            logger.debug("## STATS: attribute %s" % cols['attrb'])
-            attr = cols['attrb']
+            gff = feature(line)
+            cols = gff.columns
+            attr = gff.attributes
+            logger.debug("## STATS: attribute %s" % attr)
             if attr['Filter'] != "Pass":
                 continue
             if "-".join([attr['UID'], attr['Variant'], attr['Name']]) in seen:

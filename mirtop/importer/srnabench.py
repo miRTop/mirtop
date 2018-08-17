@@ -4,8 +4,9 @@ import os
 from collections import defaultdict
 
 import mirtop.libs.logger as mylog
-from mirtop.gff.body import paste_columns, variant_with_nt, read_gff_line
+from mirtop.gff.body import paste_columns, variant_with_nt
 from mirtop.mirna.realign import make_cigar, make_id
+from mirtop.gff.classgff import feature
 
 logger = mylog.getLogger(__name__)
 
@@ -120,7 +121,7 @@ def read_file(folder, args):
                                             args.matures)
                     line = "%s Changes %s;" % (line, extra)
 
-                line = paste_columns(read_gff_line(line), sep=sep)
+                line = paste_columns(feature(line), sep=sep)
                 if start not in reads[chrom]:
                     reads[chrom][start] = []
                 if Filter == "Pass":
