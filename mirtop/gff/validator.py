@@ -1,6 +1,7 @@
 from mirtop.gff.classgff import feature
 import mirtop.libs.logger as mylog
 from mirtop.gff import gff_versions as version
+from mirtop.mirna.realign import make_id
 
 logger = mylog.getLogger(__name__)
 
@@ -68,6 +69,14 @@ def _check_line(line, num, num_samples):
     # Check strand
     if str(fields['strand']) not in ["+", "-"]:
         logger.error('INCORRECT STRAND in line %s' % (num))
+
+    # Check UID
+    if 'UID' not in attr:
+        logger.error('UID not found in line %s' % (num))
+    else:
+        if not make_id(attr['UID']):
+            logger.error('UID is not in a correct format in line %s. '
+                         'Use mirtop gff to fix this or open an issue.' % num)
 
     # Check attribute-variant
     variant = (attr['Variant']).lower()

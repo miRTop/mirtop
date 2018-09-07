@@ -2,7 +2,8 @@
 
 from collections import defaultdict, OrderedDict
 from mirtop.mirna.realign import get_mature_sequence, align_from_variants, \
-    read_id, variant_to_5p, variant_to_3p, variant_to_add
+    read_id, variant_to_5p, variant_to_3p, variant_to_add, \
+    is_sequence, make_id
 from mirtop.gff.header import read_samples
 from mirtop.gff.classgff import feature
 
@@ -21,6 +22,24 @@ def read(fn, args):
             gff = feature(line)
             cols = gff.columns
             attr = gff.attributes
+            if 'UID' not in attr:
+                msg = "UID not found."
+                if 'Read' not in attr:
+                    if not is_sequence(attr['Read']):
+                        msg = msg + " Sequence not valid in Read attribute."
+                    else:
+                        attr['UID'] = make_id(attr['Read'])
+                if 'sequence' not in attr:
+                    msg = msg + " Sequence not found in sequence attribute."
+                    if not is_sequence(attr['sequence']):
+                        msg = msg + " Sequence not valid in sequence attribute."
+                    else:
+                        attr['UID'] = make_id(attr['Read'])
+            if 'UID' not in attr:
+                logger.warning("Line cannot is not a valid GFF3 line: %s" %
+                               line.strip())
+                logger.warning(msg)
+
             if cols['start'] not in lines[cols['chrom']]:
                 lines[cols['chrom']][cols['start']] = []
             uid = "%s-%s-%s" % (attr['UID'],

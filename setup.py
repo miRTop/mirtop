@@ -3,7 +3,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '0.4.3a'
+version = '0.4.4a'
 url = 'http://github.com/mirtop/mirtop'
 
 
@@ -29,6 +29,7 @@ setup(name='mirtop',
       classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
+        "Programming Language :: Python :: 3",
         'Topic :: Scientific/Engineering :: Bio-Informatics'
       ],
       keywords='RNA-seq miRNA isomiRs annotation',

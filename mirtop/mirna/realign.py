@@ -1,3 +1,4 @@
+import re
 from Bio import pairwise2
 from Bio.Seq import Seq
 from collections import defaultdict
@@ -154,6 +155,9 @@ def read_id(idu):
         if i == "1" or i == "2":
             return seq[:-int(i)]
         else:
+            if i not in CODE2NT:
+                logger.error("Code is not valid (%s)" % i)
+                return False
             seq += CODE2NT[i]
     return seq
 
@@ -182,14 +186,34 @@ def make_id(seq):
         if i == 0:
             continue
         trint = seq[start:i]
+        if trint not in NT2CODE:
+            logger.error("Sequence is not valid (%s)" % trint)
+            return False
         idu += NT2CODE[trint]
         start = i
     if len(seq) > i:
         dummy = "A" * (3 - (len(seq) - i))
         trint = seq[i:len(seq)]
+        if "%s%s" % (trint, dummy) not in NT2CODE:
+            logger.error("Sequence is not valid (%s)" % trint)
+            return False
         idu += NT2CODE["%s%s" % (trint, dummy)]
         idu += str(len(dummy))
     return idu
+
+
+def is_sequence(seq):
+    """
+    This function check whether the sequence is valid or not.
+
+    Args:
+        *seq(str)*: string acting as a sequence.
+
+    Returns:
+        *boolean*: whether is or not a valid nucleotide sequence.
+    """
+    alphabet = re.compile('^[ACTG]*$', re.IGNORECASE)
+    return alphabet.match(seq)
 
 
 def align(x, y, local=False):

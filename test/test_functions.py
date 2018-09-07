@@ -3,7 +3,7 @@ This directory is setup with configurations to run the main functional test.
 
 Inspired in bcbio-nextgen code
 """
-from __future__ import print_function;
+from __future__ import print_function
 import os
 import unittest
 
@@ -105,6 +105,11 @@ class FunctionsTest(unittest.TestCase):
         _convert("@#%$@2", "AAACCCTTTGGGA", True)
         _convert("@#%$g1", "AAACCCTTTGGGAT", True)
 
+        if make_id("AGTFCVS"):
+            raise ValueError("This should be False. Not valid sequence.")
+        if read_id("asD(-"):
+            raise ValueError("This should be False, Not valid code.")
+
     @attr(cigar=True)
     def test_cigar(self):
         """testing cigar correction function"""
@@ -128,6 +133,15 @@ class FunctionsTest(unittest.TestCase):
         if not cigar2snp("3MA3M", "AAATCCC")[0] == [3, "A", "T"]:
             raise ValueError("3MA3M not equal AAATCCC but %s" %
                              cigar2snp("3MA3M", "AAATCCC"))
+
+    @attr(sequence=True)
+    def test_is_sequence(self):
+        """testing if string is valid sequence"""
+        from mirtop.mirna.realign import is_sequence
+        if not is_sequence("ACTGC"):
+            raise ValueError("ACTGC should return true.")
+        if is_sequence("AC2TGC"):
+            raise ValueError("AC2TGC should return false.")
 
     @attr(locala=True)
     def test_locala(self):
@@ -351,7 +365,7 @@ class FunctionsTest(unittest.TestCase):
         print(df)
 
     @attr(variant=True)
-    def test_rvariant(self):
+    def test_variant(self):
         """testing parsing string variant"""
         from mirtop.gff import body
         gff = body.read_variant("iso_5p:-1,iso_add:2,iso_snp_central_supp")

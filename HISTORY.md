@@ -1,5 +1,6 @@
 - 0.4.*a
 
+ * Fixing UID attribute for tools that don't use our cypher system
  * Add class to parse GFF line as a first move toward isolation
  * Add JSON log for stats command.
 
