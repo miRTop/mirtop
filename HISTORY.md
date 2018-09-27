@@ -1,5 +1,5 @@
 - 0.4.*a
-
+ * Add the possibility to work with spikeins to detect random variability.
  * Fixing UID attribute for tools that don't use our cypher system
  * Add class to parse GFF line as a first move toward isolation
  * Add JSON log for stats command.

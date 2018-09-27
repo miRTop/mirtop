@@ -11,6 +11,7 @@ from mirtop.gff.compare import compare
 from mirtop.gff.convert import convert_gff_counts
 from mirtop.exporter import isomirs
 from mirtop.gff import validator
+from mirtop.libs import spikeins
 import mirtop.libs.logger as mylog
 
 import time
@@ -44,6 +45,9 @@ def main(**kwargs):
     elif "validator" in kwargs:
         logger.info("Run validator.")
         validator.check_multiple(kwargs["args"])
-    elif "query" in kwargs["args"]:
+    elif "query" in kwargs:
         logger.info("Not yet ready: This will allow queries to GFF files.")
+    elif "spikein" in kwargs:
+        logger.info("Run spike-in tools")
+        spikeins.convert(kwargs["args"])
     logger.info('It took %.3f minutes' % ((time.time()-start)/60))

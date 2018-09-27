@@ -8,12 +8,10 @@ import subprocess
 import unittest
 import shutil
 import contextlib
-import collections
 import functools
 
 from nose import SkipTest
 from nose.plugins.attrib import attr
-import yaml
 
 
 @contextlib.contextmanager
@@ -255,6 +253,43 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "../../data/examples/synthetic/let7a-5p.gtf"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_spikeins=True)
+    def test_spikeins_cmd(self):
+        """Run spikeins analysis
+        """
+        import platform
+        with make_workdir():
+            clcode = ["mirtop",
+                      "spikein",
+                      "../../data/examples/spikeins/spikeins.fa",
+                      "-o",
+                      "test_out_spikeins"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+            if platform.system() == "Linux":
+                clcode = ["razers3", "-dr", "0", "-i", "80", "-rr", "90",
+                          "-f", "-o", "spikeins.sam",
+                          "test_out_spikeins/spikeins_pre.fasta",
+                          "../../data/examples/spikeins/test-spikeins.fa"]
+                print(" ".join(clcode))
+                subprocess.check_call(clcode)
+            else:
+                shutil.copy("../../data/examples/spikeins/spikeins.sam",
+                            "spikeins.sam")
+            clcode = ["mirtop",
+                      "gff",
+                      "--add-extra",
+                      "--hairpin", "test_out_spikeins/spikeins_pre.fasta",
+                      "--gtf", "test_out_spikeins/spikeins_pre.gff",
+                      "-o", "test_out_mirs",
+                      "spikeins.sam"]
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)

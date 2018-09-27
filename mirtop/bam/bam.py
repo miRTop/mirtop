@@ -57,13 +57,20 @@ def read_bam(bam_fn, args, clean=True):
         iso = isomir()
         iso.align = line
         iso.set_pos(line.reference_start, len(reads[query_name].sequence))
-        logger.debug("READ::From BAM start %s end %s" % (iso.start, iso.end))
+        logger.debug("READ::From BAM start %s end %s at chrom %s" % (iso.start, iso.end, chrom))
         if len(precursors[chrom]) < line.reference_start + len(reads[query_name].sequence):
+            logger.debug("READ::%s start + %s sequence size are bigger than"
+                         " size precursor %s" % (
+                                                 line.reference_id,
+                                                 len(reads[query_name].sequence),
+                                                 len(precursors[chrom])))
             continue
         iso.subs, iso.add, iso.cigar = filter.tune(
             reads[query_name].sequence, precursors[chrom],
             line.reference_start, cigar)
         logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
+        logger.debug("READ::iso add %s iso subs %s" % (iso.add, iso.subs))
+
         if len(iso.subs) < 2:
             reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))

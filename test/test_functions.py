@@ -365,8 +365,8 @@ class FunctionsTest(unittest.TestCase):
         print(df)
 
     @attr(variant=True)
-    def test_variant(self):
-        """testing parsing string variant"""
+    def test_string_variant(self):
+        """testing parsing string variants"""
         from mirtop.gff import body
         gff = body.read_variant("iso_5p:-1,iso_add:2,iso_snp_central_supp")
         if len(gff) != 3:
@@ -385,3 +385,30 @@ class FunctionsTest(unittest.TestCase):
         _check_file("data/examples/gff/2samples.gff")
         _check_file("data/examples/gff/coldata_missing.gff")
         _check_file("data/examples/gff/3wrong_type.gff")
+
+    @attr(spikeins=True)
+    def test_spikeins(self):
+        """Test spikeins reading and annotation"""
+        from mirtop.libs import spikeins
+        from mirtop.mirna.realign import get_mature_sequence
+        load = spikeins.read_spikeins("data/examples/spikeins/spikeins.fa")
+        print(load)
+        load1 = load['spikein-1']
+        mature_from_data = get_mature_sequence(load1['precursor'],
+                                               load1['position'],
+                                               exact=True)
+        if mature_from_data != load1['mature']:
+            raise ValueError("Sequences doesn't match \n%s\n%s" %
+                             (mature_from_data, load1['mature']))
+
+        file_fasta = "data/examples/spikeins/spikeins_pre.fasta"
+        file_gff = "data/examples/spikeins/spikeins_pre.gff"
+        spikeins.write_precursors(load, file_fasta)
+        spikeins.write_gff(load, file_gff)
+
+        from mirtop.mirna import mapper, fasta
+        map_mir = mapper.read_gtf_to_mirna(file_gff)
+        print(map_mir)
+        mapper.guess_database(file_gff)
+        fasta_precursor = fasta.read_precursor(file_fasta, None)
+        print(fasta_precursor)

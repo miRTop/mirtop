@@ -25,8 +25,10 @@ def guess_database(gtf):
         for line in in_handle:
             if not line.startswith("#"):
                 break
-            if line.find("miRBase") > 0:
+            if line.find("miRBase") > -1:
                 database = line[line.find("miRBase"):].strip().replace(" ", "")
+            elif line.find("microRNAs") > -1:
+                database = line.strip().split()[1]
     if not database:
         logger.error("Database not found in --mirna %s. "
                      "Use --database argument to add a custom source." % gtf)
@@ -56,11 +58,14 @@ def read_gtf_to_mirna(gtf):
             if line.startswith("#"):
                 continue
             cols = line.strip().split("\t")
+            logger.debug("MAP:: line:%s" % cols)
             name = [n.split("=")[1] for n in cols[-1].split(";")
                     if n.startswith("Name")]
             idname = [n.split("=")[1] for n in cols[-1].split(";")
                       if n.startswith("ID")]
             chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
+            logger.debug("MAP:: idname:%s" % idname)
+            logger.debug("MAP:: name:%s" % name)
             id_dict[idname[0]] = name[0]
             if cols[2] == "miRNA_primary_transcript":
                 db[idname[0]] = [chrom, int(start), int(end), strand]

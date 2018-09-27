@@ -1,0 +1,3 @@
+# microRNAs:               spike v1
+chrspikein-1	.	miRNA_primary_transcript	1	33	.	+	.	Name=pre-spikein-1;ID=pre-spikein-1	
+chrspikein-1	.	miRNA	6	28	.	+	.	Derives_from=pre-spikein-1;Name=spikein-1;ID=spikein-1;	

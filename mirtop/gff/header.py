@@ -42,6 +42,8 @@ def _get_database(database):
         so = "doi:10.25504/fairsharing.hmgte8"
     elif database.lower().find("mirgenedb") > -1:
         so = "http://mirgenedb.org"
+    else:
+        so = "Custom."
     return ("## source-ontology: %s %s\n" % (database, so))
 
 

@@ -73,9 +73,11 @@ def annotate(reads, mature_ref, precursors):
     """
     n_iso = 0
     for r in reads:
+        logger.debug(("\nANN::READ::read{r}").format(**locals()))
         for p in reads[r].precursors:
             start = reads[r].precursors[p].start
             end = reads[r].precursors[p].end
+            logger.debug(("\nANN::READ::precursor {start} {end}").format(**locals()))
             for mature in mature_ref[p]:
                 mi = mature_ref[p][mature]
                 logger.debug(("\nANN::NEW::read:{s}\n pre:{p} start:{start} end: {end} "
