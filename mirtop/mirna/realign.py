@@ -135,8 +135,8 @@ class isomir:
 def read_id(idu):
     """
     Read a unique identifier for the sequence and
-    converte it to the nucleotides,
-    replacing an unique character for 3 nts.
+    convert it to the nucleotides,
+    replacing an unique code for 5 nts.
 
     It uses the code from *mirtop.mirna.keys()*.
 
@@ -151,17 +151,14 @@ def read_id(idu):
     """
     seq = ""
     for i in idu:
-        if i == "1" or i == "2":
-            return seq[:-int(i)]
-        else:
-            seq += CODE2NT[i]
+        seq += CODE2NT[i]
     return seq
 
 
 def make_id(seq):
     """
     Create a unique identifier for the sequence from the nucleotides,
-    replacing 3 nts for another unique character.
+    replacing 5 nts for a unique sequence.
 
     It uses the code from *mirtop.mirna.keys()*.
 
