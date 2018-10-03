@@ -171,6 +171,9 @@ def make_id(seq):
         *idName(str)*: unique identifier for the sequence.
     """
     idu = convert(seq, True, None)
+
+    # If you wanted to add "iso-" into the license plate as the prefix
+    # idu = convert(seq, True, "iso")
     return idu
 
 
