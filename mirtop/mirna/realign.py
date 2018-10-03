@@ -3,6 +3,7 @@ from Bio.Seq import Seq
 from collections import defaultdict
 
 from mirtop.mirna.keys import CODE2NT, NT2CODE
+from mirtop.mirna.mintcodes import convert
 import mirtop.libs.logger as mylog
 
 logger = mylog.getLogger(__name__)
@@ -149,9 +150,7 @@ def read_id(idu):
     Returns:
         *seq(str)*: nucleotides sequences.
     """
-    seq = ""
-    for i in idu:
-        seq += CODE2NT[i]
+    seq = convert(idu, False, None)
     return seq
 
 
@@ -171,21 +170,7 @@ def make_id(seq):
     Returns:
         *idName(str)*: unique identifier for the sequence.
     """
-    start = 0
-    idu = ""
-    if not seq:
-        raise ValueError("Length of sequence is Empty.")
-    for i in range(0, len(seq) + 1, 3):
-        if i == 0:
-            continue
-        trint = seq[start:i]
-        idu += NT2CODE[trint]
-        start = i
-    if len(seq) > i:
-        dummy = "A" * (3 - (len(seq) - i))
-        trint = seq[i:len(seq)]
-        idu += NT2CODE["%s%s" % (trint, dummy)]
-        idu += str(len(dummy))
+    idu = convert(seq, True, None)
     return idu
 
 
