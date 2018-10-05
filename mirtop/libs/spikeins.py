@@ -57,7 +57,8 @@ def write_precursors(spikeins, out_file):
     """
     with open(out_file, 'w') as outh:
         for spike in spikeins:
-            outh.write(">pre-" + spike + "\n" + spikeins[spike]['precursor'])
+            outh.write(">pre-{0}\n{1}\n".format(spike,
+                                                 spikeins[spike]['precursor']))
 
 
 def write_gff(spikeins, out_file):
@@ -69,7 +70,7 @@ def write_gff(spikeins, out_file):
             *out_file*: file name to write the GFF information
     """
     with open(out_file, 'w') as outh:
-        outh.write("# microRNAs:               spike v1\n")
+        outh.write("# microRNAs:               spikeins v1\n")
         for spike in spikeins:
             outh.write("\t".join(["chr%s" % spike, ".",
                                   "miRNA_primary_transcript",
