@@ -484,11 +484,9 @@ def is_license_plate(length, code):
     if not length.isnumeric():
         return False
 
-    for letter in code:
-        if letter == 'A' or letter == 'T' or letter == 'G' or letter == 'C':
-            return False
-        if not letter.isalpha() and not letter.isnumeric():
-            return False
+    if any(c in ('A', 'T', 'G', 'C') or (not c.isalpha() and not c.isnumeric()) for c in code):
+        return False
+
     return True
 
 
@@ -502,22 +500,21 @@ def encode_sequence(sequence, prefix):
     length = len(sequence)
     # Encode label
     if prefix is '':
-        final_result = str(length) + '-'
+        final_result = [(str(length) + '-')]
     else:
-        final_result = prefix + "-" + str(length) + "-"
+        final_result = [prefix + "-" + str(length) + "-"]
 
     while sequence != '':
-        final_result += encode_hash[sequence[0:5]]
+        final_result.append(encode_hash[sequence[0:5]])
         sequence = sequence[5:]
 
-    return final_result
+    return ''.join(final_result)
 
 
-def decode_sequence(trf, prefix):
+def decode_sequence(trf):
     """
     Decode the "tRF license-plate" using the lookup table
     :param trf: tRF license plate being decoded
-    :param prefix: tRF license plate prefix
     :return: The sequence it decodes to
     """
     if trf.count('-') == 2:
@@ -541,35 +538,37 @@ def decode_sequence(trf, prefix):
 
     # Retrieve sequence
     remainder = length
-    final_result = ''
+    final_result = []
     while code != '':
         if remainder >= 5:
-            final_result += decode_hash[code[0:2] + '-5']
+            final_result.append(decode_hash[code[0:2] + '-5'])
         else:
-            final_result += decode_hash[code[0:2] + '-' + str(remainder)]
+            final_result.append(decode_hash[code[0:2] + '-' + str(remainder)])
         remainder -= 5
         code = code[2:]
 
     # Check if label make sense
     if math.fabs(remainder >= 5):
         sys.stderr.write("Warning! The length doesn't agree with the sequence length.\n")
-    return final_result
+    return ''.join(final_result)
 
 
 def convert(seq, encode, prefix):
-    converted = ""
-    if '-' in prefix or ' ' in prefix:
-        sys.stderr.write("Warning: Dashes and spaces are not permitted in the license plate prefix."
-                         "MINTcodes will remove all instances automatically.\n")
-        prefix = prefix.replace('-', '')
-        prefix = prefix.replace(' ', '')
+    if prefix is None:
+        prefix = ''
+    else:
+        if '-' in prefix or ' ' in prefix:
+            sys.stderr.write("Warning: Dashes and spaces are not permitted in the license plate prefix."
+                             "MINTcodes will remove all instances automatically.\n")
+            prefix = prefix.replace('-', '')
+            prefix = prefix.replace(' ', '')
 
     if encode:
         # Encode
         if seq != '':
             cleaned = seq.upper().replace('U', 'T')
             if is_sequence(cleaned):
-                converted = encode_sequence(cleaned, prefix)
+                return encode_sequence(cleaned, prefix)
             else:
                 sys.stderr.write('Illegal characters in line ' + cleaned + '. Returning empty string it.\n')
                 sys.stderr.flush()
@@ -577,9 +576,9 @@ def convert(seq, encode, prefix):
         # Decode
         if seq != '':
             cleaned = seq.upper()
-            converted = decode_sequence(cleaned, prefix)
+            return decode_sequence(cleaned)
 
-    return converted
+    return ''
 
 
 def run_as_script():
@@ -594,7 +593,8 @@ def run_as_script():
     parser.add_argument('sequencefile', type=str, help='Sequences that are to be encoded or decoded')
     parser.add_argument('encode_choice', type=str, choices=['en', 'de'],
                         help='Choice of encoding (en) or decoding (de)')
-    parser.add_argument('prefix', type=str, help='Prefix to be used for license plates')
+    parser.add_argument('--p', '--prefix', type=str, default=None, dest='prefix',
+                        help='Prefix to be used for license plates')
 
     args = parser.parse_args()
 
