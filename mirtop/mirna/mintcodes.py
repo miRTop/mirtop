@@ -526,7 +526,8 @@ def decode_sequence(trf):
         fields = trf.split('-', 1)
     else:
         sys.stderr.write("Warning: License plate contains " + str(trf.count('-')) +
-                         " dashes. Expected maximum of 2 and minimum of 1. Returning empty string\n")
+                         " dashes. Expected maximum of 2 and minimum of 1. 
+                         string\n")
         return ""
 
     if not is_license_plate(fields[0], fields[1]):
@@ -570,7 +571,7 @@ def convert(seq, encode, prefix):
             if is_sequence(cleaned):
                 return encode_sequence(cleaned, prefix)
             else:
-                sys.stderr.write('Illegal characters in line ' + cleaned + '. Returning empty string it.\n')
+                sys.stderr.write('Illegal characters in line ' + cleaned + '. Returning empty string.\n')
                 sys.stderr.flush()
     else:
         # Decode
