@@ -1,4 +1,5 @@
 - 0.4.*a
+ * Add FASTA as an exporter from GFF.
  * Fix BAM parsing to new GFF rules.
  * Add the possibility to work with spikeins to detect random variability.
  * Fixing UID attribute for tools that don't use our cypher system

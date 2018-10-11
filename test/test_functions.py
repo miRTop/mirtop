@@ -412,3 +412,9 @@ class FunctionsTest(unittest.TestCase):
         mapper.guess_database(file_gff)
         fasta_precursor = fasta.read_precursor(file_fasta, None)
         print(fasta_precursor)
+
+    @attr(export_fasta=True)
+    def test_export_fasta(self):
+        from mirtop.exporter.fasta import _process
+        print("\n")
+        _process("data/examples/gff/2samples.gff", None)

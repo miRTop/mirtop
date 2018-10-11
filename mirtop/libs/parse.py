@@ -98,7 +98,7 @@ def _add_subparser_export(subparsers):
     parser.add_argument("--hairpin", help="hairpin.fa")
     parser.add_argument("--gtf", help="gtf file with precursor and mature position to genome.")
     parser.add_argument("--format", help="Output format",
-                        choices=['seqbuster'], default="seqbuster")
+                        choices=['seqbuster', 'fasta'], default="seqbuster")
     parser = _add_debug_option(parser)
     return parser
 

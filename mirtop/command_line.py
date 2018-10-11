@@ -9,7 +9,7 @@ from mirtop.gff import reader
 from mirtop.gff.stats import stats
 from mirtop.gff.compare import compare
 from mirtop.gff.convert import convert_gff_counts
-from mirtop.exporter import isomirs
+from mirtop.exporter import export
 from mirtop.gff import validator
 from mirtop.libs import spikeins
 import mirtop.libs.logger as mylog
@@ -41,7 +41,7 @@ def main(**kwargs):
         convert_gff_counts(kwargs["args"])
     elif "export" in kwargs:
         logger.info("Run export of GFF into other format.")
-        isomirs.convert(kwargs["args"])
+        export(kwargs["args"])
     elif "validator" in kwargs:
         logger.info("Run validator.")
         validator.check_multiple(kwargs["args"])
