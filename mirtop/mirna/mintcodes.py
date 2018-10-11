@@ -481,10 +481,10 @@ def is_license_plate(length, code):
     :param code: MINTcode for the sequence
     :return: Boolean value of if it is valid or not
     """
-    if not length.isnumeric():
+    if not length.isdecimal():
         return False
 
-    if any(c in ('A', 'T', 'G', 'C') or (not c.isalpha() and not c.isnumeric()) for c in code):
+    if any(c in ('A', 'T', 'G', 'C') or (not c.isalpha() and not c.isdecimal()) for c in code):
         return False
 
     return True
