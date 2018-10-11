@@ -7,7 +7,7 @@ import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
 
-def guess_database(gtf):
+def guess_database(args):
     """
     Guess database name from GFF file.
 
@@ -21,7 +21,7 @@ def guess_database(gtf):
     TODO: this needs to be generic to other databases.
     """
     database = None
-    with open(gtf) as in_handle:
+    with open(args.gtf) as in_handle:
         for line in in_handle:
             if not line.startswith("#"):
                 break
@@ -31,8 +31,8 @@ def guess_database(gtf):
                 database = line.strip().split()[1]
     if not database:
         logger.error("Database not found in --mirna %s. "
-                     "Use --database argument to add a custom source." % gtf)
-        raise ValueError("Database not found in %s header" % gtf)
+                     "Use --database argument to add a custom source." % args.gtf)
+        raise ValueError("Database not found in %s header" % args.gtf)
     return database
 
 

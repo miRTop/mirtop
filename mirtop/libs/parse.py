@@ -79,9 +79,11 @@ def _add_subparser_gff(subparsers):
                         choices=['BAM', 'seqbuster', 'srnabench',
                                  'prost', 'isomirsea', 'gff'], default="BAM")
     parser.add_argument("--out-format", help="Supported formats: gff3 or gtf",
-                        choices = ["gff", "gft"], default="gff")
+                        choices=["gff", "gft"], default="gff")
     parser.add_argument("--add-extra", help="Add extra attributes to gff",
                         action="store_true")
+    parser.add_argument("--database", help="Custom database name",
+                        default=None)
     parser = _add_debug_option(parser)
     return parser
 

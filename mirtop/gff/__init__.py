@@ -17,7 +17,7 @@ def reader(args):
     Realign BAM hits to miRBAse to get better accuracy and annotation
     """
     samples = []
-    database = mapper.guess_database(args.gtf)
+    database = mapper.guess_database(args)
     args.database = database
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     args.precursors = precursors

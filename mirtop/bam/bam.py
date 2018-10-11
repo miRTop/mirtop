@@ -43,7 +43,7 @@ def read_bam(bam_fn, args, clean=True):
             continue
         query_name = line.query_name
         if query_name not in reads and not line.query_sequence:
-             continue
+            continue
         logger.debug(("READ::Read name:{0} and Read sequence:{1}").format(line.query_name, line.query_sequence))
         if line.query_sequence and line.query_sequence.find("N") > -1:
             continue

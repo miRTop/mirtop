@@ -181,7 +181,7 @@ def make_id(seq):
     start = 0
     idu = ""
     if not seq:
-        raise ValueError("Length of sequence is Empty.")
+        raise ValueError("Sequence is empty.")
     for i in range(0, len(seq) + 1, 3):
         if i == 0:
             continue
