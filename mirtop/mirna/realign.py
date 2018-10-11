@@ -2,8 +2,7 @@ from Bio import pairwise2
 from Bio.Seq import Seq
 from collections import defaultdict
 
-from mirtop.mirna.keys import CODE2NT, NT2CODE
-from mirtop.mirna.mintcodes import convert
+from mirtop.mirna.mintplates import convert
 import mirtop.libs.logger as mylog
 
 logger = mylog.getLogger(__name__)
@@ -150,7 +149,7 @@ def read_id(idu):
     Returns:
         *seq(str)*: nucleotides sequences.
     """
-    seq = convert(idu, False, None)
+    seq = convert(idu, False, 'iso')
     return seq
 
 
@@ -170,7 +169,7 @@ def make_id(seq):
     Returns:
         *idName(str)*: unique identifier for the sequence.
     """
-    idu = convert(seq, True, None)
+    idu = convert(seq, True, 'iso')
 
     # If you wanted to add "iso-" into the license plate as the prefix
     # idu = convert(seq, True, "iso")
