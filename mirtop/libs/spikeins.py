@@ -70,7 +70,7 @@ def write_gff(spikeins, out_file):
             *out_file*: file name to write the GFF information
     """
     with open(out_file, 'w') as outh:
-        outh.write("# microRNAs:               spikeins v1\n")
+        outh.write("#microRNAs:               spikeins_v1\n")
         for spike in spikeins:
             outh.write("\t".join(["chr%s" % spike, ".",
                                   "miRNA_primary_transcript",
