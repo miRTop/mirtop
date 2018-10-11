@@ -100,12 +100,12 @@ def create(reads, database, sample, args):
                 Cigar = iso.cigar
                 counts = read.counts
                 Filter = iso.filter
-
-                attrb = ("Read {r}; UID {idseq}; Name {mirName};"
-                         " Parent {preName};"
-                         " Variant {Variant}; Cigar {Cigar};"
-                         " Expression {counts};"
-                         " Filter {Filter}; Hits {hits};").format(**locals())
+                # This get correctly formated with paste_columns below
+                attrb = ("Read {seq};UID {idseq};Name {mirName};"
+                         "Parent {preName};"
+                         "Variant {Variant};Cigar {Cigar};"
+                         "Expression {counts};"
+                         "Filter {Filter};Hits {hits};").format(**locals())
                 line = ("{chrom}\t{database}\t{source}\t{start}\t{end}"
                         "\t{score}\t{strand}\t.\t{attrb}").format(**locals())
                 logger.debug("GFF::%s" % line)

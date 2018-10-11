@@ -39,18 +39,19 @@ def read_bam(bam_fn, args, clean=True):
     reads = defaultdict(hits)
     for line in handle:
         if line.reference_id < 0:
-            logger.debug("Sequence not mapped: %s" % line.reference_id)
+            logger.debug("READ::Sequence not mapped: %s" % line.reference_id)
             continue
         query_name = line.query_name
-        # if query_name not in reads and line.query_sequence:
-        #     continue
+        if query_name not in reads and not line.query_sequence:
+             continue
+        logger.debug(("READ::Read name:{0} and Read sequence:{1}").format(line.query_name, line.query_sequence))
         if line.query_sequence and line.query_sequence.find("N") > -1:
             continue
         if query_name not in reads:
             reads[query_name].set_sequence(line.query_sequence)
             reads[query_name].counts = _get_freq(query_name)
         if line.is_reverse:
-            logger.debug("Sequence is reverse: %s" % line.query_name)
+            logger.debug("READ::Sequence is reverse: %s" % line.query_name)
             continue
         chrom = handle.getrname(line.reference_id)
         cigar = line.cigartuples
