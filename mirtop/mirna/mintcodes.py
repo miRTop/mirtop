@@ -522,13 +522,11 @@ def decode_sequence(trf):
         # Discard prefix, it isn't used at all
         fields = fields[1:]
 
-    elif trf.count('-' == 1):
+    elif trf.count('-') == 1:
         fields = trf.split('-', 1)
     else:
-        sys.stderr.write("Warning: License plate contains " + str(trf.count('-')) +
-                         " dashes. Expected maximum of 2 and minimum of 1. 
-                         string\n")
-        return ""
+        sys.stderr.write('Error, exiting: Provided license plate is not in a valid format.\n')
+        sys.exit(1)
 
     if not is_license_plate(fields[0], fields[1]):
         sys.stderr.write('Error, exiting: Provided license plate is not in a valid format.\n')
