@@ -505,8 +505,12 @@ def encode_sequence(sequence, prefix):
         final_result = [prefix + "-" + str(length) + "-"]
 
     while sequence != '':
-        final_result.append(encode_hash[sequence[0:5]])
-        sequence = sequence[5:]
+        try:
+            final_result.append(encode_hash[sequence[0:5]])
+            sequence = sequence[5:]
+        except KeyError:
+            sys.stderr.write("Error, exiting: Provided sequence does not encode to valid license plate")
+            sys.exit(1)
 
     return ''.join(final_result)
 
@@ -540,9 +544,17 @@ def decode_sequence(trf):
     final_result = []
     while code != '':
         if remainder >= 5:
-            final_result.append(decode_hash[code[0:2] + '-5'])
+            try:
+                final_result.append(decode_hash[code[0:2] + '-5'])
+            except KeyError:
+                sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence")
+                sys.exit(1)
         else:
-            final_result.append(decode_hash[code[0:2] + '-' + str(remainder)])
+            try:
+                final_result.append(decode_hash[code[0:2] + '-' + str(remainder)])
+            except KeyError:
+                sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence")
+                sys.exit(1)
         remainder -= 5
         code = code[2:]
 
@@ -569,15 +581,14 @@ def convert(seq, encode, prefix):
             if is_sequence(cleaned):
                 return encode_sequence(cleaned, prefix)
             else:
-                sys.stderr.write('Illegal characters in line ' + cleaned + '. Returning empty string.\n')
+                sys.stderr.write('Error, exiting: Illegal characters in line ' + cleaned + '.\n')
                 sys.stderr.flush()
+                sys.exit(1)
     else:
         # Decode
         if seq != '':
             cleaned = seq.upper()
             return decode_sequence(cleaned)
-
-    return ''
 
 
 def run_as_script():
