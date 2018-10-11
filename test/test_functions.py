@@ -6,12 +6,12 @@ Inspired in bcbio-nextgen code
 from __future__ import print_function
 import os
 import unittest
+import argparse
 
 from nose.plugins.attrib import attr
 
 
 def annotate(fn, read_file, load=False, create=True):
-    import argparse
     args = argparse.Namespace()
     args.hairpin = "data/examples/annotate/hairpin.fa"
     args.sps = "hsa"
@@ -23,7 +23,7 @@ def annotate(fn, read_file, load=False, create=True):
     matures = mapper.read_gtf_to_precursor(args.gtf)
     args.precursors = precursors
     args.matures = matures
-    args.database = mapper.guess_database(args.gtf)
+    args.database = mapper.guess_database(args)
     from mirtop.mirna import annotate
     from mirtop.gff import body
     if not load:
@@ -42,7 +42,9 @@ class FunctionsTest(unittest.TestCase):
     @attr(database=True)
     def test_database(self):
         from mirtop.mirna import mapper
-        db = mapper.guess_database("data/examples/annotate/hsa.gff3")
+        args = argparse.Namespace()
+        args.gtf = "data/examples/annotate/hsa.gff3"
+        db = mapper.guess_database(args)
         print("Database is %s" % db)
         if db != "miRBasev21":
             raise ValueError("%s not eq to miRBasev21" % db)
@@ -409,7 +411,6 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna import mapper, fasta
         map_mir = mapper.read_gtf_to_mirna(file_gff)
         print(map_mir)
-        mapper.guess_database(file_gff)
         fasta_precursor = fasta.read_precursor(file_fasta, None)
         print(fasta_precursor)
 
