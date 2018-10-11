@@ -509,7 +509,7 @@ def encode_sequence(sequence, prefix):
             final_result.append(encode_hash[sequence[0:5]])
             sequence = sequence[5:]
         except KeyError:
-            sys.stderr.write("Error, exiting: Provided sequence does not encode to valid license plate")
+            sys.stderr.write("Error, exiting: Provided sequence does not encode to valid license plate\n")
             sys.exit(1)
 
     return ''.join(final_result)
@@ -547,13 +547,13 @@ def decode_sequence(trf):
             try:
                 final_result.append(decode_hash[code[0:2] + '-5'])
             except KeyError:
-                sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence")
+                sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence\n")
                 sys.exit(1)
         else:
             try:
                 final_result.append(decode_hash[code[0:2] + '-' + str(remainder)])
             except KeyError:
-                sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence")
+                sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence\n")
                 sys.exit(1)
         remainder -= 5
         code = code[2:]
