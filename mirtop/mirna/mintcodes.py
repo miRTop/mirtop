@@ -589,7 +589,7 @@ def run_as_script():
     parser = argparse.ArgumentParser(
         description="\nUsage:\n\tpython MINTcodes_tRF_license_plates.class en example_sequences_to_encode.txt"
                     "\tpython MINTcodes_tRF_license_plates.class de example_tRF_license_plates_to_decode.txt",
-        allow_abbrev=False, formatter_class=RawDescriptionHelpFormatter)
+        formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('sequencefile', type=str, help='Sequences that are to be encoded or decoded')
     parser.add_argument('encode_choice', type=str, choices=['en', 'de'],
                         help='Choice of encoding (en) or decoding (de)')
