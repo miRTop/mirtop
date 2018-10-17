@@ -13,7 +13,6 @@ not dependent on genomic location and is consequently independent of any genome 
 import sys
 import re
 import argparse
-import math
 
 encode_hash = {'AAAAA': 'BB', 'AAAAC': 'BD', 'AAAAG': 'B0', 'AAAAT': 'BE', 'AAACA': 'BF', 'AAACC': 'B1',
                'AAACG': 'BH', 'AAACT': 'BI', 'AAAGA': 'B2', 'AAAGC': 'BJ', 'AAAGG': 'BK', 'AAAGT': 'B3',
@@ -569,8 +568,10 @@ def decode_sequence(plate):
         code = code[2:]
 
     # Check if label make sense
-    if math.fabs(remainder >= 5):
-        sys.stderr.write("Warning: The length doesn't agree with the sequence length.\n")
+    if len(final_result) != length:
+        sys.stderr.write("Error, exiting: Invalid license plate. Incorrect decoded sequence length.\n")
+        sys.exit(1)
+
     return ''.join(final_result)
 
 
