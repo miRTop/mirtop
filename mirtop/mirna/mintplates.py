@@ -2,6 +2,12 @@
 """
 MINTplates.py: Program to generate license plates from given sequence or decode license plate to a sequence.
 An optional prefix can be provided to the program such as 'tRF', 'rRF', 'iso', etc, if needed.
+
+These sequence-dependent license plate identifiers were introduced and described in the following
+publication - (https://www.ncbi.nlm.nih.gov/pubmed/27153631/).
+For additional information, please additionally see - (https://www.ncbi.nlm.nih.gov/pubmed/28220888/).
+These identifiers can be used for tRFs, isomiRs, and other molecular sequences. Importantly, this labeling scheme is
+not dependent on genomic location and is consequently independent of any genome assembly used.
 """
 
 import sys
