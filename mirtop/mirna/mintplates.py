@@ -518,8 +518,7 @@ def encode_sequence(sequence, prefix):
             final_result.append(encode_hash[sequence[0:5]])
             sequence = sequence[5:]
         except KeyError:
-            sys.stderr.write("Error, exiting: Provided sequence does not encode to valid license plate\n")
-            sys.exit(1)
+            raise
 
     return ''.join(final_result)
 
@@ -538,12 +537,10 @@ def decode_sequence(plate):
     elif plate.count('-') == 1:
         fields = plate.split('-', 1)
     else:
-        sys.stderr.write('Error, exiting: Provided license plate is not in a valid format.\n')
-        sys.exit(1)
+        raise KeyError('Error, exiting: Provided license plate is not in a valid format.\n')
 
     if not is_license_plate(fields[0], fields[1]):
-        sys.stderr.write('Error, exiting: Provided license plate is not in a valid format.\n')
-        sys.exit(1)
+        raise KeyError('Error, exiting: Provided license plate is not in a valid format.\n')
 
     length = int(fields[0])
     code = fields[1]
@@ -556,22 +553,19 @@ def decode_sequence(plate):
             try:
                 raw_result.append(decode_hash[code[0:2] + '-5'])
             except KeyError:
-                sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence\n")
-                sys.exit(1)
+                raise
         else:
             try:
                 raw_result.append(decode_hash[code[0:2] + '-' + str(remainder)])
             except KeyError:
-                sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence\n")
-                sys.exit(1)
+                raise
         remainder -= 5
         code = code[2:]
 
     # Check if label make sense
     final_result = ''.join(raw_result)
     if len(final_result) != length:
-        sys.stderr.write("Error, exiting: Invalid license plate. Incorrect decoded sequence length.\n")
-        sys.exit(1)
+        raise KeyError("Error, exiting: Invalid license plate. Incorrect decoded sequence length.\n")
 
     return final_result
 
@@ -593,9 +587,7 @@ def convert(seq, encode, prefix):
             if is_sequence(cleaned):
                 return encode_sequence(cleaned, prefix)
             else:
-                sys.stderr.write('Error, exiting: Illegal characters in line ' + cleaned + '.\n')
-                sys.stderr.flush()
-                sys.exit(1)
+                raise KeyError('Error, exiting: Illegal characters in line ' + cleaned + '.\n')
     else:
         # Decode
         if seq != '':
@@ -631,19 +623,16 @@ def run_as_script():
 
     for item in illegal_characters:
         if item in args.sequencefile.split('/')[-1]:
-            sys.stderr.write('Error, exiting: Illegal character ' + item + ' in filename\n')
-            sys.exit(1)
+            raise KeyError('Error, exiting: Illegal character ' + item + ' in filename\n')
 
     try:
         sequence_file = open(args.sequencefile, 'r')
     except IOError:
-        sys.stderr.write("Error, exiting: File " + args.sequencefile + " does not exist\n")
-        sys.exit(1)
+        raise
 
     if sequence_file is None:
-        sys.stderr.write('Error: An unexpected error has occurred, please ensure that the file ' + args.sequencefile +
-                         ' exists\n')
-        sys.exit(1)
+        raise IOError('Error: An unexpected error has occurred, please ensure that the file ' + args.sequencefile +
+                      ' exists\n')
 
     sequences = []
     for line in sequence_file:

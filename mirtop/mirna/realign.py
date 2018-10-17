@@ -149,7 +149,11 @@ def read_id(idu):
     Returns:
         *seq(str)*: nucleotides sequences.
     """
-    seq = convert(idu, False, 'iso')
+    try:
+        seq = convert(idu, False, 'iso')
+    except KeyError:
+        raise
+
     return seq
 
 
@@ -169,7 +173,10 @@ def make_id(seq):
     Returns:
         *idName(str)*: unique identifier for the sequence.
     """
-    idu = convert(seq, True, 'iso')
+    try:
+        idu = convert(seq, True, 'iso')
+    except KeyError:
+        raise
 
     # If you wanted to add "iso-" into the license plate as the prefix
     # idu = convert(seq, True, "iso")
