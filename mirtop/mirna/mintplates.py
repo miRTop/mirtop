@@ -537,10 +537,10 @@ def decode_sequence(plate):
     elif plate.count('-') == 1:
         fields = plate.split('-', 1)
     else:
-        raise KeyError('Error, exiting: Provided license plate is not in a valid format.\n')
+        raise KeyError('Error, exiting: Provided license plate is not in a valid format.')
 
     if not is_license_plate(fields[0], fields[1]):
-        raise KeyError('Error, exiting: Provided license plate is not in a valid format.\n')
+        raise KeyError('Error, exiting: Provided license plate is not in a valid format.')
 
     length = int(fields[0])
     code = fields[1]
@@ -548,7 +548,7 @@ def decode_sequence(plate):
     # Retrieve sequence
     remainder = length
     raw_result = []
-    while code != '':
+    while code != '' and remainder > 0:
         if remainder >= 5:
             try:
                 raw_result.append(decode_hash[code[0:2] + '-5'])
@@ -564,8 +564,8 @@ def decode_sequence(plate):
 
     # Check if label make sense
     final_result = ''.join(raw_result)
-    if len(final_result) != length:
-        raise KeyError("Error, exiting: Invalid license plate. Incorrect decoded sequence length.\n")
+    if len(final_result) != length or code != '':
+        raise KeyError("Error, exiting: Invalid license plate. Incorrect decoded sequence length.")
 
     return final_result
 
@@ -587,7 +587,7 @@ def convert(seq, encode, prefix):
             if is_sequence(cleaned):
                 return encode_sequence(cleaned, prefix)
             else:
-                raise KeyError('Error, exiting: Illegal characters in line ' + cleaned + '.\n')
+                raise KeyError('Error, exiting: Illegal characters in line ' + cleaned)
     else:
         # Decode
         if seq != '':
@@ -623,7 +623,7 @@ def run_as_script():
 
     for item in illegal_characters:
         if item in args.sequencefile.split('/')[-1]:
-            raise KeyError('Error, exiting: Illegal character ' + item + ' in filename\n')
+            raise KeyError('Error, exiting: Illegal character ' + item + ' in filename')
 
     try:
         sequence_file = open(args.sequencefile, 'r')
@@ -632,7 +632,7 @@ def run_as_script():
 
     if sequence_file is None:
         raise IOError('Error: An unexpected error has occurred, please ensure that the file ' + args.sequencefile +
-                      ' exists\n')
+                      ' exists')
 
     sequences = []
     for line in sequence_file:
