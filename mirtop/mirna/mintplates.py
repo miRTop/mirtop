@@ -550,17 +550,17 @@ def decode_sequence(plate):
 
     # Retrieve sequence
     remainder = length
-    final_result = []
+    raw_result = []
     while code != '':
         if remainder >= 5:
             try:
-                final_result.append(decode_hash[code[0:2] + '-5'])
+                raw_result.append(decode_hash[code[0:2] + '-5'])
             except KeyError:
                 sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence\n")
                 sys.exit(1)
         else:
             try:
-                final_result.append(decode_hash[code[0:2] + '-' + str(remainder)])
+                raw_result.append(decode_hash[code[0:2] + '-' + str(remainder)])
             except KeyError:
                 sys.stderr.write("Error, exiting: Provided license plate does not decode to valid sequence\n")
                 sys.exit(1)
@@ -568,11 +568,12 @@ def decode_sequence(plate):
         code = code[2:]
 
     # Check if label make sense
+    final_result = ''.join(raw_result)
     if len(final_result) != length:
         sys.stderr.write("Error, exiting: Invalid license plate. Incorrect decoded sequence length.\n")
         sys.exit(1)
 
-    return ''.join(final_result)
+    return final_result
 
 
 def convert(seq, encode, prefix):
