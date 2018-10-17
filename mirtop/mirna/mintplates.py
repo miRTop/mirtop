@@ -1,8 +1,12 @@
 #!/usr/bin/env python
+"""
+MINTplates.py: Program to generate license plates from given sequence or decode license plate to a sequence.
+An optional prefix can be provided to the program such as 'tRF', 'rRF', 'iso', etc, if needed.
+"""
+
 import sys
 import re
 import argparse
-import os
 import math
 
 encode_hash = {'AAAAA': 'BB', 'AAAAC': 'BD', 'AAAAG': 'B0', 'AAAAT': 'BE', 'AAACA': 'BF', 'AAACC': 'B1',
@@ -478,7 +482,7 @@ def is_license_plate(length, code):
     """
     Checks if the license plate is in the proper format
     :param length: Encoded sequence length
-    :param code: MINTcode for the sequence
+    :param code: license plate for the sequence
     :return: Boolean value of if it is valid or not
     """
     if not length.isdigit():
@@ -492,10 +496,10 @@ def is_license_plate(length, code):
 
 def encode_sequence(sequence, prefix):
     """
-    Encodes the sequence into its corresponding tRF license plate
+    Encodes the sequence into its corresponding license plate with given prefix (if given one)
     :param sequence: The sequence being encoded
     :param prefix: The prefix to use for the license plate
-    :return: The tRF license plate it encodes to
+    :return: The license plate it encodes to
     """
     length = len(sequence)
     # Encode label
@@ -515,19 +519,19 @@ def encode_sequence(sequence, prefix):
     return ''.join(final_result)
 
 
-def decode_sequence(trf):
+def decode_sequence(plate):
     """
-    Decode the "tRF license-plate" using the lookup table
-    :param trf: tRF license plate being decoded
+    Decode the license-plate using the lookup table
+    :param plate: license plate being decoded
     :return: The sequence it decodes to
     """
-    if trf.count('-') == 2:
-        fields = trf.split('-', 2)
+    if plate.count('-') == 2:
+        fields = plate.split('-', 2)
         # Discard prefix, it isn't used at all
         fields = fields[1:]
 
-    elif trf.count('-') == 1:
-        fields = trf.split('-', 1)
+    elif plate.count('-') == 1:
+        fields = plate.split('-', 1)
     else:
         sys.stderr.write('Error, exiting: Provided license plate is not in a valid format.\n')
         sys.exit(1)
@@ -560,7 +564,7 @@ def decode_sequence(trf):
 
     # Check if label make sense
     if math.fabs(remainder >= 5):
-        sys.stderr.write("Warning! The length doesn't agree with the sequence length.\n")
+        sys.stderr.write("Warning: The length doesn't agree with the sequence length.\n")
     return ''.join(final_result)
 
 
@@ -570,7 +574,7 @@ def convert(seq, encode, prefix):
     else:
         if '-' in prefix or ' ' in prefix:
             sys.stderr.write("Warning: Dashes and spaces are not permitted in the license plate prefix."
-                             "MINTcodes will remove all instances automatically.\n")
+                             "Program will remove all instances automatically.\n")
             prefix = prefix.replace('-', '')
             prefix = prefix.replace(' ', '')
 
@@ -597,14 +601,14 @@ def run_as_script():
     """
     from argparse import RawDescriptionHelpFormatter
     parser = argparse.ArgumentParser(
-        description="\nUsage:\n\tpython MINTcodes_tRF_license_plates.class en example_sequences_to_encode.txt"
-                    "\tpython MINTcodes_tRF_license_plates.class de example_tRF_license_plates_to_decode.txt",
+        description="Program to generate license plates from given sequence or decode license plate to a sequence. "
+                    "An optional prefix can be provided to the program such as 'tRF', 'rRF', 'iso', etc, if needed.",
         formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('sequencefile', type=str, help='Sequences that are to be encoded or decoded')
     parser.add_argument('encode_choice', type=str, choices=['en', 'de'],
                         help='Choice of encoding (en) or decoding (de)')
     parser.add_argument('--p', '--prefix', type=str, default=None, dest='prefix',
-                        help='Prefix to be used for license plates')
+                        help="Prefix to be used for license plates. 'tRF', 'rRF', 'iso', etc")
 
     args = parser.parse_args()
 
@@ -619,7 +623,7 @@ def run_as_script():
 
     for item in illegal_characters:
         if item in args.sequencefile.split('/')[-1]:
-            sys.stderr.write('Illegal character ' + item + ' in filename\n')
+            sys.stderr.write('Error, exiting: Illegal character ' + item + ' in filename\n')
             sys.exit(1)
 
     try:
@@ -629,7 +633,8 @@ def run_as_script():
         sys.exit(1)
 
     if sequence_file is None:
-        sys.stderr.write('Hm, something else went wrong, error 2\n')
+        sys.stderr.write('Error: An unexpected error has occurred, please ensure that the file ' + args.sequencefile +
+                         ' exists\n')
         sys.exit(1)
 
     sequences = []
