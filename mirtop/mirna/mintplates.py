@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 """
-MINTplates.py: Program to generate license plates from given sequence or decode license plate to a sequence.
-An optional prefix can be provided to the program such as 'tRF', 'rRF', 'iso', etc, if needed.
+MINTplates.py: Terms and conditions located in README_TermsOfUse_MINTplates.txt
 
-These sequence-dependent license plate identifiers were introduced and described in the following
-publication - (https://www.ncbi.nlm.nih.gov/pubmed/27153631/).
-For additional information, please additionally see - (https://www.ncbi.nlm.nih.gov/pubmed/28220888/).
-These identifiers can be used for tRFs, isomiRs, and other molecular sequences. Importantly, this labeling scheme is
-not dependent on genomic location and is consequently independent of any genome assembly used.
+This code was created by Venetia Pliatsika, Isidore Rigoutsos, Jeffery Ma, Phillipe Loher
+It can be used to create/encode molecular "license-plates" from sequences and to also decode the "license-plates"
+back to sequences.  While initially created for tRFs (tRNA fragments), this tool can be used for
+any genomic sequences including but not limited to:  tRFs, isomiRs, reference miRNA, etc.
+For more information on "license-plates", visit https://cm.jefferson.edu/MINTbase and
+refer to publications https://www.ncbi.nlm.nih.gov/pubmed/27153631/ and https://www.ncbi.nlm.nih.gov/pubmed/28220888/.
+Contact us at: https://cm.jefferson.edu/contact-us/
 """
 
 import sys
@@ -517,7 +518,10 @@ def encode_sequence(sequence, prefix):
         try:
             final_result.append(encode_hash[sequence[0:5]])
             sequence = sequence[5:]
-        except KeyError:
+        except KeyError as err:
+            if not err.args:
+                err.args = ('',)
+            err.args = err.args + ("Error, exiting: Sequence '" + sequence + "' is invalid.",)
             raise
 
     return ''.join(final_result)
@@ -537,10 +541,10 @@ def decode_sequence(plate):
     elif plate.count('-') == 1:
         fields = plate.split('-', 1)
     else:
-        raise KeyError('Error, exiting: Provided license plate is not in a valid format.')
+        raise KeyError("Error, exiting: Provided license plate '" + plate + "' is not in a valid format.")
 
     if not is_license_plate(fields[0], fields[1]):
-        raise KeyError('Error, exiting: Provided license plate is not in a valid format.')
+        raise KeyError("Error, exiting: Provided license plate '" + plate + "' is not in a valid format.")
 
     length = int(fields[0])
     code = fields[1]
@@ -552,20 +556,27 @@ def decode_sequence(plate):
         if remainder >= 5:
             try:
                 raw_result.append(decode_hash[code[0:2] + '-5'])
-            except KeyError:
+            except KeyError as err:
+                if not err.args:
+                    err.args = ('',)
+                err.args = err.args + ("Error, exiting: License plate '" + plate + "' is invalid.",)
                 raise
         else:
             try:
                 raw_result.append(decode_hash[code[0:2] + '-' + str(remainder)])
-            except KeyError:
+            except KeyError as err:
+                if not err.args:
+                    err.args = ('',)
+                err.args = err.args + ("Error, exiting: License plate '" + plate + "' is invalid.",)
                 raise
+
         remainder -= 5
         code = code[2:]
 
     # Check if label make sense
     final_result = ''.join(raw_result)
     if len(final_result) != length or code != '':
-        raise KeyError("Error, exiting: Invalid license plate. Incorrect decoded sequence length.")
+        raise KeyError("Error, exiting: Invalid license plate '" + plate + "'.")
 
     return final_result
 
@@ -576,7 +587,7 @@ def convert(seq, encode, prefix):
     else:
         if '-' in prefix or ' ' in prefix:
             sys.stderr.write("Warning: Dashes and spaces are not permitted in the license plate prefix."
-                             "Program will remove all instances automatically.\n")
+                             "Program will remove all instances automatically from prefix '" + prefix + "'.\n")
             prefix = prefix.replace('-', '')
             prefix = prefix.replace(' ', '')
 
@@ -587,7 +598,7 @@ def convert(seq, encode, prefix):
             if is_sequence(cleaned):
                 return encode_sequence(cleaned, prefix)
             else:
-                raise KeyError('Error, exiting: Illegal characters in line ' + cleaned)
+                raise KeyError('Error, exiting: Illegal characters in line "' + cleaned + '"')
     else:
         # Decode
         if seq != '':
@@ -623,16 +634,18 @@ def run_as_script():
 
     for item in illegal_characters:
         if item in args.sequencefile.split('/')[-1]:
-            raise KeyError('Error, exiting: Illegal character ' + item + ' in filename')
+            raise KeyError('Error, exiting: Illegal character "' + item + '" in filename')
 
     try:
         sequence_file = open(args.sequencefile, 'r')
     except IOError:
-        raise
+        sys.stderr.write('Error, exiting: File ' + args.sequencefile + ' not found.\n')
+        sys.exit(1)
 
     if sequence_file is None:
-        raise IOError('Error: An unexpected error has occurred, please ensure that the file ' + args.sequencefile +
-                      ' exists')
+        sys.stderr.write('Error: An unexpected error has occurred, please ensure that the file ' + args.sequencefile +
+                         ' exists\n')
+        sys.exit(1)
 
     sequences = []
     for line in sequence_file:
