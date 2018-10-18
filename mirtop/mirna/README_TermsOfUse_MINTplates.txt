@@ -36,6 +36,6 @@ TO BE OBTAINED FROM USE OF THE CODE.
 
 3. Usage Information
 --------------------
-Usage:
+Usage (Python 2 and 3 compatible):
 	python MINTplates.py example_sequences_to_encode.txt en --p [prefix to add to license plate]
 	python MINTplates.py example_license_plates_to_decode.txt de --p [optional prefix, not used in decoding]
