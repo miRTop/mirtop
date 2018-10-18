@@ -140,7 +140,7 @@ def read_id(idu):
 
     It uses the code from *mirtop.mirna.keys()*.
 
-    Inspared in MINTplate: https://cm.jefferson.edu/MINTbase
+    Inspired by MINTplate: https://cm.jefferson.edu/MINTbase
     https://github.com/TJU-CMC-Org/MINTmap/tree/master/MINTplates
 
     Args:
@@ -164,7 +164,7 @@ def make_id(seq):
 
     It uses the code from *mirtop.mirna.keys()*.
 
-    Inspared in MINTplate: https://cm.jefferson.edu/MINTbase
+    Inspired by MINTplate: https://cm.jefferson.edu/MINTbase
     https://github.com/TJU-CMC-Org/MINTmap/tree/master/MINTplates
 
     Args:
