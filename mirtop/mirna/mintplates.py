@@ -652,13 +652,13 @@ def run_as_script():
         sequences.append(line.rstrip())
     sequence_file.close()
 
-    done = []
+    done = {}
 
     for seq in sequences:
-        done.append(convert(seq, encode, args.prefix))
+        done[seq] = convert(seq, encode, args.prefix)
 
     for item in done:
-        sys.stdout.write(item + '\n')
+        sys.stdout.write(item + '\t' + done[item] + '\n')
 
 
 if __name__ == "__main__":
