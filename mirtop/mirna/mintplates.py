@@ -598,7 +598,7 @@ def convert(seq, encode, prefix):
             if is_sequence(cleaned):
                 return encode_sequence(cleaned, prefix)
             else:
-                raise KeyError('Error, exiting: Illegal characters in line "' + cleaned + '"')
+                raise KeyError('Error, exiting: Illegal characters in line "' + seq + '"')
     else:
         # Decode
         if seq != '':
@@ -655,7 +655,11 @@ def run_as_script():
     done = {}
 
     for seq in sequences:
-        done[seq] = convert(seq, encode, args.prefix)
+        try:
+            done[seq] = convert(seq, encode, args.prefix)
+        except KeyError as error:
+            print(error)
+            sys.exit(1)
 
     for item in done:
         sys.stdout.write(item + '\t' + done[item] + '\n')
