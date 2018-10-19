@@ -514,15 +514,17 @@ def encode_sequence(sequence, prefix):
     else:
         final_result = [prefix + "-" + str(length) + "-"]
 
-    while sequence != '':
+    work_sequence = sequence
+    while work_sequence != '':
         try:
-            final_result.append(encode_hash[sequence[0:5]])
-            sequence = sequence[5:]
+            final_result.append(encode_hash[work_sequence[0:5]])
         except KeyError as err:
             if not err.args:
                 err.args = ('',)
-            err.args = err.args + ("Error, exiting: Sequence '" + sequence + "' is invalid.",)
+            err.args = err.args + ("Error, exiting: Segment '" + work_sequence[0:5] +
+                                   "' from sequence '" + sequence + "' is invalid.",)
             raise
+        work_sequence = work_sequence[5:]
 
     return ''.join(final_result)
 
@@ -559,7 +561,8 @@ def decode_sequence(plate):
             except KeyError as err:
                 if not err.args:
                     err.args = ('',)
-                err.args = err.args + ("Error, exiting: License plate '" + plate + "' is invalid.",)
+                err.args = err.args + ("Error, exiting: Segment '" + code[0:2] + "' from license plate '"
+                                       + plate + "' is invalid.",)
                 raise
         else:
             try:
@@ -567,7 +570,8 @@ def decode_sequence(plate):
             except KeyError as err:
                 if not err.args:
                     err.args = ('',)
-                err.args = err.args + ("Error, exiting: License plate '" + plate + "' is invalid.",)
+                err.args = err.args + ("Error, exiting: Segment '" + code[0:2] + "' from license plate '"
+                                       + plate + "' is invalid.",)
                 raise
 
         remainder -= 5
