@@ -3,7 +3,7 @@ from Bio import pairwise2
 from Bio.Seq import Seq
 from collections import defaultdict
 
-from mirtop.mirna.keys import CODE2NT, NT2CODE
+from mirtop.mirna.mintplates import convert
 import mirtop.libs.logger as mylog
 
 logger = mylog.getLogger(__name__)
@@ -136,12 +136,12 @@ class isomir:
 def read_id(idu):
     """
     Read a unique identifier for the sequence and
-    converte it to the nucleotides,
-    replacing an unique character for 3 nts.
+    convert it to the nucleotides,
+    replacing an unique code for 5 nts.
 
     It uses the code from *mirtop.mirna.keys()*.
 
-    Inspared in MINTplate: https://cm.jefferson.edu/MINTbase
+    Inspired by MINTplate: https://cm.jefferson.edu/MINTbase
     https://github.com/TJU-CMC-Org/MINTmap/tree/master/MINTplates
 
     Args:
@@ -150,26 +150,23 @@ def read_id(idu):
     Returns:
         *seq(str)*: nucleotides sequences.
     """
-    seq = ""
-    for i in idu:
-        if i == "1" or i == "2":
-            return seq[:-int(i)]
-        else:
-            if i not in CODE2NT:
-                logger.error("UID is not valid (%s)" % idu)
-                return False
-            seq += CODE2NT[i]
+    try:
+        seq = convert(idu, False, 'iso')
+    except KeyError:
+        logger.error("UID is not valid " + idu)
+        raise
+
     return seq
 
 
 def make_id(seq):
     """
     Create a unique identifier for the sequence from the nucleotides,
-    replacing 3 nts for another unique character.
+    replacing 5 nts for a unique sequence.
 
     It uses the code from *mirtop.mirna.keys()*.
 
-    Inspared in MINTplate: https://cm.jefferson.edu/MINTbase
+    Inspired by MINTplate: https://cm.jefferson.edu/MINTbase
     https://github.com/TJU-CMC-Org/MINTmap/tree/master/MINTplates
 
     Args:
@@ -178,27 +175,14 @@ def make_id(seq):
     Returns:
         *idName(str)*: unique identifier for the sequence.
     """
-    start = 0
-    idu = ""
-    if not seq:
-        raise ValueError("Sequence is empty.")
-    for i in range(0, len(seq) + 1, 3):
-        if i == 0:
-            continue
-        trint = seq[start:i]
-        if trint not in NT2CODE:
-            logger.error("Sequence is not valid (%s)" % trint)
-            return False
-        idu += NT2CODE[trint]
-        start = i
-    if len(seq) > i:
-        dummy = "A" * (3 - (len(seq) - i))
-        trint = seq[i:len(seq)]
-        if "%s%s" % (trint, dummy) not in NT2CODE:
-            logger.error("Sequence is not valid (%s)" % trint)
-            return False
-        idu += NT2CODE["%s%s" % (trint, dummy)]
-        idu += str(len(dummy))
+    try:
+        idu = convert(seq, True, 'iso')
+    except KeyError as error:
+        logger.error("Sequence is not valid " + seq)
+        raise
+
+    # If you wanted to add "iso-" into the license plate as the prefix
+    # idu = convert(seq, True, "iso")
     return idu
 
 

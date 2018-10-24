@@ -100,17 +100,28 @@ class FunctionsTest(unittest.TestCase):
                 raise ValueError("%s didn't result on %s but in %s" %
                                  (s, test, code))
 
-        _convert("AAACCCTTTGGG", "@#%$")
-        _convert("AAACCCTTTGGGA", "@#%$@2")
-        _convert("AAACCCTTTGGGAT", "@#%$g1")
-        _convert("@#%$", "AAACCCTTTGGG", True)
-        _convert("@#%$@2", "AAACCCTTTGGGA", True)
-        _convert("@#%$g1", "AAACCCTTTGGGAT", True)
+        _convert("AAACCCTTTGGG", "iso-12-B1NY4")
+        _convert("AAACCCTTTGGGA", "iso-13-B1NYDX")
+        _convert("AAACCCTTTGGGAT", "iso-14-B1NYI7")
+        _convert("iso-12-B1NY4", "AAACCCTTTGGG", True)
+        _convert("iso-13-B1NYDX", "AAACCCTTTGGGA", True)
+        _convert("iso-14-B1NYI7", "AAACCCTTTGGGAT", True)
 
-        if make_id("AGTFCVS"):
-            raise ValueError("This should be False. Not valid sequence.")
-        if read_id("asD(-"):
-            raise ValueError("This should be False, Not valid code.")
+        # if make_id("AGTFCVS"):
+        #     raise ValueError("This should be False. Not valid sequence.")
+        # if read_id("asD(-"):
+        #     raise ValueError("This should be False, Not valid code.")
+
+    @attr(code_convert=True)
+    def test_code_convert(self):
+        """testing code correction function"""
+        from mirtop.mirna.realign import make_id
+        from mirtop.gff.update import read_uid_10
+
+        if not make_id(read_uid_10("@#%$")) == "iso-12-B1NY4":
+            raise ValueError("Update ID is not working.")
+        if not make_id(read_uid_10("@#%$@2")) == "iso-13-B1NYDX":
+            raise ValueError("Update ID is not working.")
 
     @attr(cigar=True)
     def test_cigar(self):
