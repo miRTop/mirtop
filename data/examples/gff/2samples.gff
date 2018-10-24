@@ -1,5 +1,5 @@
 ## mirGFF3. VERSION 1.1
 ## source-ontology: miRBasev21 doi:10.25504/fairsharing.hmgte8
 ## COLDATA: samples1,sample2
-hsa-let-7a-1	miRBasev21	isomiR	3	26	0	+	.	Read=GATGAGGTAGTAGGTTGTATAGTT; UID=F4WWABg5; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-2; Cigar=24M; Expression=66,33; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	4	26	0	+	.	Read=ATGAGGTAGTAGGTTGTATAGTT; UID=bhJJ5WJQ1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-1; Cigar=23M; Expression=4,2; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	3	26	0	+	.	Read=GATGAGGTAGTAGGTTGTATAGTT; UID=iso-24-5URPV39QFE; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-2; Cigar=24M; Expression=66,33; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	4	26	0	+	.	Read=ATGAGGTAGTAGGTTGTATAGTT; UID=iso-23-I0S31NSL0E; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-1; Cigar=23M; Expression=4,2; Filter=Pass; Hits=1

@@ -154,7 +154,7 @@ def read_id(idu):
         seq = convert(idu, False, 'iso')
     except KeyError:
         logger.error("UID is not valid " + idu)
-        raise
+        return False
 
     return seq
 

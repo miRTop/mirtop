@@ -1,7 +1,7 @@
 from mirtop.gff.classgff import feature
 import mirtop.libs.logger as mylog
 from mirtop.gff import gff_versions as version
-from mirtop.mirna.realign import make_id
+from mirtop.mirna.realign import read_id
 
 logger = mylog.getLogger(__name__)
 
@@ -74,7 +74,7 @@ def _check_line(line, num, num_samples):
     if 'UID' not in attr:
         logger.error('UID not found in line %s' % (num))
     else:
-        if not make_id(attr['UID']):
+        if not read_id(attr['UID']):
             logger.error('UID is not in a correct format in line %s. '
                          'Use mirtop gff to fix this or open an issue.' % num)
 

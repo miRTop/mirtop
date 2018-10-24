@@ -1,15 +1,15 @@
 ## mirGFF3. VERSION 1.1
 ## source-ontology: miRBasev21 doi:10.25504/fairsharing.hmgte8
 ## COLDATA: let7a-5p
-hsa-let-7a-1	miRBasev21	isomiR	3	26	0	+	.	Read=GATGAGGTAGTAGGTTGTATAGTT; UID=F4WWABg5; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-2; Cigar=24M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	4	26	0	+	.	Read=ATGAGGTAGTAGGTTGTATAGTT; UID=bhJJ5WJQ1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-1; Cigar=23M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	5	26	0	+	.	Read=TGAGGTAGTACGTTGTATAGTT; UID=7AwdRzwL2; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_snv_central; Cigar=10MC11M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	5	28	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTTAA; UID=7AwhRzwL; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_add:+2; Cigar=22MAA; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	5	27	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTTT; UID=7AwhRzwQ1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_3p:+1; Cigar=23M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiRe	5	24	0	+	.	Read=TGAGGTAGTAGGTTGTATAG; UID=7AwhRzm1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_3p:-2; Cigar=20M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	5	28	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTTTT; UID=7AwhRzw%; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_3p:+2; Cigar=24M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiRe	5	25	0	+	.	Read=TGAGGTAGTAGGTTGTATAGT; UID=7AwhRzw; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_3p:-1; Cigar=21M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	5	27	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTTA; UID=7AwhRzwL1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_add:+1; Cigar=22MA; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	ref_miRNA	5	26	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTT; UID=7AwhRzwL2; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=NA; Cigar=22M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	6	26	0	+	.	Read=GAGGTAGTAGGTTGTATAGTT; UID=4WWABg5; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:+1; Cigar=21M; Expression=1; Filter=Pass; Hits=1
-hsa-let-7a-1	miRBasev21	isomiR	7	26	0	+	.	Read=AGGTAGTAGGTTGTATAGTT; UID=hJJ5WJQ1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:+2; Cigar=20M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	3	26	0	+	.	Read=GATGAGGTAGTAGGTTGTATAGTT; UID=iso-24-5URPV39QFE; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-2; Cigar=24M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiRe	4	26	0	+	.	Read=ATGAGGTAGTAGGTTGTATAGTT; UID=iso-23-I0S31NSL0E; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-1; Cigar=23M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiRe	5	26	0	+	.	Read=TGAGGTAGTACGTTGTATAGTT; UID=iso-22-XKVLMYVPQ; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_snv_central; Cigar=10MC11M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	5	28	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTTAA; UID=iso-24-XKVLRYVPKF; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_add:+2; Cigar=22MAA; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	5	27	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTTT; UID=iso-23-XKVLRYVP0Q; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_3p:+1; Cigar=23M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	5	24	0	+	.	Read=TGAGGTAGTAGGTTGTATAG; UID=iso-20-XKVLRYVP; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_3p:-2; Cigar=20M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	5	28	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTTTT; UID=iso-24-XKVLRYVPKQ; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_3p:+2; Cigar=24M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	5	25	0	+	.	Read=TGAGGTAGTAGGTTGTATAGT; UID=iso-21-XKVLRYVPE; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_3p:-1; Cigar=21M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	5	27	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTTA; UID=iso-23-XKVLRYVP0O; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_add:+1; Cigar=22MA; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	ref_miRNA	5	26	0	+	.	Read=TGAGGTAGTAGGTTGTATAGTT; UID=iso-22-XKVLRYVPQ; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=NA; Cigar=22M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	6	26	0	+	.	Read=GAGGTAGTAGGTTGTATAGTT; UID=iso-21-531P7WH3E; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:+1; Cigar=21M; Expression=1; Filter=Pass; Hits=1
+hsa-let-7a-1	miRBasev21	isomiR	7	26	0	+	.	Read=AGGTAGTAGGTTGTATAGTT; UID=iso-20-1LSKZLVN; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:+2; Cigar=20M; Expression=1; Filter=Pass; Hits=1
