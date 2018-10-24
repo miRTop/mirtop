@@ -37,6 +37,7 @@ def read_bam(bam_fn, args, clean=True):
     mode = "r" if bam_fn.endswith("sam") else "rb"
     handle = pysam.Samfile(bam_fn, mode)
     reads = defaultdict(hits)
+    indels_skip = 0
     for line in handle:
         if line.reference_id < 0:
             logger.debug("READ::Sequence not mapped: %s" % line.reference_id)
@@ -55,6 +56,9 @@ def read_bam(bam_fn, args, clean=True):
             continue
         chrom = handle.getrname(line.reference_id)
         cigar = line.cigartuples
+        if line.cigarstring.find("I") > -1:
+            indels_skip += 1
+            continue
         iso = isomir()
         iso.align = line
         iso.set_pos(line.reference_start, len(reads[query_name].sequence))
@@ -75,6 +79,7 @@ def read_bam(bam_fn, args, clean=True):
         if len(iso.subs) < 2:
             reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))
+    logger.info("Hits skipped due to contain indels %s" % indels_skip)
     if clean:
         reads = filter.clean_hits(reads)
         logger.info("Hits after clean: %s" % len(reads))

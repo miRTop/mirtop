@@ -10,20 +10,24 @@ class feature:
         self.attributes = {}
         self.columns = {}
         self.read_gff_line()
-        self.reserved_attributes = gff_versions.ATTRv['1.0']
+        self.reserved_attributes = gff_versions.ATTRv['1.1']
 
     def guess_format(self):
         return "=" if self.line.find("Name=") > -1 else " "
 
-    def paste_columns(cols, sep=" "):
+    def paste_columns(self, sep=None):
         """
         Create GFF/GTF line from read_gff_line
         """
-        cols['attrb'] = "; ".join(
-            "%s%s%s" % (a, sep, cols['attrb'][a]) for a in cols['attrb'])
-        return "\t".join([cols['chrom'], cols['source'], cols['type'],
-                          cols['start'], cols['end'], cols['score'],
-                          cols['strand'], cols['ext'], cols['attrb']])
+        sep = self.guess_format()
+        attributes = "; ".join(
+            "%s%s%s" % (a, sep, self.attributes[a]) for a in self.attributes)
+        return "\t".join([self.columns['chrom'], self.columns['source'],
+                          self.columns['type'],
+                          self.columns['start'], self.columns['end'],
+                          self.columns['score'],
+                          self.columns['strand'], self.columns['ext'],
+                          attributes])
 
     def read_attributes(self, gff_attrb, sep=" "):
         sep = self.guess_format()

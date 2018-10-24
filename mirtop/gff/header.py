@@ -21,14 +21,14 @@ def create(samples, database, custom, filter=None):
         *header (str)*: header string.
     """
     header = ""
-    header += _get_gff_version()
+    header += get_gff_version()
     header += _get_database(database)
     header += _get_samples(samples)
     header += custom
     return header
 
 
-def _get_gff_version():
+def get_gff_version():
     return ("## mirGFF3. VERSION"
             " %s\n" % version.current)
 
@@ -51,6 +51,18 @@ def _filter(filters):
     if not filters:
         return "## FILTER: PASS\n"
     return "## FILTER: %s" % ";\n".join(filters)
+
+
+def read_version(fn):
+    """Extract mirGFF3 version"""
+    with open(fn) as inh:
+        for line in inh:
+            if line.find("VERSION") > -1:
+                return line.split("VERSION")[1]
+            if not line.startswith("#"):
+                ValueError("Version not found in the header."
+                           "A valid file should have a line like this:"
+                           "## mirGFF3. VERSION X.X")
 
 
 def read_samples(fn):

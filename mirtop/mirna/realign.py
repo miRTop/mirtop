@@ -69,21 +69,21 @@ class isomir:
         for sub in subs:
             if sub:
                 if sub[0] > 1 and sub[0] < 8:
-                    value += "iso_snp_seed,"
+                    value += "iso_snv_seed,"
                 elif sub[0] == 8:
-                    value += "iso_snp_central_offset,"
+                    value += "iso_snv_central_offset,"
                 elif sub[0] > 8 and sub[0] < 13:
-                    value += "iso_snp_central,"
+                    value += "iso_snv_central,"
                 elif sub[0] > 12 and sub[0] < 18:
-                    value += "iso_snp_central_supp,"
+                    value += "iso_snv_central_supp,"
                 else:
-                    value += "iso_snp,"
+                    value += "iso_snv,"
 
         if self.add:
             value += "iso_add:+%s," % len(self.add)
         if self.t5:
             size = len(self.t5)
-            direction = "+" if self.t5.isupper() else "-"
+            direction = "-" if self.t5.isupper() else "+"
             value += "iso_5p:%s%s," % (direction, size)
         if self.t3:
             size = len(self.t3)
@@ -156,7 +156,7 @@ def read_id(idu):
             return seq[:-int(i)]
         else:
             if i not in CODE2NT:
-                logger.error("Code is not valid (%s)" % i)
+                logger.error("UID is not valid (%s)" % idu)
                 return False
             seq += CODE2NT[i]
     return seq

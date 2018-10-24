@@ -135,9 +135,9 @@ def cigar2variants(cigar, sequence, tag):
     logger.debug("\nISOMIRSEA:: expanded: %s" % expand_cigar(cigar))
     for l in expand_cigar(cigar):
         if l == "I":
-            iso5p += 1
-        elif l == "D":
             iso5p -= 1
+        elif l == "D":
+            iso5p += 1
         else:
             break
     iso3p = 0
@@ -169,21 +169,22 @@ def cigar2variants(cigar, sequence, tag):
     variant = "NA;" if not variant else variant
     return variant[:-1]
 
+
 def _define_snp(subs):
     value = ""
     logger.debug("\nISOMIRSEA:: subs %s" % subs)
     for sub in subs:
         if sub:
             if sub[0] > 1 and sub[0] < 8:
-                value += "iso_snp_seed,"
+                value += "iso_snv_seed,"
             elif sub[0] == 8:
-                value += "iso_snp_central_offset,"
+                value += "iso_snv_central_offset,"
             elif sub[0] > 8 and sub[0] < 13:
-                value += "iso_snp_central,"
+                value += "iso_snv_central,"
             elif sub[0] > 12 and sub[0] < 18:
-                value += "iso_snp_central_supp,"
+                value += "iso_snv_central_supp,"
             else:
-                value += "iso_snp,"
+                value += "iso_snv,"
     return value[:-1]
 
 

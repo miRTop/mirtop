@@ -1,4 +1,7 @@
 - 0.4.*a
+
+ * Revert sign in iso_5p, replace snp by snv.
+ * Skip lines that contain malformed UID.
  * Add FASTA as an exporter from GFF.
  * Fix BAM parsing to new GFF rules.
  * Add the possibility to work with spikeins to detect random variability.

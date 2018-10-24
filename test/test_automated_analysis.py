@@ -105,6 +105,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
     @attr(complete=True)
     @attr(annotate=True)
     @attr(bam=True)
+    @attr(cmd=True)
     def test_srnaseq_annotation_bam(self):
         """Run miraligner analysis
         """
@@ -122,6 +123,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_seqbuster=True)
+    @attr(cmd=True)
     def test_srnaseq_annotation_seqbuster(self):
         """Run miraligner analysis
         """
@@ -141,6 +143,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_isomirsea=True)
+    @attr(cmd=True)
     def test_srnaseq_annotation_isomirsea(self):
         """Run isomirsea analysis
         """
@@ -160,6 +163,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_srnabench=True)
+    @attr(cmd=True)
     def test_srnaseq_annotation_srnabench(self):
         """Run srnabench analysis
         """
@@ -179,6 +183,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_stats=True)
+    @attr(cmd=True)
     def test_srnaseq_stats(self):
         """Run stats analysis
         """
@@ -192,7 +197,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
-    @attr(cmd_stats2=True)
+    @attr(cmd_stats=True)
+    @attr(cmd=True)
     def test_srnaseq_stats(self):
         """Run stats analysis
         """
@@ -206,6 +212,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_merge=True)
+    @attr(cmd=True)
     def test_merge_bam(self):
         """
         Run collapse two samples
@@ -225,6 +232,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_export=True)
+    @attr(cmd=True)
     def test_export(self):
         """
         Run export command
@@ -242,6 +250,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_count=True)
+    @attr(cmd=True)
     def test_count(self):
         """
         Run count command
@@ -259,6 +268,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_spikeins=True)
+    @attr(cmd=True)
     def test_spikeins_cmd(self):
         """Run spikeins analysis
         """

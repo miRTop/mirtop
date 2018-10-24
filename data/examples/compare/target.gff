@@ -1,6 +1,6 @@
-## GFF3 adapted for miRNA sequencing data. VERSION 0.0.1
-## source-ontology: miRBase1
+## mirGFF3. VERSION 1.1
+## source-ontology: miRBasev21 doi:10.25504/fairsharing.hmgte8
 ## COLDATA: sampleX
-hsa-let-7a-1	miRBase21	isomiR	4	26	0	+	.	Read hsa-let-7a-5p.sA.t.ATGAGGTAGTAGGTTGTATAGT; UID bhJJ5WJL2; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1,iso_3p:-1; Cigar 22M; Expression 11; Filter Pass; Hits 1;
-hsa-let-7a-1	miRBase21	isomiR	4	30	0	+	.	Read hsa-let-7a-5p.sA.TT.eT.ATGAGGTAGTAGGTTGTATAGTTTTT; UID bhJJ5WJ%Q1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_add:+3,iso_5p:+1; Cigar 25MT; Expression 66; Filter Pass; Hits 1;
-hsa-let-7a-1	miRBase21	isomiR	4	27	0	+	.	Read hsa-let-7a-5p.sA.ATGAGGTAGTAGGTTGTATAGTT; UID bhJJ5WJQ1; Name hsa-let-7a-5p; Parent hsa-let-7a-1; Variant iso_5p:+1; Cigar 23M; Expression 56; Filter Pass; Hits 1;
+hsa-let-7a-1	miRBase21	isomiR	4	26	0	+	.	Read=hsa-let-7a-5p.sA.t.ATGAGGTAGTAGGTTGTATAGT; UID=bhJJ5WJL2; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-1,iso_3p:-1; Cigar=22M; Expression 11; Filter=Pass; Hits=1;
+hsa-let-7a-1	miRBase21	isomiR	4	30	0	+	.	Read=hsa-let-7a-5p.sA.TT.eT.ATGAGGTAGTAGGTTGTATAGTTTTT; UID=bhJJ5WJ%Q1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_add:+3,iso_5p:-1; Cigar=25MT; Expression=66; Filter=Pass; Hits=1;
+hsa-let-7a-1	miRBase21	isomiR	4	27	0	+	.	Read=hsa-let-7a-5p.sA.ATGAGGTAGTAGGTTGTATAGTT; UID=bhJJ5WJQ1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:-1; Cigar=23M; Expression=56; Filter=Pass; Hits=1;

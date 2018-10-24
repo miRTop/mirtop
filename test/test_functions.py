@@ -349,7 +349,7 @@ class FunctionsTest(unittest.TestCase):
         args.hairpin = "data/examples/annotate/hairpin.fa"
         args.sps = "hsa"
         args.gtf = "data/examples/annotate/hsa.gff3"
-        args.gff = 'data/examples/synthetic/let7a-5p.gtf'
+        args.gff = 'data/examples/synthetic/let7a-5p.gff'
         args.out = 'data/examples/synthetic'
         args.add_extra = True
         convert_gff_counts(args)

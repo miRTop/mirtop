@@ -15,13 +15,19 @@ def read(fn, args):
     """Read GTF/GFF file and load into annotate, chrom counts, sample, line"""
     samples = read_samples(fn)
     lines = defaultdict(dict)
+    sep = " " if args.out_format == "gtf" else "="
+    corrupted_uid = 0
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
                 continue
+            line = paste_columns(feature(line), sep=sep)
             gff = feature(line)
             cols = gff.columns
             attr = gff.attributes
+            if attr['UID'] and not read_id(attr['UID']):
+                corrupted_uid += 1
+                continue
             if 'UID' not in attr:
                 msg = "UID not found."
                 if 'Read' not in attr:
@@ -36,7 +42,7 @@ def read(fn, args):
                     else:
                         attr['UID'] = make_id(attr['Read'])
             if 'UID' not in attr:
-                logger.warning("Line cannot is not a valid GFF3 line: %s" %
+                logger.warning("Line is not a valid GFF3 line: %s" %
                                line.strip())
                 logger.warning(msg)
 
@@ -51,6 +57,7 @@ def read(fn, args):
                  attr['Expression'].strip().split(","),
                  samples,
                  line.strip()])
+    logger.info("Lines skipped due to corrupted UID: %s" % corrupted_uid)
     return lines
 
 
@@ -68,14 +75,14 @@ def create(reads, database, sample, args):
     if args.add_extra:
         precursors = args.precursors
         matures = args.matures
-    for r, read in reads.iteritems():
+    for (r, read) in reads.items():
         hits = set()
         [hits.add(mature.mirna) for mature in read.precursors.values()
             if mature.mirna]
         hits = len(hits)
         if len(read.precursors) > 0:
             n_reads += 1
-        for p, iso in read.precursors.iteritems():
+        for (p, iso) in read.precursors.items():
             if not iso.mirna:
                 filter_precursor += 1
                 continue
