@@ -430,3 +430,9 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.exporter.fasta import _process
         print("\n")
         _process("data/examples/gff/2samples.gff", None)
+
+    @attr(update=True)
+    def test_update(self):
+        from mirtop.gff.update import update_file
+        print("\n")
+        update_file("data/examples/versions/version1.0.gff", None)

@@ -16,7 +16,8 @@ def parse_cl(in_args):
                 "counts": _add_subparser_counts,
                 "export": _add_subparser_export,
                 "validator": _add_subparser_validator,
-                "spikein": _add_subparser_spikein
+                "spikein": _add_subparser_spikein,
+                "update": _add_subparser_update
                 }
     parser = argparse.ArgumentParser(description="small RNA analysis")
     sub_cmd = None
@@ -161,6 +162,15 @@ def _add_subparser_spikein(subparsers):
                                    help="Work with spike-ins.")
     parser.add_argument("file", help="FASTA file with spikeins.")
     parser.add_argument("-o", "--out", dest="out",
+                        help="folder of output files")
+    parser = _add_debug_option(parser)
+    return parser
+
+def _add_subparser_update(subparsers):
+    parser = subparsers.add_parser("update",
+                                   help="update GFF to current format version.")
+    parser.add_argument("files", nargs="*", help="GFF/GTF files.")
+    parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
                         help="folder of output files")
     parser = _add_debug_option(parser)
     return parser

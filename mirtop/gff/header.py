@@ -58,7 +58,7 @@ def read_version(fn):
     with open(fn) as inh:
         for line in inh:
             if line.find("VERSION") > -1:
-                return line.split("VERSION")[1]
+                return line.split("VERSION")[1].strip()
             if not line.startswith("#"):
                 ValueError("Version not found in the header."
                            "A valid file should have a line like this:"

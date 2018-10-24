@@ -303,3 +303,18 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_update=True)
+    @attr(cmd=True)
+    def test_update_cmd(self):
+        """Run update analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "update",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/versions/version1.0.gff"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)

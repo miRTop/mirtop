@@ -1,0 +1,7 @@
+## GFF3 adapted for miRNA sequencing data. VERSION 1.0
+## source-ontology: miRBasev21
+## COLDATA: let7a-5p
+hsa-let-7a-1	miRBasev21	isomiR	3	26	0	+	.	Read=seq_iso_5p:GA_x1; UID=F4WWABg5; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:+2; Cigar=24M; Expression=1; Filter=Pass; Hits=1; Changes=iso_5p:AT,iso_3p:0,iso_add:0,iso_snp:0
+hsa-let-7a-1	miRBasev21	isomiR	4	26	0	+	.	Read=seq_iso_5p:A_x1; UID=bhJJ5WJQ1; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_5p:+1; Cigar=23M; Expression=1; Filter=Pass; Hits=1; Changes=iso_5p:T,iso_3p:0,iso_add:0,iso_snp:0
+hsa-let-7a-1	miRBasev21	isomiR	5	26	0	+	.	Read=seq_iso_snp:11CG_x1; UID=7AwdRzwL2; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_snp_central; Cigar=10MC11M; Expression=1; Filter=Pass; Hits=1; Changes=iso_5p:0,iso_3p:0,iso_add:0,iso_snp:11CG
+hsa-let-7a-1	miRBasev21	isomiR	5	28	0	+	.	Read=seq_iso_add:AA_x1; UID=7AwhRzwL; Name=hsa-let-7a-5p; Parent=hsa-let-7a-1; Variant=iso_add:+2; Cigar=22MAA; Expression=1; Filter=Pass; Hits=1; Changes=iso_5p:0,iso_3p:0,iso_add:AA,iso_snp:0

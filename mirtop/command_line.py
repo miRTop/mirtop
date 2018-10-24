@@ -12,6 +12,7 @@ from mirtop.gff.convert import convert_gff_counts
 from mirtop.exporter import export
 from mirtop.gff import validator
 from mirtop.libs import spikeins
+from mirtop.gff import update
 import mirtop.libs.logger as mylog
 
 import time
@@ -50,4 +51,7 @@ def main(**kwargs):
     elif "spikein" in kwargs:
         logger.info("Run spike-in tools")
         spikeins.convert(kwargs["args"])
+    elif "update" in kwargs:
+        logger.info("Run update tools")
+        update.convert(kwargs["args"])
     logger.info('It took %.3f minutes' % ((time.time()-start)/60))
