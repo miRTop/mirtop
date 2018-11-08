@@ -228,36 +228,36 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Results for hsa-let-7a-5p is %s" % mature)
 
         res = align_from_variants("AGGTAGTAGGTTGTATAGTT", mature,
-                                  "iso_5p:-2")
+                                  "iso_5p:+2")
         if res:
             raise ValueError("Wrong alignment for test 1 %s" % res)
         res = align_from_variants("GATGAGGTAGTAGGTTGTATAGTT", mature,
-                                  "iso_5p:+2")
+                                  "iso_5p:-2")
         if res:
             raise ValueError("Wrong alignment for test 2 %s" % res)
         res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature,
-                                  "iso_5p:-2,iso_add:2")
+                                  "iso_5p:+2,iso_add:2")
         if res:
             raise ValueError("Wrong alignment for test 3 %s" % res)
         res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature,
-                                  "iso_5p:-2,iso_3p:2")
+                                  "iso_5p:+2,iso_3p:2")
         if res:
             raise ValueError("Wrong alignment for test 4 %s" % res)
         res = align_from_variants("AGGTAGTAGGTTGTATAG", mature,
-                                  "iso_5p:-2,iso_3p:-2")
+                                  "iso_5p:+2,iso_3p:-2")
         if res:
             raise ValueError("Wrong alignment for test 5 %s" % res)
         res = align_from_variants("AGGTAGTAGGTTGTATAGAA", mature,
-                                  "iso_5p:-2,iso_3p:-2,iso_add:2")
+                                  "iso_5p:+2,iso_3p:-2,iso_add3p:2")
         if res:
             raise ValueError("Wrong alignment for test 6 %s" % res)
         res = align_from_variants("AGGTAGTAGGATGTATAGTT", mature,
-                                  "iso_5p:-2,iso_snp_central")
+                                  "iso_5p:+2,iso_snv_central")
         if not res:
             if res[0][0] != 10:
                 raise ValueError("Wrong alignment for test 7 %s" % res)
         res = align_from_variants("AGGTAGTAGGATGTATAGAA", mature,
-                                  "iso_5p:-2,iso_3p:-2,iso_add:2")
+                                  "iso_5p:+2,iso_3p:-2,iso_add3p:2")
         if res:
             raise ValueError("Wrong alignment for test 8 %s" % res)
 

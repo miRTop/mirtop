@@ -186,8 +186,8 @@ def _translate(isomirs, description):
         if label.find("nta") > -1:
             number_nts = label.split("|")[1].split("#")[-1]
             if number_nts.find("-") < 0:
-                number_nts = "+%s" % number_nts
-            iso.append("iso_add:%s" % number_nts)
+                number_nts = "%s" % number_nts
+            iso.append("iso_add3p:%s" % number_nts)
         if label.find("NucVar") > -1:
             for nt in description.split(","):
                 logger.debug("TRANSLATE::change:%s" % description)

@@ -1,14 +1,5 @@
-import traceback
-import os.path as op
-import os
-import re
-import shutil
-import pandas as pd
-import pysam
 from collections import defaultdict
 from mirtop.mirna.realign import hits, cigar_correction, make_cigar, align
-from mirtop.libs import do
-from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 
 logger = mylog.getLogger(__name__)
@@ -76,6 +67,7 @@ def tune(seq, precursor, start, cigar):
 
     return subs, add, make_cigar(seq, mature)
 
+
 def clean_hits(reads):
     """
     Select only best matches from a list of hits from the same read.
@@ -105,5 +97,3 @@ def clean_hits(reads):
                 new_reads[r].remove_precursor(p)
 
     return new_reads
-
-

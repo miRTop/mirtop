@@ -34,6 +34,7 @@ def read_uid_10(idu):
 
 def to10to11(gff_line):
     gff_line = gff_line.replace("_snp", "_snv")
+    gff_line = gff_line.replace("_add", "_add3p")
     features = feature(gff_line)
     if "iso_5p" in features.attributes["Variant"]:
         variants = features.attributes["Variant"].split(",")

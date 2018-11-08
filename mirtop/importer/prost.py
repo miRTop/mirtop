@@ -143,7 +143,7 @@ def _make_variant(cols):
     if cols[1] != "0":
         variant.append("iso_3p:%s" % cols[1])
     if cols[2] != "0":
-        variant.append("iso_add:%s" % cols[2])
+        variant.append("iso_add3p:%s" % int(cols[2]))
     if cols[3] == "True":
         variant.append("iso_snv_seed")
     if cols[4] == "True":

@@ -123,9 +123,9 @@ def _accuracy(target, reference):
     """
     logger.debug("COMPARE::ACCURACY::values %s vs %s" % (target, reference))
     accuracy = dict()
-    types = ["iso_5p", "iso_3p", "iso_add", "iso_snp",
-             "iso_snp_seed", "iso_snp_central",
-             "iso_snp_central_supp", "iso_snp_central_offset"]
+    types = ["iso_5p", "iso_3p", "iso_add3p", "iso_snv",
+             "iso_snv_seed", "iso_snv_central",
+             "iso_snv_central_supp", "iso_snv_central_offset"]
     for t in types:
         if t in reference:
             accuracy[t] = "TP" if t in target else "FN"

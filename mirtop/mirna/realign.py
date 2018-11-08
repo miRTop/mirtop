@@ -80,7 +80,7 @@ class isomir:
                     value += "iso_snv,"
 
         if self.add:
-            value += "iso_add:+%s," % len(self.add)
+            value += "iso_add3p:%s," % len(self.add)
         if self.t5:
             size = len(self.t5)
             direction = "-" if self.t5.isupper() else "+"
@@ -452,7 +452,7 @@ def align_from_variants(sequence, mature, variants):
     logger.debug("realign::align_from_variants::mature %s" % mature)
     logger.debug("realign::align_from_variants::variants %s" % variants)
     # snp = [v for v in variants.split(",") if v.find("snp") > -1]
-    snp = ["iso_snp" for v in variants.split(",") if v.find("snp") > -1]
+    snp = ["iso_snv" for v in variants.split(",") if v.find("snv") > -1]
     fix_5p = 4
     if "iso_5p" in k:
         fix_5p = 4 - var_dict["iso_5p"]
@@ -473,7 +473,7 @@ def align_from_variants(sequence, mature, variants):
                 continue
             value = ""
             pos = p + 1
-            value = "iso_snp"
+            value = "iso_snv"
             #if pos > 1 and pos < 8:
             #    value = "iso_snp_seed"
             #elif pos == 8:

@@ -252,4 +252,4 @@ def variant_with_nt(line, precursors, matures):
         mm = "".join(["".join(map(str, m)) for m in mm])
     else:
         mm = "0"
-    return "iso_5p:%s,iso_3p:%s,iso_add:%s,iso_snp:%s" % (t5, t3, add, mm)
+    return "iso_5p:%s,iso_3p:%s,iso_add3p:%s,iso_snv:%s" % (t5, t3, add, mm)

@@ -159,7 +159,7 @@ def cigar2variants(cigar, sequence, tag):
     if tag[-1] == "T" or iso3p < 0:
         iso3p = "iso_3p:%s" % _fix(iso3p) if iso3p else ""
     else:
-        iso3p = "iso_add:%s" % _fix(iso3p) if iso3p else ""
+        iso3p = "iso_add3p:%s" % iso3p if iso3p else ""
 
     variant = ""
     for iso in [iso5p, iso3p, _define_snp(isosnp)]:

@@ -7,7 +7,9 @@ from __future__ import print_function
 import os
 import pandas as pd
 import json
+import re
 from collections import defaultdict
+
 from mirtop.gff.classgff import feature
 from mirtop import version
 
@@ -62,6 +64,7 @@ def _calc_stats(fn):
     samples = _get_samples(fn)
     lines = []
     seen = set()
+    ok = re.compile('pass', re.IGNORECASE)
     with open(fn) as inh:
         for line in inh:
             if line.startswith("#"):
@@ -70,7 +73,7 @@ def _calc_stats(fn):
             cols = gff.columns
             attr = gff.attributes
             logger.debug("## STATS: attribute %s" % attr)
-            if attr['Filter'] != "Pass":
+            if ok.match(attr['Filter']):
                 continue
             if "-".join([attr['UID'], attr['Variant'], attr['Name']]) in seen:
                 continue
