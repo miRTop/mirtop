@@ -455,10 +455,10 @@ def align_from_variants(sequence, mature, variants):
     snp = ["iso_snv" for v in variants.split(",") if v.find("snv") > -1]
     fix_5p = 4
     if "iso_5p" in k:
-        fix_5p = 4 - var_dict["iso_5p"]
+        fix_5p = 4 + var_dict["iso_5p"]
     mature = mature[fix_5p:]
-    if "iso_add" in k:
-        sequence = sequence[:-1 * var_dict["iso_add"]]
+    if "iso_add3p" in k:
+        sequence = sequence[:-1 * var_dict["iso_add3p"]]
     if "iso_3p" in k and var_dict["iso_3p"] > 0:
         sequence = sequence[:-1 * var_dict["iso_3p"]]
     logger.debug("realign::align_from_variants::snp %s" % snp)
@@ -512,7 +512,8 @@ def variant_to_5p(hairpin, pos, variant):
     iso_t5 = [v for v in variant.split(",") if v.startswith("iso_5p")]
     if iso_t5:
         t5 = int(iso_t5[0].split(":")[-1][-1])
-        direction_t5 = int(iso_t5[0].split(":")[-1])
+        direction_t5 = int(iso_t5[0].split(":")[-1]) * -1
+        print([pos, t5, direction_t5])
         if direction_t5 > 0:
             return hairpin[pos - t5:pos]
         elif direction_t5 < 0:

@@ -1,0 +1,2 @@
+seq	name	freq	mir	start	end	mism	add	t5	t3	s5	s3	DB	precursor	ambiguity
+GAGCTAGTAGGTTGTATAGTAA	example_x1	ample_	hsa-let-7a-5p	5	24	4CG	AA	t	t	GAG	AGTTTGGG	miRNA	hsa-let-7a-3	1

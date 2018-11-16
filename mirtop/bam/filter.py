@@ -39,33 +39,41 @@ def tune(seq, precursor, start, cigar):
     if seq.endswith("-"):
         seq = seq[:-1]
     logger.debug("TUNE:: %s %s %s" % (cigar, seq, mature))
+
     error = set()
-    pattern_addition = [[1, 1, 0], [1, 0, 1], [0, 1, 0], [0, 1, 1], [0, 0, 1], [1, 1, 1]]
     for pos in range(0, len(seq)):
         if seq[pos] != mature[pos]:
             error.add(pos)
 
     subs, add = [], []
-    for e in error:
-        if e < len(seq) - 3:
-            subs.append([e, seq[e], mature[e]])
 
-    pattern, error_add = [], []
-    for e in range(len(seq) - 3, len(seq)):
+    prob = 0
+    add_position = []
+    for e in range(len(seq) - 1, len(seq) - 6, -1):
         if e in error:
-            pattern.append(1)
-            error_add.append(e)
-        else:
-            pattern.append(0)
-    for p in pattern_addition:
-        if pattern == p:
-            add = seq[error_add[0]:].replace("-", "")
+            prob = 1
+        if prob == 1:
+            add.append(seq[e])
+            add_position.append(e)
+        if e not in error and prob == 0 and seq[e] in ["A", "T"]:
+            add.append(seq[e])
+            add_position.append(e)
+            continue
+        if e not in error:
+            if add:
+                add.pop()
+                add_position.pop()
+            if prob == 0:
+                add = []
+                add_position = []
             break
-    if not add and error_add:
-        for e in error_add:
+
+    for e in error:
+        if e not in add_position:
             subs.append([e, seq[e], mature[e]])
 
-    return subs, add, make_cigar(seq, mature)
+    logger.debug("TUNE:: %s %s" % (subs, add))
+    return subs, "".join(add), make_cigar(seq, mature)
 
 
 def clean_hits(reads):

@@ -71,7 +71,7 @@ def read_file(fn, args):
                                                        precursors[chrom],
                                                        reference_start, None)
             logger.debug("SEQBUSTER::After tune start %s end %s" % (iso.start, iso.end))
-            if len(iso.subs) < 2:
+            if len(iso.subs) < 6:
                 reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))
     return reads

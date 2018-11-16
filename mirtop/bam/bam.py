@@ -76,8 +76,7 @@ def read_bam(bam_fn, args, clean=True):
         logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
         logger.debug("READ::iso add %s iso subs %s" % (iso.add, iso.subs))
 
-        if len(iso.subs) < 2:
-            reads[query_name].set_precursor(chrom, iso)
+        reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))
     logger.info("Hits skipped due to contain indels %s" % indels_skip)
     if clean:

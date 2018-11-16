@@ -123,7 +123,7 @@ def _add_subparser_simulator(subparsers):
     parser.add_argument("--bed",
                         help="bed file with position of precursors <=200 nt")
     parser.add_argument("--fasta", help = "fasta with precursors.")
-    parser.add_argument("--out", dest="out", required=1,
+    parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
     parser.add_argument("-r", "--reference", dest="ref",
                         help="reference fasta file with index"),
@@ -136,7 +136,7 @@ def _add_subparser_counts(subparsers):
     parser = subparsers.add_parser("counts", help="extract expression counts for each sample for mirna/variants")
     parser.add_argument("--gff",
                         help="/path/to/GFF/file/file.gff", required = 1)
-    parser.add_argument("--out",
+    parser.add_argument("-o", "--out",
                         required=True,
                         help="/path/to/output/directory")
     parser.add_argument("--add-extra", help="Add extra attributes to gff", action="store_true")
