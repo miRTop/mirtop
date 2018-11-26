@@ -90,6 +90,7 @@ def create(reads, database, sample, args):
                 seen.add((r, iso.mirna))
                 chrom = p
                 seq = reads[r].sequence
+                seq_name = seq if not args.keep_name else r
                 if iso.get_score(len(seq)) < 1:
                     filter_score += 1
                     continue
@@ -108,7 +109,7 @@ def create(reads, database, sample, args):
                 counts = read.counts
                 Filter = iso.filter
                 # This get correctly formated with paste_columns below
-                attrb = ("Read {seq};UID {idseq};Name {mirName};"
+                attrb = ("Read {seq_name};UID {idseq};Name {mirName};"
                          "Parent {preName};"
                          "Variant {Variant};Cigar {Cigar};"
                          "Expression {counts};"

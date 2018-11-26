@@ -1,5 +1,8 @@
 - 0.4.*a
 
+ * Accept seqbuster input without frequency column.
+ * Allow keep name of the sequence.
+ * Accept indels in snv category.
  * Additions are only last nucleotides that are mismatches.
  * Adapt mintplate license.
  * Revert sign in iso_5p, replace snp by snv.

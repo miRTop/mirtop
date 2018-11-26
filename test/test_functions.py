@@ -11,13 +11,14 @@ import argparse
 from nose.plugins.attrib import attr
 
 
-def annotate(fn, read_file, load=False, create=True):
+def annotate(fn, read_file, load=False, create=True, keep_name=False):
     args = argparse.Namespace()
     args.hairpin = "data/examples/annotate/hairpin.fa"
     args.sps = "hsa"
     args.gtf = "data/examples/annotate/hsa.gff3"
     args.add_extra = True
     args.out_format = "gtf"
+    args.keep_name = keep_name
     from mirtop.mirna import fasta, mapper
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     matures = mapper.read_gtf_to_precursor(args.gtf)
@@ -209,7 +210,7 @@ class FunctionsTest(unittest.TestCase):
         if expression != "1,2":
             raise ValueError("This is wrong: %s" % expression)
 
-    @attr(mature=True)
+    @attr(align_mature=True)
     def test_variant(self):
         """testing get mature sequence"""
         from mirtop.mirna import fasta, mapper
@@ -227,30 +228,41 @@ class FunctionsTest(unittest.TestCase):
         if mature != "GGGATGAGGTAGTAGGTTGTATAGTTTTAG":
             raise ValueError("Results for hsa-let-7a-5p is %s" % mature)
 
+        res = align_from_variants("AGGTAGTAGTTGTATAGTT", mature,
+                                  "iso_5p:+2,iso_snv_central")
+        if not res or res[0][0] != 10:
+            raise ValueError("Wrong alignment for test 0 %s" % res)
+
         res = align_from_variants("AGGTAGTAGGTTGTATAGTT", mature,
                                   "iso_5p:+2")
         if res:
             raise ValueError("Wrong alignment for test 1 %s" % res)
+
         res = align_from_variants("GATGAGGTAGTAGGTTGTATAGTT", mature,
                                   "iso_5p:-2")
         if res:
             raise ValueError("Wrong alignment for test 2 %s" % res)
+
         res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature,
-                                  "iso_5p:+2,iso_add:2")
+                                  "iso_5p:+2,iso_add3p:2")
         if res:
             raise ValueError("Wrong alignment for test 3 %s" % res)
+
         res = align_from_variants("AGGTAGTAGGTTGTATAGTTTT", mature,
                                   "iso_5p:+2,iso_3p:2")
         if res:
             raise ValueError("Wrong alignment for test 4 %s" % res)
+
         res = align_from_variants("AGGTAGTAGGTTGTATAG", mature,
                                   "iso_5p:+2,iso_3p:-2")
         if res:
             raise ValueError("Wrong alignment for test 5 %s" % res)
+
         res = align_from_variants("AGGTAGTAGGTTGTATAGAA", mature,
                                   "iso_5p:+2,iso_3p:-2,iso_add3p:2")
         if res:
             raise ValueError("Wrong alignment for test 6 %s" % res)
+
         res = align_from_variants("AGGTAGTAGGATGTATAGTT", mature,
                                   "iso_5p:+2,iso_snv_central")
         if not res:
@@ -288,6 +300,16 @@ class FunctionsTest(unittest.TestCase):
         print("\ntriming\n")
         print(annotate("data/aligments/let7-triming.sam", bam.read_bam))
 
+    @attr(keep_name=True)
+    def test_keep_name(self):
+        from mirtop.bam import bam
+        line = annotate("data/aligments/let7-perfect.sam",
+                        bam.read_bam,
+                        keep_name=True)
+        print(line)
+        if line["hsa-let-7a-1"][5][0][4].find("seq_perfect_x2") < 0:
+            raise ValueError("Keep name failed: %s" % line)
+
     @attr(seqbuster=True)
     def test_seqbuster(self):
         """testing reading seqbuster files function"""
@@ -299,6 +321,8 @@ class FunctionsTest(unittest.TestCase):
         annotate("data/examples/seqbuster/reads20.mirna", seqbuster.read_file)
         print("\naddition\n")
         annotate("data/examples/seqbuster/readsAdd.mirna", seqbuster.read_file)
+        print("\nno frequency\n")
+        annotate("data/examples/seqbuster/seqbuster_nofreq.mirna", seqbuster.read_file)
 
     @attr(srnabench=True)
     def test_srnabench(self):

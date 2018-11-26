@@ -451,7 +451,6 @@ def align_from_variants(sequence, mature, variants):
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
     logger.debug("realign::align_from_variants::variants %s" % variants)
-    # snp = [v for v in variants.split(",") if v.find("snp") > -1]
     snp = ["iso_snv" for v in variants.split(",") if v.find("snv") > -1]
     fix_5p = 4
     if "iso_5p" in k:
@@ -459,14 +458,20 @@ def align_from_variants(sequence, mature, variants):
     mature = mature[fix_5p:]
     if "iso_add3p" in k:
         sequence = sequence[:-1 * var_dict["iso_add3p"]]
-    if "iso_3p" in k and var_dict["iso_3p"] > 0:
-        sequence = sequence[:-1 * var_dict["iso_3p"]]
+    if "iso_3p" in k:
+        mature = mature[:-(4 + (-1 * var_dict["iso_3p"]))]
+    else:
+        mature = mature[:-4]
     logger.debug("realign::align_from_variants::snp %s" % snp)
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
     if len(sequence) > len(mature):
         logger.warning("Invalid isomiR definition:\n%s\niso:%s\nref:%s" % (init_log, sequence, mature))
         return "Invalid"
+    if len(sequence) != len(mature):  # in case of indels, align again
+        a = align(sequence, mature)
+        sequence = a[0]
+        mature = a[1]
     for p in range(0, len(sequence)):
         if sequence[p] != mature[p]:
             if mature[p] == "N":
@@ -474,16 +479,6 @@ def align_from_variants(sequence, mature, variants):
             value = ""
             pos = p + 1
             value = "iso_snv"
-            #if pos > 1 and pos < 8:
-            #    value = "iso_snp_seed"
-            #elif pos == 8:
-            #    value = "iso_snp_central_offset"
-            #elif pos > 8 and pos < 13:
-            #    value = "iso_snp_central"
-            #elif pos > 12 and pos < 18:
-            #    value = "iso_snp_central_supp"
-            #else:
-            #    value = "iso_snp"
             logger.debug("realign::align_from_variants::value %s at %s" % (value, pos))
             if value in snp:
                 snps.append([pos, sequence[p], mature[p]])
@@ -513,7 +508,6 @@ def variant_to_5p(hairpin, pos, variant):
     if iso_t5:
         t5 = int(iso_t5[0].split(":")[-1][-1])
         direction_t5 = int(iso_t5[0].split(":")[-1]) * -1
-        print([pos, t5, direction_t5])
         if direction_t5 > 0:
             return hairpin[pos - t5:pos]
         elif direction_t5 < 0:
