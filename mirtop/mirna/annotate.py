@@ -46,6 +46,7 @@ def _coord(sequence, start, mirna, precursor, iso):
         iso.t3 = precursor[mirna[1] + 1 - dif:(mirna[1] + 1)].lower()
     elif end == mirna[1]:
         iso.t3 = 0
+
     if dif > 6:
         logger.debug("COOR::end > 6 %s %s %s %s %s" % (
             len(sequence), end, dif, mirna, iso.format()))

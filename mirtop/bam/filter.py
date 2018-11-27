@@ -73,6 +73,7 @@ def tune(seq, precursor, start, cigar):
             subs.append([e, seq[e], mature[e]])
 
     logger.debug("TUNE:: %s %s" % (subs, add))
+
     return subs, "".join(add), make_cigar(seq, mature)
 
 
