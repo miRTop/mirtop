@@ -224,8 +224,8 @@ class FunctionsTest(unittest.TestCase):
         if res != "AAAATTTTTTTTTTTAAAA":
             raise ValueError("Results for GAAAATTTTTTTTTTTAAAAG was %s" % res)
         mature = get_mature_sequence(precursors["hsa-let-7a-1"],
-                                     matures["hsa-let-7a-1"]["hsa-let-7a-5p"])
-        if mature != "GGGATGAGGTAGTAGGTTGTATAGTTTTAG":
+                                     matures["hsa-let-7a-1"]["hsa-let-7a-5p"], nt = 8)
+        if mature != "NNTGGGATGAGGTAGTAGGTTGTATAGTTTTAGGGT":
             raise ValueError("Results for hsa-let-7a-5p is %s" % mature)
 
         res = align_from_variants("AGGTAGTAGTTGTATAGTT", mature,
@@ -388,7 +388,7 @@ class FunctionsTest(unittest.TestCase):
         args.out = 'data/examples/synthetic'
         args.add_extra = True
         convert_gff_counts(args)
-        os.remove(os.path.join(args.out, "expression_counts.tsv"))
+        os.remove(os.path.join(args.out, "let7a-5p.tsv"))
 
         return True
 

@@ -42,6 +42,9 @@ def read_bam(bam_fn, args, clean=True):
         if line.reference_id < 0:
             logger.debug("READ::Sequence not mapped: %s" % line.reference_id)
             continue
+        if not line.cigarstring:
+            logger.debug("READ::Sequence malformed: %s" % line)
+            continue
         query_name = line.query_name
         if query_name not in reads and not line.query_sequence:
             continue
@@ -58,7 +61,6 @@ def read_bam(bam_fn, args, clean=True):
         cigar = line.cigartuples
         if line.cigarstring.find("I") > -1:
             indels_skip += 1
-            continue
         iso = isomir()
         iso.align = line
         iso.set_pos(line.reference_start, len(reads[query_name].sequence))
@@ -78,7 +80,7 @@ def read_bam(bam_fn, args, clean=True):
 
         reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))
-    logger.info("Hits skipped due to contain indels %s" % indels_skip)
+    logger.info("Hits with indels %s" % indels_skip)
     if clean:
         reads = filter.clean_hits(reads)
         logger.info("Hits after clean: %s" % len(reads))

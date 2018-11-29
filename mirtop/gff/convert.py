@@ -38,7 +38,7 @@ def convert_gff_counts(args):
     logger.info("INFO Writing TSV file to directory %s", args.out)
 
     gff_file = open(args.gff, 'r')
-    out_file = op.join(args.out, "expression_counts.tsv")
+    out_file = op.join(args.out, "%s.tsv" % op.splitext(op.basename(args.gff))[0])
     missing_parent = 0
     missing_mirna = 0
     unvalid_uid = 0

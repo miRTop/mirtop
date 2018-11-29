@@ -1,5 +1,6 @@
 - 0.4.*a
 
+ * Allow longer truncation and addition events.
  * Accept seqbuster input without frequency column.
  * Allow keep name of the sequence.
  * Accept indels in snv category.

@@ -402,7 +402,7 @@ def reverse_complement(seq):
     return Seq(seq).reverse_complement()
 
 
-def get_mature_sequence(precursor, mature, exact=False):
+def get_mature_sequence(precursor, mature, exact=False, nt = 5):
     """
     From precursor and mature positions
        get mature sequence with +/- 4 flanking nts.
@@ -414,15 +414,17 @@ def get_mature_sequence(precursor, mature, exact=False):
 
        *exact(boolean)*: not add 4+/- flanking nts.
 
+       *nt(int)*: number of nts to get.
+
     Returns:
         *(str)*: mature sequence.
     """
-    p = "NNNNN%s" % precursor
-    s = mature[0] + 5
-    e = mature[1] + 5
+    p = "%s%s" % ("".join(["N"]*nt), precursor)
+    s = mature[0] + nt
+    e = mature[1] + nt
     if exact:
         return p[s:e + 1]
-    return p[s - 4 :e + 5]
+    return p[s - (nt - 1) :e + nt]
 
 
 def align_from_variants(sequence, mature, variants):
@@ -452,16 +454,16 @@ def align_from_variants(sequence, mature, variants):
     logger.debug("realign::align_from_variants::mature %s" % mature)
     logger.debug("realign::align_from_variants::variants %s" % variants)
     snp = ["iso_snv" for v in variants.split(",") if v.find("snv") > -1]
-    fix_5p = 4
+    fix_5p = 7
     if "iso_5p" in k:
-        fix_5p = 4 + var_dict["iso_5p"]
+        fix_5p = 7 + var_dict["iso_5p"]
     mature = mature[fix_5p:]
     if "iso_add3p" in k:
         sequence = sequence[:-1 * var_dict["iso_add3p"]]
     if "iso_3p" in k:
-        mature = mature[:-(4 + (-1 * var_dict["iso_3p"]))]
+        mature = mature[:-(7 + (-1 * var_dict["iso_3p"]))]
     else:
-        mature = mature[:-4]
+        mature = mature[:-7]
     logger.debug("realign::align_from_variants::snp %s" % snp)
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)

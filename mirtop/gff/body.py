@@ -242,7 +242,8 @@ def variant_with_nt(line, precursors, matures):
                          attr["Variant"])
     mature_sequence = get_mature_sequence(
         precursors[attr["Parent"]],
-        matures[attr["Parent"]][attr["Name"]])
+        matures[attr["Parent"]][attr["Name"]],
+        nt = 8)
     logger.debug("GFF::BODY::mature_sequence %s" % mature_sequence)
     mm = align_from_variants(read,
                              mature_sequence,
