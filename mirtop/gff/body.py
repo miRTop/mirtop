@@ -51,6 +51,8 @@ def read(fn, args):
             uid = "%s-%s-%s" % (attr['UID'],
                                 attr['Variant'],
                                 attr['Name'])
+            if args.keep_name:
+                uid = "%s-%s" % (uid, attr['Read'])
             lines[cols['chrom']][cols['start']].append(
                 [uid,
                  cols['chrom'],
@@ -97,7 +99,6 @@ def create(reads, database, sample, args):
                 if iso.subs:
                     iso.subs = [] if "N" in iso.subs[0] else iso.subs
                 idseq = reads[r].idseq
-                annotation = "%s.%s" % (chrom, idseq)
                 source = "ref_miRNA" if not iso.is_iso() else "isomiR"
                 strand = iso.strand
                 start, end = iso.start, iso.end
@@ -108,6 +109,7 @@ def create(reads, database, sample, args):
                 Cigar = iso.cigar
                 counts = read.counts
                 Filter = iso.filter
+                annotation = "%s.%s.%s" % (chrom, idseq, seq_name)
                 # This get correctly formated with paste_columns below
                 attrb = ("Read {seq_name};UID {idseq};Name {mirName};"
                          "Parent {preName};"
