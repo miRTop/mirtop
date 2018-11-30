@@ -56,7 +56,7 @@ def convert_gff_counts(args):
             gff = feature(mirna_line)
             attr = gff.attributes
             UID = attr["UID"]
-            Read = read_id(UID)
+            Read =  attr["Read"]
             mirna = attr["Name"]
             parent = attr["Parent"]
             variant = attr["Variant"]
