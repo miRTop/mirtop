@@ -88,6 +88,8 @@ def _add_subparser_gff(subparsers):
                         action="store_true")
     parser.add_argument("--database", help="Custom database name",
                         default=None)
+    parser.add_argument("--genomic", action="store_true", default=False,
+                        help="BAM file is mapped against genome.")
     parser = _add_debug_option(parser)
     return parser
 

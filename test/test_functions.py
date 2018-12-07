@@ -11,11 +11,15 @@ import argparse
 from nose.plugins.attrib import attr
 
 
-def annotate(fn, read_file, load=False, create=True, keep_name=False):
+def annotate(fn, read_file, load=False, create=True, keep_name=False,
+             gtf=None, genomic=None):
     args = argparse.Namespace()
     args.hairpin = "data/examples/annotate/hairpin.fa"
     args.sps = "hsa"
     args.gtf = "data/examples/annotate/hsa.gff3"
+    if gtf:
+        args.gtf = gtf
+    args.genomic = genomic
     args.add_extra = True
     args.out_format = "gtf"
     args.keep_name = keep_name
@@ -50,8 +54,8 @@ class FunctionsTest(unittest.TestCase):
         if db != "miRBasev21":
             raise ValueError("%s not eq to miRBasev21" % db)
 
-    @attr(read=True)
-    def test_read(self):
+    @attr(read_hairpin=True)
+    def test_read_hairpin(self):
         from mirtop.mirna import mapper, fasta
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
@@ -71,6 +75,15 @@ class FunctionsTest(unittest.TestCase):
         # read data/aligments/let7-perfect.bam
         return True
 
+    @attr(read_mir2genomic=True)
+    def test_read_mir2genomic(self):
+        from mirtop.mirna import mapper
+        from mirtop.libs import logger
+        logger.initialize_logger("test_read_files", True, True)
+        mir2hairpin = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        map_mir = mapper.read_gtf_chr2mirna("data/examples/annotate/hsa.gff3")
+        print(map_mir)
+
     @attr(read_genomic=True)
     def test_read_genomic(self):
         from mirtop.mirna import mapper
@@ -80,7 +93,55 @@ class FunctionsTest(unittest.TestCase):
         print(map_mir)
         # if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 5:
         #    raise ValueError("GFF is not loaded correctly.")
+        # genomic ['chr9', 94175957]
+        genomic = {'chrom': 'chr9', 'start': 94175957, 'strand': '+'}
+        # hairpin ['hsa-let-7a-1', 5]
+        hairpin = {'start': 5}
+        mapper.liftover_genomic_precursor({'start': 94175956,
+                                           'strand': '+'},
+                                          genomic, hairpin, 4)
+        mapper.liftover_genomic_precursor({'start': 94175955,
+                                           'strand': '+'},
+                                          genomic, hairpin, 3)
+        mapper.liftover_genomic_precursor({'start': 94175957,
+                                           'strand': '+'},
+                                          genomic, hairpin, 5)
+        mapper.liftover_genomic_precursor({'start': 94175958,
+                                           'strand': '+'},
+                                          genomic, hairpin, 6)
+        mapper.liftover_genomic_precursor({'start': 94175959,
+                                           'strand': '+'},
+                                          genomic, hairpin, 7)
+        # genomic ['chr11', 122146522]
+        genomic = {'chrom': 'chr11', 'start': 122146522, 'strand': '-'}
+        # hairpin ['hsa-let-7a-2', 5]
+        hairpin = {'start': 4}
+        mapper.liftover_genomic_precursor({'end': 122146523,
+                                           'strand': '-'},
+                                          genomic, hairpin, 3)
+        mapper.liftover_genomic_precursor({'end': 122146524,
+                                           'strand': '-'},
+                                          genomic, hairpin, 2)
+        mapper.liftover_genomic_precursor({'end': 122146522,
+                                           'strand': '-'},
+                                          genomic, hairpin, 4)
+        mapper.liftover_genomic_precursor({'end': 122146521,
+                                           'strand': '-'},
+                                          genomic, hairpin, 5)
+        mapper.liftover_genomic_precursor({'end': 122146520,
+                                           'strand': '-'},
+                                          genomic, hairpin, 6)
         return True
+
+    @attr(liftover_genomic=True)
+    def test_read_genomic(self):
+        from mirtop.mirna import mapper
+        from mirtop.bam import bam
+        from mirtop.libs import logger
+        logger.initialize_logger("test_read_files", True, True)
+        chrom2mirna = mapper.read_gtf_chr2mirna("data/examples/annotate/hsa.gff3")
+        bam._bed_with_mirna_in_chrom("chr9", chrom2mirna)
+        bam._liftover("chr9", 94176409, 94176430, False, chrom2mirna)
 
     @attr(read_line=True)
     def test_read_line(self):
@@ -299,6 +360,25 @@ class FunctionsTest(unittest.TestCase):
         # seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
         print("\ntriming\n")
         print(annotate("data/aligments/let7-triming.sam", bam.read_bam))
+
+    @attr(alignment_genomic=True)
+    def test_alignment_genomic(self):
+        """testing alignments function"""
+        from mirtop.bam import bam
+        from mirtop.libs import logger
+        # logger.initialize_logger("test_read_files", True, True)
+
+        print("\ngenomic\n")
+        for example in ["hsa-let-7a-nm", "hsa-let-7a-5ploss1",
+                        "hsa-let-7a-3ploss1", "hsa-let-7a-5ploss1_neg"]:
+            print(annotate("data/examples/annotate/%s.sam" % example,
+                           bam.read_bam,
+                           gtf="data/db/hsa.gff3", genomic=True))
+
+        logger.initialize_logger("test_read_files", True, True)
+        print(annotate("data/examples/annotate/hsa-let-7a-5ploss1_neg.sam",
+                       bam.read_bam,
+                       gtf="data/db/hsa.gff3", genomic=True))
 
     @attr(keep_name=True)
     def test_keep_name(self):

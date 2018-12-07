@@ -399,7 +399,7 @@ def reverse_complement(seq):
 
         >>> ATGC
     """
-    return Seq(seq).reverse_complement()
+    return str(Seq(seq).reverse_complement())
 
 
 def get_mature_sequence(precursor, mature, exact=False, nt = 5):
