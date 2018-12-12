@@ -29,10 +29,14 @@ def tune(seq, precursor, start, cigar):
 
             cigar (str): updated cigar
     """
+    end = len(seq)
+    if start < 0:
+        end = end + start
+        start = 0
     if cigar:
         seq, mature = cigar_correction(cigar, seq, precursor[start:])
     else:
-        seq, mature, score, p, size = align(seq, precursor[start:start + len(seq)])
+        seq, mature, score, p, size = align(seq, precursor[start:start + end])
         cigar = make_cigar(seq, mature)
     if seq.startswith("-"):
         seq = seq[1:]

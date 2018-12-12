@@ -53,6 +53,9 @@ class isomir:
 
     def set_pos(self, start, l, strand="+"):
         """Set end position"""
+        if start < 0:
+            # l = l + start
+            start = 0
         self.strand = strand
         self.start = start
         self.end = start + l - 1

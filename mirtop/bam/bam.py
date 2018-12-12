@@ -37,12 +37,96 @@ def read_bam(bam_fn, args, clean=True):
     precursors = args.precursors
     bam_fn = _sam_to_bam(bam_fn)
     bam_fn = _bam_sort(bam_fn)
+    reads = defaultdict(hits)
+    if args.genomic:
+        logger.warning("This is under development and variants can be inaccurated.")
+        handle = _intersect(bam_fn, args.gtf)
+        reads = _read_quick_bam(bam_fn, reads, args)
+        reads = _read_lifted_bam(handle, reads, args, clean)
+    else:
+        reads = _read_original_bam(bam_fn, reads, args, clean)
+    return reads
+
+
+def _read_quick_bam(bam_fn, reads, args):
     mode = "r" if bam_fn.endswith("sam") else "rb"
     handle = pysam.Samfile(bam_fn, mode)
-    reads = defaultdict(hits)
+    for line in handle:
+        if line.reference_id < 0:
+            logger.debug("READ::Sequence not mapped: %s" % line.reference_id)
+            continue
+        if not line.cigarstring:
+            logger.debug("READ::Sequence malformed: %s" % line)
+            continue
+        query_name = line.query_name
+        if query_name not in reads and not line.query_sequence:
+            continue
+        sequence = line.query_sequence if not line.is_reverse else reverse_complement(line.query_sequence)
+        logger.debug(("READ::Read name:{0} and Read sequence:{1}").format(line.query_name, sequence))
+        if line.query_sequence and line.query_sequence.find("N") > -1:
+            continue
+        if query_name not in reads:
+            reads[query_name].set_sequence(sequence)
+            reads[query_name].counts = _get_freq(query_name)
+    return reads
+
+
+def _read_lifted_bam(handle, reads, args, clean):
     indels_skip = 0
-    if args.genomic:
-        chrom2mirna = read_gtf_chr2mirna(args.gtf)
+    precursors = args.precursors
+    for line in handle:
+        if str(line).find("miRNA_primary_transcript") < 0: # only working with mirbase
+            continue
+        query_name = line[3]
+        sequence = reads[query_name].sequence
+        logger.debug(("READ::line name:{0}").format(line))
+        if sequence and sequence.find("N") > -1:
+            continue
+        if query_name not in reads:
+            reads[query_name].set_sequence(sequence)
+            reads[query_name].counts = _get_freq(query_name)
+
+        chrom = line[20].strip().split("Name=")[-1]
+        start = line[1]
+        end = line[2]
+        strand = line[5]
+        if not start:
+            continue
+        if strand == "+":
+            start = int(start) - int(line[15]) + 1
+        else:
+            start = int(line[16]) - int(end)
+        iso = isomir()
+        iso.align = line
+        iso.set_pos(start, len(reads[query_name].sequence))
+        logger.debug("READ::From BAM start %s end %s at chrom %s" % (iso.start, iso.end, chrom))
+        if len(precursors[chrom]) < start + len(reads[query_name].sequence):
+            logger.debug("READ::%s start + %s sequence size are bigger than"
+                         " size precursor %s" % (
+                                                 chrom,
+                                                 len(reads[query_name].sequence),
+                                                 len(precursors[chrom])))
+            continue
+        iso.subs, iso.add, iso.cigar = filter.tune(
+            reads[query_name].sequence, precursors[chrom],
+            start, None)
+        logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
+        logger.debug("READ::iso add %s iso subs %s" % (iso.add, iso.subs))
+
+        reads[query_name].set_precursor(chrom, iso)
+    logger.info("Hits: %s" % len(reads))
+    logger.info("Hits with indels %s" % indels_skip)
+    if clean:
+        reads = filter.clean_hits(reads)
+        logger.info("Hits after clean: %s" % len(reads))
+    return reads
+
+
+def _read_original_bam(bam_fn, reads, args, clean):
+    mode = "r" if bam_fn.endswith("sam") else "rb"
+    handle = pysam.Samfile(bam_fn, mode)
+    indels_skip = 0
+    precursors = args.precursors
     for line in handle:
         if line.reference_id < 0:
             logger.debug("READ::Sequence not mapped: %s" % line.reference_id)
@@ -66,9 +150,6 @@ def read_bam(bam_fn, args, clean=True):
         chrom = handle.getrname(line.reference_id)
         start = line.reference_start
         # If genomic endcode, liftover to precursor position
-        if args.genomic:
-            chrom, start = _liftover(chrom, start + 1, line.reference_end,
-                                     line.is_reverse, chrom2mirna)
         if not start:
             continue
         cigar = line.cigartuples
@@ -128,43 +209,7 @@ def _get_freq(name):
     return counts
 
 
-def _liftover(chr, start, end, is_reverse, chrom2mirna):
-    strand = "+" if not is_reverse else "-"
-    bed = _bed_with_mirna_in_chrom(chr, chrom2mirna)
-    hit = "\t".join([chr, str(start), str(end), strand])
-    hit = pybedtools.BedTool(hit, from_string=True)
-    logger.debug("BAM::liftover:hit: %s" % hit)
-    overlap = hit.intersect(bed, wo=True)
-    logger.debug("BAM::liftover:overlap: %s" % overlap)
-    # check only one overlap
-    logger.debug("BAM::length overlap:%s" % len(overlap))
-    ## read start and strand
-    ## miRNA Name
-    for align in overlap:
-        print(align[8])
-        read = {'start': int(align[1]), 'end': int(align[2]),
-                'strand': align[3]}
-        genomic = {'chrom': align[4], 'start': int(align[5]),
-                   'end': int(align[6]),
-                   'strand': align[7]}
-        hairpin = {'start': int(align[8].split(":")[-1]),
-                   'chrom': align[8].split(":")[0]}
-        hairpin_position = liftover_genomic_precursor(read,
-                                                      genomic,
-                                                      hairpin)
-        logger.debug("BAM::lifted:: %s" % [hairpin['chrom'], hairpin_position])
-        return [hairpin['chrom'], hairpin_position]
-    return [None, None]
-
-
-def _bed_with_mirna_in_chrom(chr, chrom2mirna):
-    lines = []
-    if chr in chrom2mirna:
-        for position in chrom2mirna[chr]:
-            line = "\t".join([chr, position[1], position[2],  # start/end
-                              position[3],  # strand
-                              "%s:%s" % (position[4], position[5])])  # hairpin
-            lines.append(line)
-    lines = "\n".join(lines)
-    logger.debug("BAM::CHROM: miRNAs %s in this chrom %s" % (lines, chr))
-    return pybedtools.BedTool(lines, from_string=True)  # or bed_file_directly
+def _intersect(bam, gtf):
+    bampy = pybedtools.BedTool(bam)
+    gtfpy = pybedtools.BedTool(gtf)
+    return bampy.intersect(gtfpy, wo=True, bed=True, s=True)

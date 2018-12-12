@@ -1,5 +1,7 @@
 - 0.4.*a
 
+ * Support isomiRs that go beyond 5p end
+ * Support genomic coordinates.
  * Fix missing reads when using --keep-read in the final mirtop.gff file.
  * Allow longer truncation and addition events.
  * Accept seqbuster input without frequency column.

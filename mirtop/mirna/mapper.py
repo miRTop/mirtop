@@ -127,7 +127,7 @@ def read_gtf_chr2mirna(gtf):
     return db_mir
 
 
-def read_gtf_to_precursor(gtf):
+def read_gtf_to_precursor(gtf):  # need to adapt to mirgenedb
     """
     Load GTF file with precursor positions on genome
     Return dict with key being precursor name and
