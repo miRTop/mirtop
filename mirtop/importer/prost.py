@@ -59,7 +59,7 @@ def read_file(fn, hairpins, database, mirna_gtf):
                 continue
             miRNA = ann_type[ann[query_sequence]][1]
             preNames = ann_type[ann[query_sequence]][0]
-            if query_name not in reads and query_sequence==None:
+            if query_name not in reads and not query_sequence:
                 continue
             if query_sequence and query_sequence.find("N") > -1:
                 continue

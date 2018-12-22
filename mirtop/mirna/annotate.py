@@ -14,12 +14,13 @@ def _coord(sequence, start, mirna, precursor, iso):
     deletion = 0
     add = 0
     if iso.subs:
-        insertion = 1 if iso.subs[0][-1] == "-" else 0
+        insertion = sum([1  if s[-1] == "-" else 0 for s in iso.subs])
     if iso.subs:
-        deletion = 1 if iso.subs[0][1] == "-" else 0
+        deletion = sum([1  if s[1] == "-" else 0 for s in iso.subs])
     if iso.add:
         add = len(iso.add)
     end = (iso.end - add - insertion + deletion)
+
     logger.debug("COOR:: s:%s len:%s end:%s fixedEnd:%s mirna:%s iso:%s" % (
         start, len(sequence), iso.end, end, mirna, iso.format())
         )
@@ -46,6 +47,7 @@ def _coord(sequence, start, mirna, precursor, iso):
         iso.t3 = precursor[mirna[1] + 1 - dif:(mirna[1] + 1)].lower()
     elif end == mirna[1]:
         iso.t3 = 0
+
     if dif > 6:
         logger.debug("COOR::end > 6 %s %s %s %s %s" % (
             len(sequence), end, dif, mirna, iso.format()))

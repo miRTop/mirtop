@@ -1,4 +1,4 @@
-"""GFF proxy converter"""
+"""mirGFF3 proxy converter"""
 from __future__ import print_function
 
 import os.path as op
@@ -26,6 +26,11 @@ def reader(args):
     # TODO check numbers of miRNA and precursors read
     # TODO print message if numbers mismatch
     out_dts = dict()
+    if args.keep_name and len(args.files) > 1:
+        logger.warning("--keep-name when running multiple samples\n"
+                       "can generate wrong results if the\n"
+                       "name read is different across sample\n"
+                       "for the same sequence.")
     for fn in args.files:
         if args.format != "gff":
             sample = op.splitext(op.basename(fn))[0]

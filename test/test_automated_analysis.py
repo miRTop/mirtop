@@ -121,6 +121,25 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print(" ".join(clcode))
             subprocess.check_call(clcode)
 
+    @attr(bam_genomic=True)
+    @attr(complete=True)
+    @attr(bam=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_genomic_bam(self):
+        """Run miraligner analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff",
+                      "--sps", "hsa", "--add-extra", "--genomic",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/db/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/annotate/hsa-let-7a-nm.sam"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
     @attr(complete=True)
     @attr(cmd_seqbuster=True)
     @attr(cmd=True)

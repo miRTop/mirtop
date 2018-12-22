@@ -73,6 +73,9 @@ def _add_subparser_gff(subparsers):
                         help="dir of output files")
     parser.add_argument("--sps",
                         help="species")
+    parser.add_argument("--keep-name", action="store_true",
+                        default=False,
+                        help="Use sequence name in the Attribute column.")
     parser.add_argument("--hairpin", help="hairpin.fa")
     parser.add_argument("--gtf",
                         help="GFF file with precursor and mature position to genome.")
@@ -85,6 +88,8 @@ def _add_subparser_gff(subparsers):
                         action="store_true")
     parser.add_argument("--database", help="Custom database name",
                         default=None)
+    parser.add_argument("--genomic", action="store_true", default=False,
+                        help="BAM file is mapped against genome.")
     parser = _add_debug_option(parser)
     return parser
 
@@ -122,7 +127,7 @@ def _add_subparser_simulator(subparsers):
     parser = subparsers.add_parser("simulator", help="simulate small RNAfrom fasta/bed file")
     parser.add_argument("--bed",
                         help="bed file with position of precursors <=200 nt")
-    parser.add_argument("--fasta", help = "fasta with precursors.")
+    parser.add_argument("--fasta", help="fasta with precursors.")
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
     parser.add_argument("-r", "--reference", dest="ref",
@@ -165,6 +170,7 @@ def _add_subparser_spikein(subparsers):
                         help="folder of output files")
     parser = _add_debug_option(parser)
     return parser
+
 
 def _add_subparser_update(subparsers):
     parser = subparsers.add_parser("update",

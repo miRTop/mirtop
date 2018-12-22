@@ -53,6 +53,9 @@ class isomir:
 
     def set_pos(self, start, l, strand="+"):
         """Set end position"""
+        if start < 0:
+            # l = l + start
+            start = 0
         self.strand = strand
         self.start = start
         self.end = start + l - 1
@@ -62,36 +65,36 @@ class isomir:
 
     def formatGFF(self):
         """Create Variant attribute."""
-        value = ""
+        value = []
         subs = self.subs
         if self.external != "notsure" and self.external != "":
             return self.external
         for sub in subs:
             if sub:
                 if sub[0] > 1 and sub[0] < 8:
-                    value += "iso_snv_seed,"
+                    value.append("iso_snv_seed")
                 elif sub[0] == 8:
-                    value += "iso_snv_central_offset,"
+                    value.append("iso_snv_central_offset")
                 elif sub[0] > 8 and sub[0] < 13:
-                    value += "iso_snv_central,"
+                    value.append("iso_snv_central")
                 elif sub[0] > 12 and sub[0] < 18:
-                    value += "iso_snv_central_supp,"
+                    value.append("iso_snv_central_supp")
                 else:
-                    value += "iso_snv,"
+                    value.append("iso_snv")
 
         if self.add:
-            value += "iso_add3p:%s," % len(self.add)
+            value.append("iso_add3p:%s" % len(self.add))
         if self.t5:
             size = len(self.t5)
             direction = "-" if self.t5.isupper() else "+"
-            value += "iso_5p:%s%s," % (direction, size)
+            value.append("iso_5p:%s%s" % (direction, size))
         if self.t3:
             size = len(self.t3)
             direction = "+" if self.t3.isupper() else "-"
-            value += "iso_3p:%s%s," % (direction, size)
+            value.append("iso_3p:%s%s" % (direction, size))
         if not value:
-            value = "NA;"
-        return value[:-1]
+            value = ["NA"]
+        return ",".join(list(set(value)))
 
     def format(self, sep="\t"):
         """Create tabular line from variant fields."""
@@ -399,10 +402,10 @@ def reverse_complement(seq):
 
         >>> ATGC
     """
-    return Seq(seq).reverse_complement()
+    return str(Seq(seq).reverse_complement())
 
 
-def get_mature_sequence(precursor, mature, exact=False):
+def get_mature_sequence(precursor, mature, exact=False, nt = 5):
     """
     From precursor and mature positions
        get mature sequence with +/- 4 flanking nts.
@@ -414,15 +417,17 @@ def get_mature_sequence(precursor, mature, exact=False):
 
        *exact(boolean)*: not add 4+/- flanking nts.
 
+       *nt(int)*: number of nts to get.
+
     Returns:
         *(str)*: mature sequence.
     """
-    p = "NNNNN%s" % precursor
-    s = mature[0] + 5
-    e = mature[1] + 5
+    p = "%s%s" % ("".join(["N"]*nt), precursor)
+    s = mature[0] + nt
+    e = mature[1] + nt
     if exact:
         return p[s:e + 1]
-    return p[s - 4 :e + 5]
+    return p[s - (nt - 1) :e + nt]
 
 
 def align_from_variants(sequence, mature, variants):
@@ -451,22 +456,30 @@ def align_from_variants(sequence, mature, variants):
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
     logger.debug("realign::align_from_variants::variants %s" % variants)
-    # snp = [v for v in variants.split(",") if v.find("snp") > -1]
     snp = ["iso_snv" for v in variants.split(",") if v.find("snv") > -1]
-    fix_5p = 4
+    fix_5p = 7
     if "iso_5p" in k:
-        fix_5p = 4 + var_dict["iso_5p"]
+        fix_5p = 7 + var_dict["iso_5p"]
     mature = mature[fix_5p:]
     if "iso_add3p" in k:
         sequence = sequence[:-1 * var_dict["iso_add3p"]]
-    if "iso_3p" in k and var_dict["iso_3p"] > 0:
-        sequence = sequence[:-1 * var_dict["iso_3p"]]
+    if "iso_3p" in k:
+        mature = mature[:-(7 + (-1 * var_dict["iso_3p"]))]
+    else:
+        mature = mature[:-7]
     logger.debug("realign::align_from_variants::snp %s" % snp)
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
+
+    if len(sequence) != len(mature):  # in case of indels, align again
+        a = align(sequence, mature)
+        sequence = a[0]
+        mature = a[1]
+
     if len(sequence) > len(mature):
         logger.warning("Invalid isomiR definition:\n%s\niso:%s\nref:%s" % (init_log, sequence, mature))
         return "Invalid"
+
     for p in range(0, len(sequence)):
         if sequence[p] != mature[p]:
             if mature[p] == "N":
@@ -474,16 +487,6 @@ def align_from_variants(sequence, mature, variants):
             value = ""
             pos = p + 1
             value = "iso_snv"
-            #if pos > 1 and pos < 8:
-            #    value = "iso_snp_seed"
-            #elif pos == 8:
-            #    value = "iso_snp_central_offset"
-            #elif pos > 8 and pos < 13:
-            #    value = "iso_snp_central"
-            #elif pos > 12 and pos < 18:
-            #    value = "iso_snp_central_supp"
-            #else:
-            #    value = "iso_snp"
             logger.debug("realign::align_from_variants::value %s at %s" % (value, pos))
             if value in snp:
                 snps.append([pos, sequence[p], mature[p]])
@@ -513,7 +516,6 @@ def variant_to_5p(hairpin, pos, variant):
     if iso_t5:
         t5 = int(iso_t5[0].split(":")[-1][-1])
         direction_t5 = int(iso_t5[0].split(":")[-1]) * -1
-        print([pos, t5, direction_t5])
         if direction_t5 > 0:
             return hairpin[pos - t5:pos]
         elif direction_t5 < 0:
@@ -544,7 +546,7 @@ def variant_to_3p(hairpin, pos, variant):
         t3 = int(iso_t3[0].split(":")[-1][-1])
         direction_t3 = int(iso_t3[0].split(":")[-1])
         if direction_t3 > 0:
-            return hairpin[pos:pos + t3]
+            return hairpin[pos + 1:pos + t3 + 1]
         elif direction_t3 < 0:
             return hairpin[pos - t3 + 1:pos + 1].lower()
     return "0"

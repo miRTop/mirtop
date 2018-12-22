@@ -51,6 +51,8 @@ def read(fn, args):
             uid = "%s-%s-%s" % (attr['UID'],
                                 attr['Variant'],
                                 attr['Name'])
+            if args.keep_name:
+                uid = "%s-%s" % (uid, attr['Read'])
             lines[cols['chrom']][cols['start']].append(
                 [uid,
                  cols['chrom'],
@@ -90,13 +92,13 @@ def create(reads, database, sample, args):
                 seen.add((r, iso.mirna))
                 chrom = p
                 seq = reads[r].sequence
+                seq_name = seq if not args.keep_name else r
                 if iso.get_score(len(seq)) < 1:
                     filter_score += 1
                     continue
                 if iso.subs:
                     iso.subs = [] if "N" in iso.subs[0] else iso.subs
                 idseq = reads[r].idseq
-                annotation = "%s.%s" % (chrom, idseq)
                 source = "ref_miRNA" if not iso.is_iso() else "isomiR"
                 strand = iso.strand
                 start, end = iso.start, iso.end
@@ -107,8 +109,9 @@ def create(reads, database, sample, args):
                 Cigar = iso.cigar
                 counts = read.counts
                 Filter = iso.filter
+                annotation = "%s.%s.%s" % (chrom, idseq, seq_name)
                 # This get correctly formated with paste_columns below
-                attrb = ("Read {seq};UID {idseq};Name {mirName};"
+                attrb = ("Read {seq_name};UID {idseq};Name {mirName};"
                          "Parent {preName};"
                          "Variant {Variant};Cigar {Cigar};"
                          "Expression {counts};"
@@ -241,7 +244,8 @@ def variant_with_nt(line, precursors, matures):
                          attr["Variant"])
     mature_sequence = get_mature_sequence(
         precursors[attr["Parent"]],
-        matures[attr["Parent"]][attr["Name"]])
+        matures[attr["Parent"]][attr["Name"]],
+        nt = 8)
     logger.debug("GFF::BODY::mature_sequence %s" % mature_sequence)
     mm = align_from_variants(read,
                              mature_sequence,

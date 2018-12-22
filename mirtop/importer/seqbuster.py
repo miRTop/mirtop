@@ -39,22 +39,25 @@ def read_file(fn, args):
     """
     precursors = args.precursors
     reads = defaultdict(hits)
+    col_fix = 0
     with open(fn) as handle:
-        handle.readline()
+        header = handle.readline()
+        if header.find("freq") < 0:
+            col_fix = 1
         for line in handle:
             cols = line.strip().split("\t")
             query_name = cols[1]
             query_sequence = cols[0]
-            reference_start = int(cols[4]) - 1
-            seqbuster_iso = ":".join(cols[6:10])
-            if query_name not in reads and query_sequence==None:
+            reference_start = int(cols[4-col_fix]) - 1
+            seqbuster_iso = ":".join(cols[6-col_fix:10-col_fix])
+            if query_name not in reads and query_sequence is None:
                 continue
             if query_sequence and query_sequence.find("N") > -1:
                 continue
             if query_name not in reads:
                 reads[query_name].set_sequence(query_sequence)
                 reads[query_name].counts = _get_freq(query_name)
-            chrom = cols[13]
+            chrom = cols[13-col_fix]
             logger.debug("\nSEQBUSTER::NEW::query: {query_sequence}\n"
                          "  precursor {chrom}\n"
                          "  name:  {query_name}\n"

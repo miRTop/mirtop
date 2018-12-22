@@ -66,7 +66,7 @@ def read_gtf_to_mirna(gtf):
             chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
             logger.debug("MAP:: idname:%s" % idname)
             logger.debug("MAP:: name:%s" % name)
-            id_dict[idname[0]] = name[0]
+            id_dict[idname[0]] = name[0] # MIMA to sps-Y-X-5/3p
             if cols[2] == "miRNA_primary_transcript":
                 db[idname[0]] = [chrom, int(start), int(end), strand]
             if cols[2] == "miRNA":
@@ -79,7 +79,55 @@ def read_gtf_to_mirna(gtf):
     return db_mir
 
 
-def read_gtf_to_precursor(gtf):
+def read_gtf_chr2mirna(gtf):
+    """
+    Load GTF file with precursor positions on genome.
+
+    Args:
+        *gtf(str)*: file name with GFF miRNA genomic positions and
+            header lines.
+
+    Returns:
+        *db_mir(dict)*: dictionary with keys being chr and values
+            mirna and genomic positions.
+    """
+    mir2hairpin = read_gtf_to_precursor(gtf)
+    if not gtf:
+        return gtf
+    db = defaultdict(list)
+    db_mir = defaultdict(list)
+    id_dict = dict()
+    with open(gtf) as in_handle:
+        for line in in_handle:
+            if line.startswith("#"):
+                continue
+            cols = line.strip().split("\t")
+            logger.debug("MAP:: line:%s" % cols)
+            name = [n.split("=")[1] for n in cols[-1].split(";")
+                    if n.startswith("Name")]
+            idname = [n.split("=")[1] for n in cols[-1].split(";")
+                      if n.startswith("ID")]
+            chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
+            logger.debug("MAP:: idname:%s" % idname)
+            logger.debug("MAP:: name:%s" % name)
+            id_dict[idname[0]] = name[0] # MIMA to sps-Y-X-5/3p
+            if cols[2] == "miRNA_primary_transcript":
+                db[idname[0]] = [chrom, int(start), int(end), strand]
+            if cols[2] == "miRNA":
+                parent = [n.split("=")[1] for n in cols[-1].split(";")
+                          if n.startswith("Derives_from")]
+                parent_name = id_dict[parent[0]]
+                db_mir[chrom].append([name[0], start, end,
+                                      strand,
+                                      parent_name,
+                                      mir2hairpin[parent_name][name[0]][0]])
+                logger.debug("MAP:: mirna:%s" % name[0])
+                logger.debug("MAP:: precursor:%s" % parent_name)
+                logger.debug("MAP:: precursor pos %s" % mir2hairpin[parent_name][name[0]])
+    return db_mir
+
+
+def read_gtf_to_precursor(gtf):  # need to adapt to mirgenedb
     """
     Load GTF file with precursor positions on genome
     Return dict with key being precursor name and
@@ -149,3 +197,32 @@ def read_gtf_to_precursor(gtf):
         logger.debug("MAP:: final:%s %s %s" % (mir[1], start, end))
         map_dict[id_dict[parent]][mir[1]] = db_mir[mir][1:3]
     return map_dict
+
+
+def liftover_genomic_precursor(read, genome, hairpin, expected=None):
+    # example 1 LESS (+) strand to miRNAX (+)1010 (->10)
+    # genome miRNAX [start, end, strand] (+)1009
+    # hairpin miRNAX [start, end] 9 (1 MORE = 8, 1 LESS = 10)
+    # hairpin_start - (genome_start - read_start)
+    # 9 - (1009 - 1010) = 9 - (-1) = 10
+    if read['strand'] != genome['strand']:
+        # Add warning
+        return None
+    logger.debug("MAPPER::liftover::genomic %s" % genome)
+    logger.debug("MAPPER::liftover::hairpin %s" % hairpin)
+    logger.debug("MAPPER::liftover::read %s" % read)
+    if genome['strand'] == "+":
+        lifted = hairpin["start"] - (genome["start"] - read["start"])
+    # example 1 MORE: 1008
+    # 9 - (1009 - 1008) = 9 - 1 = 8
+    # example 1 MORE (-) strand: 1010
+    # hairpin_start - (read_start - genome_start)
+    # 9 - (1010 - 1009) = 9 - 1 = 8
+    # example 1 LESS: 1008
+    #  9 - (1008 - 1009) = 9 - (-1) = 10
+    elif genome['strand'] == "-":
+        lifted = hairpin["start"] - (read["end"] - genome["end"])
+    logger.debug("MAPPER::liftover::lifted %s" % lifted)
+    if expected and expected != lifted:
+        raise ValueError("Bad liftover event.")
+    return lifted
