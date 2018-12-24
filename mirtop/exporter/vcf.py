@@ -1,11 +1,23 @@
 from __future__ import print_function
 
+import datetime
+import sys
+import os.path as op
+
 from mirtop.mirna.fasta import read_precursor
 from mirtop.mirna.mapper import read_gtf_to_precursor, read_gtf_to_mirna
 from mirtop.gff.body import read_gff_line
+import mirtop.libs.logger as mylog
 
-import datetime
-import sys
+logger = mylog.getLogger(__name__)
+
+
+def convert(args):
+    for fn in args.files:
+        out_file = op.join(args.out, "%s.vcf" % op.splitext(op.basename(fn))[0])
+        logger.info("Reading %s" % fn)
+        create_vcf(fn, args.hairpin, args.gtf, out_file)
+        logger.info("VCF generated %s" % out_file)
 
 
 def cigar_2_key(cigar, readseq, refseq, pos, var5p, var3p, parent_ini_pos, parent_end_pos, hairpin):
@@ -48,6 +60,8 @@ def cigar_2_key(cigar, readseq, refseq, pos, var5p, var3p, parent_ini_pos, paren
     else:
         refseq = refseq[:var3p]
     # Calculating the type of variant and its ref/alt positions.
+    logger.debug("VCF::precursor::read %s" % refseq)
+    logger.debug("VCF::CIGAR::read %s" % cigar)
     for i in range(len(cigar)):
         if cigar[i].isdigit():
             n_Mpar = n_Mpar + (cigar[i])
@@ -156,6 +170,8 @@ def create_vcf(mirgff3, precursor, gtf, vcffile):
     gff3 = read_gtf_to_precursor(gtf)
     gtf_dic = read_gtf_to_mirna(gtf)
     for line in range(0, len(gff3_data)):
+        if not gff3_data[line]:
+            continue
         if gff3_data[line][1] == "#":
             continue
         else:   # Parsing the gff3 mirna lecture:
@@ -173,7 +189,7 @@ def create_vcf(mirgff3, precursor, gtf, vcffile):
             vcf_pos = int(gff_fields['start']) + int(gtf_dic[gtf_name][gtf_parent][1])
             hairpin = hairpins[gtf_parent]
             variants = gff_fields['attrb']['Variant'].split(",")
-
+            logger.debug("VCF::Variant::%s" % variants)
             #  Obtaining the iso_3p, iso_add3p and iso_5p values:
 
             var3p = [s for s in variants if 'iso_3p' in s]
@@ -188,55 +204,57 @@ def create_vcf(mirgff3, precursor, gtf, vcffile):
             else:
                 var_add3p = 0
             var3p = var3p + var_add3p
-
+            logger.debug("VCF::VAR_3p::%s" % var3p)
             var5p = [s for s in variants if 'iso_5p' in s]
             if len(var5p):
                 var5p = int(var5p[0][7:])  # Position of iso_5p value
             else:
                 var5p = 0  #
+            logger.debug("VCF::VAR_5p::%s" % var5p)
             cigar = gff_fields['attrb']["Cigar"]
             # Obtaining all the variants from the cigar:
-            (key_pos, key_var, vcf_ref, vcf_alt) = cigar_2_key(cigar, gff_fields['attrb']['Read'], ref_seq, vcf_pos,
-                                                               var5p, var3p, parent_ini_pos, parent_end_pos, hairpin)
+            if 1:
+                (key_pos, key_var, vcf_ref, vcf_alt) = cigar_2_key(cigar, gff_fields['attrb']['Read'], ref_seq, vcf_pos,
+                                                                   var5p, var3p, parent_ini_pos, parent_end_pos, hairpin)
 
-            # Adding the variants to a dictionary and calculating all the fields of a vcf file format:
-            if len(key_var) > 0:
-                for s in range(len(key_var)):
-                    key_dict = vcf_chrom + '-' + str(key_pos[s]) + '-' + str(key_var[s])
-                    raw_counts = gff_fields['attrb']['Expression']
-                    raw_counts = [int(i) for i in raw_counts.split(',')]
-                    nozero_counts = [int(i > 0) for i in raw_counts]  # counts for every sample if expr != 0.
-                    if gtf_name in mirna_dict:  # Adding expression values to same mirnas
-                        mirna_dict[gtf_name]['Z'] = [sum(x) for x in zip(mirna_dict[gtf_name]['Z'], raw_counts)]
-                    else:
-                        mirna_dict[gtf_name] = {}
-                        mirna_dict[gtf_name]["Z"] = raw_counts
-                    if key_dict in all_dict:
-                        if all_dict[key_dict]["Type"] in ["A", "C", "T", "G"]:
-                            all_dict[key_dict]['X'] = [sum(x) for x in zip(all_dict[key_dict]['X'], nozero_counts)]
-                            all_dict[key_dict]['Y'] = [sum(x) for x in zip(all_dict[key_dict]['Y'], raw_counts)]
-                    else:
-                        key_list.append(key_dict)
-                        all_dict[key_dict] = {}
-                        all_dict[key_dict]["Chrom"] = vcf_chrom
-                        all_dict[key_dict]["Position"] = key_pos[s]
-                        all_dict[key_dict]["mirna"] = gtf_name
-                        all_dict[key_dict]["Type"] = key_var[s]
-                        if key_var[s][0] in ["A", "C", "T", "G"]:
-                            n_SNP += 1
-                            all_dict[key_dict]["SNP"] = True
-                            all_dict[key_dict]["ID"] = gff_fields['attrb']['Name'] + '-SNP' + str(n_SNP)
-                            all_dict[key_dict]['X'] = nozero_counts
-                            all_dict[key_dict]['Y'] = raw_counts
+                # Adding the variants to a dictionary and calculating all the fields of a vcf file format:
+                if len(key_var) > 0:
+                    for s in range(len(key_var)):
+                        key_dict = vcf_chrom + '-' + str(key_pos[s]) + '-' + str(key_var[s])
+                        raw_counts = gff_fields['attrb']['Expression']
+                        raw_counts = [int(i) for i in raw_counts.split(',')]
+                        nozero_counts = [int(i > 0) for i in raw_counts]  # counts for every sample if expr != 0.
+                        if gtf_name in mirna_dict:  # Adding expression values to same mirnas
+                            mirna_dict[gtf_name]['Z'] = [sum(x) for x in zip(mirna_dict[gtf_name]['Z'], raw_counts)]
                         else:
-                            n_noSNP += 1
-                            all_dict[key_dict]["SNP"] = False
-                            all_dict[key_dict]["ID"] = gff_fields['attrb']['Name'] + '-nonSNP' + str(n_noSNP)
-                        all_dict[key_dict]["Ref"] = vcf_ref[s]
-                        all_dict[key_dict]["Alt"] = vcf_alt[s]
-                        all_dict[key_dict]["Qual"] = "."
-                        all_dict[key_dict]["Filter"] = gff_fields['attrb']['Filter']
-                        all_dict[key_dict]["Info"] = "NS=" + str(len(sample_names))
+                            mirna_dict[gtf_name] = {}
+                            mirna_dict[gtf_name]["Z"] = raw_counts
+                        if key_dict in all_dict:
+                            if all_dict[key_dict]["Type"] in ["A", "C", "T", "G"]:
+                                all_dict[key_dict]['X'] = [sum(x) for x in zip(all_dict[key_dict]['X'], nozero_counts)]
+                                all_dict[key_dict]['Y'] = [sum(x) for x in zip(all_dict[key_dict]['Y'], raw_counts)]
+                        else:
+                            key_list.append(key_dict)
+                            all_dict[key_dict] = {}
+                            all_dict[key_dict]["Chrom"] = vcf_chrom
+                            all_dict[key_dict]["Position"] = key_pos[s]
+                            all_dict[key_dict]["mirna"] = gtf_name
+                            all_dict[key_dict]["Type"] = key_var[s]
+                            if key_var[s][0] in ["A", "C", "T", "G"]:
+                                n_SNP += 1
+                                all_dict[key_dict]["SNP"] = True
+                                all_dict[key_dict]["ID"] = gff_fields['attrb']['Name'] + '-SNP' + str(n_SNP)
+                                all_dict[key_dict]['X'] = nozero_counts
+                                all_dict[key_dict]['Y'] = raw_counts
+                            else:
+                                n_noSNP += 1
+                                all_dict[key_dict]["SNP"] = False
+                                all_dict[key_dict]["ID"] = gff_fields['attrb']['Name'] + '-nonSNP' + str(n_noSNP)
+                            all_dict[key_dict]["Ref"] = vcf_ref[s]
+                            all_dict[key_dict]["Alt"] = vcf_alt[s]
+                            all_dict[key_dict]["Qual"] = "."
+                            all_dict[key_dict]["Filter"] = gff_fields['attrb']['Filter']
+                            all_dict[key_dict]["Info"] = "NS=" + str(len(sample_names))
             else:
                 no_var += 1
 
