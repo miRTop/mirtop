@@ -250,9 +250,9 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
-    @attr(cmd_export=True)
+    @attr(cmd_export_seqbuster=True)
     @attr(cmd=True)
-    def test_export(self):
+    def test_export_seqbuster(self):
         """
         Run export command
         """
@@ -260,6 +260,26 @@ class AutomatedAnalysisTest(unittest.TestCase):
             clcode = ["mirtop",
                       "export",
                       "-o", "test_out_mirs",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "../../data/examples/gff/correct_file.gff"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_export_vcf=True)
+    @attr(cmd=True)
+    def test_export_vcf(self):
+        """
+        Run export command
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "export",
+                      "-o", "test_out_mirs",
+                      "--format", "vcf",
+                      "-d", "-vd",
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "../../data/examples/gff/correct_file.gff"]
