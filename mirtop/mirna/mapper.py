@@ -20,23 +20,29 @@ def guess_database(args):
 
     TODO: this needs to be generic to other databases.
     """
+    return _guess_database_file(args.gtf)
+
+
+def _guess_database_file(gff):
     database = None
-    with open(args.gtf) as in_handle:
+    with open(gff) as in_handle:
         for line in in_handle:
             if not line.startswith("#"):
                 break
             if line.find("miRBase") > -1:
                 database = line[line.find("miRBase"):].strip().replace(" ", "")
+            elif line.find("MirGeneDB") > -1:
+                database = line[line.find("MirGeneDB"):].strip().replace(" ", "")
             elif line.find("microRNAs") > -1:
                 database = line.strip().split()[1]
     if not database:
         logger.error("Database not found in --mirna %s. "
-                     "Use --database argument to add a custom source." % args.gtf)
-        raise ValueError("Database not found in %s header" % args.gtf)
+                     "Use --database argument to add a custom source." % gff)
+        raise ValueError("Database not found in %s header" % gff)
     return database
 
 
-def read_gtf_to_mirna(gtf):
+def read_gtf_to_mirna(gtf):  # deprecate in the future
     """
     Load GTF file with precursor positions on genome.
 
@@ -79,7 +85,7 @@ def read_gtf_to_mirna(gtf):
     return db_mir
 
 
-def read_gtf_chr2mirna(gtf):
+def read_gtf_chr2mirna(gtf):  # read from read_gtf_to_precursor
     """
     Load GTF file with precursor positions on genome.
 
@@ -145,31 +151,19 @@ def read_gtf_to_precursor(gtf):  # need to adapt to mirgenedb
     """
     if not gtf:
         return gtf
-    db = defaultdict(list)
-    db_mir = defaultdict(list)
-    id_dict = dict()
-    map_dict = defaultdict(dict)
-    with open(gtf) as in_handle:
-        for line in in_handle:
-            if line.startswith("#"):
-                continue
-            cols = line.strip().split("\t")
-            name = [n.split("=")[1] for n in cols[-1].split(";")
-                    if n.startswith("Name")]
-            idname = [n.split("=")[1] for n in cols[-1].split(";")
-                      if n.startswith("ID")]
-            chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
-            id_dict[idname[0]] = name[0]
-            if cols[2] == "miRNA_primary_transcript":
-                db[name[0]] = [chrom, int(start), int(end), strand]
-            if cols[2] == "miRNA":
-                parent = [n.split("=")[1] for n in cols[-1].split(";")
-                          if n.startswith("Derives_from")]
-                db_mir[(parent[0], name[0])] = [chrom,
-                                                int(start), int(end),
-                                                strand, parent[0]]
-                logger.debug("MAP:: mirna:%s" % name[0])
-                logger.debug("MAP:: pos %s" % db_mir[(parent[0], name[0])])
+    if _guess_database_file(gtf).find("miRBase") > -1:
+        mapped = read_gtf_to_precursor_mirbase(gtf)
+    elif _guess_database_file(gtf).find("MirGeneDB") > -1:
+        mapped = read_gtf_to_precursor_mirgenedb(gtf)
+    else:
+        logger.info("Database different than miRBase or MirGeneDB")
+        logger.info("If you get an error when loading,")
+        logger.info("report it to https://github.com/miRTop/mirtop/issues")
+        mapped = read_gtf_to_precursor_mirbase(gtf)
+    return mapped
+
+
+def _parse_db_mir(db_mir, db, id_dict, map_dict):
     for mir in db_mir:
         parent = db_mir[mir][4]
         precursor = db[id_dict[parent]]
@@ -197,6 +191,98 @@ def read_gtf_to_precursor(gtf):  # need to adapt to mirgenedb
         logger.debug("MAP:: final:%s %s %s" % (mir[1], start, end))
         map_dict[id_dict[parent]][mir[1]] = db_mir[mir][1:3]
     return map_dict
+
+
+def read_gtf_to_precursor_mirgenedb(gtf):
+    """
+    Load GTF file with precursor positions on genome
+    Return dict with key being precursor name and
+    value a dict of mature miRNA with relative position
+    to precursor. For MirGeneDB and similar GFF3 files.
+
+    Args:
+        *gtf(str)*: file name with GFF miRNA genomic positions and
+            header lines.
+
+    Returns:
+        *map_dict(dict)*:
+
+        >>> {'parent': {mirna: [start, end]}}
+    """
+    if not gtf:
+        return gtf
+    db = defaultdict(list)
+    db_mir = defaultdict(list)
+    id_dict = dict()
+    map_dict = defaultdict(dict)
+    with open(gtf) as in_handle:
+        for line in in_handle:
+            if line.startswith("#"):
+                continue
+            cols = line.strip().split("\t")
+            idname = [n.split("=")[1] for n in cols[-1].split(";")
+                      if n.startswith("ID")][0]
+            name = idname
+            chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
+            id_dict[idname] = name
+            if cols[2] == "pre_miRNA":
+                db[name] = [chrom, int(start), int(end), strand]
+            if cols[2] == "miRNA":
+                idname_mi = [n.split("=")[1] for n in cols[-1].split(";")
+                             if n.startswith("ID")][0]
+                parent = "%s_pre" % idname_mi.split("_")[0]
+                db_mir[(parent, name)] = [chrom,
+                                          int(start), int(end),
+                                          strand, parent]
+                logger.debug("MAP:: mirna:%s" % name)
+                logger.debug("MAP:: pos %s" % db_mir[(parent, name)])
+    return _parse_db_mir(db_mir, db, id_dict, map_dict)
+
+
+def read_gtf_to_precursor_mirbase(gtf):
+    """
+    Load GTF file with precursor positions on genome
+    Return dict with key being precursor name and
+    value a dict of mature miRNA with relative position
+    to precursor. For miRBase and similar GFF3 files.
+
+    Args:
+        *gtf(str)*: file name with GFF miRNA genomic positions and
+            header lines.
+
+    Returns:
+        *map_dict(dict)*:
+
+        >>> {'parent': {mirna: [start, end]}}
+    """
+    if not gtf:
+        return gtf
+    db = defaultdict(list)
+    db_mir = defaultdict(list)
+    id_dict = dict()
+    map_dict = defaultdict(dict)
+    with open(gtf) as in_handle:
+        for line in in_handle:
+            if line.startswith("#"):
+                continue
+            cols = line.strip().split("\t")
+            name = [n.split("=")[1] for n in cols[-1].split(";")
+                    if n.startswith("Name")]
+            idname = [n.split("=")[1] for n in cols[-1].split(";")
+                      if n.startswith("ID")]
+            chrom, start, end, strand = cols[0], cols[3], cols[4], cols[6]
+            id_dict[idname[0]] = name[0]
+            if cols[2] == "miRNA_primary_transcript":
+                db[name[0]] = [chrom, int(start), int(end), strand]
+            if cols[2] == "miRNA":
+                parent = [n.split("=")[1] for n in cols[-1].split(";")
+                          if n.startswith("Derives_from")]
+                db_mir[(parent[0], name[0])] = [chrom,
+                                                int(start), int(end),
+                                                strand, parent[0]]
+                logger.debug("MAP:: mirna:%s" % name[0])
+                logger.debug("MAP:: pos %s" % db_mir[(parent[0], name[0])])
+    return _parse_db_mir(db_mir, db, id_dict, map_dict)
 
 
 def liftover_genomic_precursor(read, genome, hairpin, expected=None):

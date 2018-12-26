@@ -75,6 +75,15 @@ class FunctionsTest(unittest.TestCase):
         # read data/aligments/let7-perfect.bam
         return True
 
+    @attr(read_hairpin_mirgenedb=True)
+    def test_read_hairpin_mirgenedb(self):
+        from mirtop.mirna import mapper
+        from mirtop.libs import logger
+        logger.initialize_logger("test_read_files", True, True)
+        map_mir = mapper.read_gtf_to_precursor(
+            "data/db/mirgenedb/hsa.gff")
+        print(map_mir)
+
     @attr(read_mir2genomic=True)
     def test_read_mir2genomic(self):
         from mirtop.mirna import mapper
@@ -317,7 +326,7 @@ class FunctionsTest(unittest.TestCase):
                         "hsa-let-7a-3ploss1", "hsa-let-7a-5ploss1_neg"]:
             print(annotate("data/examples/annotate/%s.sam" % example,
                            bam.read_bam,
-                           gtf="data/db/hsa.gff3", genomic=True))
+                           gtf="data/db/mirbase/hsa.gff3", genomic=True))
 
     @attr(keep_name=True)
     def test_keep_name(self):

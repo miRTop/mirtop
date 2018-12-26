@@ -1,0 +1,6 @@
+##gff-version 3
+# microRNAs:    MirGeneDB v2.0
+# genome-build-id:  hg38
+chr11	.	pre_miRNA	122146523	122146589	.	-	.	ID=Hsa-Let-7-P1_pre;Alias=MI0000061
+chr11	.	miRNA	122146523	122146544	.	-	.	ID=Hsa-Let-7-P1_5p;Alias=MIMAT0000062
+chr11	.	miRNA	122146568	122146589	.	-	.	ID=Hsa-Let-7-P1_3p*;Alias=MIMAT0010195
