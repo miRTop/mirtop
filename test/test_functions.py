@@ -91,6 +91,7 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test_read_files", True, True)
         map_mir = mapper.read_gtf_chr2mirna("data/examples/annotate/hsa.gff3")
         print(map_mir)
+        # print(mapper.read_gtf_chr2mirna2("data/examples/annotate/hsa.gff3"))
 
     @attr(read_mir2genomic=True)
     def test_read_mir2genomic(self):
@@ -323,7 +324,6 @@ class FunctionsTest(unittest.TestCase):
         """testing alignments function"""
         from mirtop.bam import bam
         from mirtop.libs import logger
-        # logger.initialize_logger("test_read_files", True, True)
         logger.initialize_logger("test_read_files", True, True)
         # print(annotate("data/examples/annotate/hsa-let-7a-5ploss1_neg.sam",
         #                bam.read_bam,
