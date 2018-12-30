@@ -159,7 +159,6 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print(" ".join(clcode))
             subprocess.check_call(clcode)
 
-
     @attr(complete=True)
     @attr(cmd_isomirsea=True)
     @attr(cmd=True)

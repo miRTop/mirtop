@@ -1,5 +1,6 @@
 - 0.4.*a
 
+ * Normalize functions to support different databases.
  * Support miRgeneDB.
  * Export to VCF. Thanks to Rorderic Espin.
  * Support isomiRs that go beyond 5p end

@@ -84,13 +84,20 @@ class FunctionsTest(unittest.TestCase):
             "data/db/mirgenedb/hsa.gff")
         print(map_mir)
 
+    @attr(read_mir2chr=True)
+    def test_read_mir2chr(self):
+        from mirtop.mirna import mapper
+        from mirtop.libs import logger
+        logger.initialize_logger("test_read_files", True, True)
+        map_mir = mapper.read_gtf_chr2mirna("data/examples/annotate/hsa.gff3")
+        print(map_mir)
+
     @attr(read_mir2genomic=True)
     def test_read_mir2genomic(self):
         from mirtop.mirna import mapper
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
-        mir2hairpin = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
-        map_mir = mapper.read_gtf_chr2mirna("data/examples/annotate/hsa.gff3")
+        map_mir = mapper.read_gtf_to_mirna("data/examples/annotate/hsa.gff3")
         print(map_mir)
 
     @attr(read_line=True)
