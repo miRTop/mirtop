@@ -121,7 +121,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print(" ".join(clcode))
             subprocess.check_call(clcode)
 
-    @attr(bam_genomic=True)
+    @attr(cmd_bam_genomic=True)
     @attr(complete=True)
     @attr(bam=True)
     @attr(cmd=True)
@@ -133,7 +133,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "gff",
                       "--sps", "hsa", "--add-extra", "--genomic",
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
-                      "--gtf", "../../data/db/hsa.gff3",
+                      "--gtf", "../../data/db/mirbase/hsa.gff3",
                       "-o", "test_out_mirs",
                       "../../data/examples/annotate/hsa-let-7a-nm.sam"]
             print("")
