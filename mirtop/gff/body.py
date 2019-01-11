@@ -46,14 +46,14 @@ def create(reads, database, sample, args):
     if args.add_extra:
         precursors = args.precursors
         matures = args.matures
-    for r, read in reads.iteritems():
+    for r, read in list(reads.items()):
         hits = set()
-        [hits.add(mature.mirna) for mature in read.precursors.values()
+        [hits.add(mature.mirna) for mature in list(read.precursors.values())
             if mature.mirna]
         hits = len(hits)
         if len(read.precursors) > 0:
             n_reads += 1
-        for p, iso in read.precursors.iteritems():
+        for p, iso in list(read.precursors.items()):
             if not iso.mirna:
                 filter_precursor += 1
                 continue
@@ -162,8 +162,8 @@ def read_variant(attrb, sep=" "):
             gff_dict[item_pair[0].strip()] = int(item_pair[1].strip())
         else:
             gff_dict[item_pair[0].strip()] = True
-    logger.debug("Keys found: %s" % gff_dict.keys())
-    logger.debug("Values found: %s" % gff_dict.values())
+    logger.debug("Keys found: %s" % list(gff_dict.keys()))
+    logger.debug("Values found: %s" % list(gff_dict.values()))
     return gff_dict
 
 

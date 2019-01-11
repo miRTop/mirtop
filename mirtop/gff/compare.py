@@ -36,7 +36,7 @@ def compare(args):
         fn_out = os.path.join(args.out, "summary.txt")
         with open(fn_out, 'w') as outh:
             for fn in result:
-                print("sample\tidu\tseq\ttag\tsame_mirna\t%s" % "\t".join(result[fn][0][3].keys()), file=outh)
+                print("sample\tidu\tseq\ttag\tsame_mirna\t%s" % "\t".join(list(result[fn][0][3].keys())), file=outh)
                 for line in result[fn]:
                     read = read_id(line[0])
                     acc = "\t".join([line[3][v] for v in line[3]])
@@ -132,6 +132,6 @@ def _accuracy(target, reference):
             accuracy[t] = "TP" if t in target else "FN"
         else:
             accuracy[t] = "TN" if t not in target else "FP"
-    logger.debug("COMPARE::ACCURACY::%s" % accuracy.keys())
-    logger.debug("COMPARE::ACCURACY::%s" % accuracy.values())
+    logger.debug("COMPARE::ACCURACY::%s" % list(accuracy.keys()))
+    logger.debug("COMPARE::ACCURACY::%s" % list(accuracy.values()))
     return accuracy

@@ -1,7 +1,7 @@
 """
 Some commands to install common databases like mirbase and some human/mouse annotation
 """
-
+from __future__ import print_function
 import os.path as op
 import subprocess
 

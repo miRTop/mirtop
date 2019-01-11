@@ -54,7 +54,7 @@ def _format_samples_counts(samples, expression):
     else:
         samples = [samples]
         expression = [expression]
-    return dict(zip(samples, expression))
+    return dict(list(zip(samples, expression)))
 
 
 def _fix(line, expression):

@@ -152,7 +152,7 @@ def _read_iso(fn):
                 label = [cols[3].split("$")[0]]
             if len(mirnas) != len(label):
                 label = label * (len(mirnas) - len(label))
-            anno = dict(zip(mirnas, label))
+            anno = dict(list(zip(mirnas, label)))
             logger.debug("TRANSLATE::%s with %s" % (mirnas, label))
             for m in anno:
                 iso[(cols[0], m)] = _translate(anno[m], cols[4])

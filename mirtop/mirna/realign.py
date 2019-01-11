@@ -439,7 +439,7 @@ def align_from_variants(sequence, mature, variants):
     snps = []
     k = [v.split(":")[0] for v in variants.split(",") if v.find(":") > -1]
     v = [int(v.split(":")[1]) for v in variants.split(",") if v.find(":") > -1]
-    var_dict = dict(zip(k, v))
+    var_dict = dict(list(zip(k, v)))
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
     logger.debug("realign::align_from_variants::variants %s" % variants)

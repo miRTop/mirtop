@@ -80,7 +80,7 @@ def _check_line(line, num, num_samples):
     # Check attribute-expression
 
     expression = fields['attrb']['Expression'].strip().split(",")
-    expression = filter(None, expression)
+    expression = [_f for _f in expression if _f]
     if len(expression) != num_samples:
         logger.error('INCORRECT number of EXPRESSION VALUES \
         in line %s' % (num))

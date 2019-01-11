@@ -84,7 +84,7 @@ def _classify(srna_type, attr, samples):
     # iso_5p, iso_3p, iso_add ...
     # FILTER :: exact/isomiR_type
     lines = []
-    counts = dict(zip(samples, attr['Expression'].split(",")))
+    counts = dict(list(zip(samples, attr['Expression'].split(","))))
     for s in counts:
         if int(counts[s]) > 0:
             lines.append([srna_type, s, counts[s]])
