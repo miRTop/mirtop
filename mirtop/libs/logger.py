@@ -21,7 +21,7 @@ def set_format(frmt, frmt_col=None, datefmt=None):
     return formatter
 
 
-def initialize_logger(output_dir, debug, level=False):
+def initialize_logger(output_dir, debug=False, level=False):
     NOTE = 15
     COLOR_FORMAT = "%(log_color)s%(asctime)s%(levelname)s-%(name)s(%(lineno)d)%(reset)s: %(message)s"
     COLOR_FORMAT_INFO = "%(log_color)s%(asctime)s %(levelname)s%(reset)s: %(message)s"
