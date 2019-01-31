@@ -55,7 +55,7 @@ def _coord(sequence, start, mirna, precursor, iso):
     return True
 
 
-def annotate(reads, mature_ref, precursors):
+def annotate(reads, mature_ref, precursors, quiet=False):
     """
     Using coordinates, mismatches and realign to annotate isomiRs
 
@@ -68,7 +68,8 @@ def annotate(reads, mature_ref, precursors):
 
         *precursors dict object (key : fasta)*:
             that comes from *mirtop.mirna.fasta.read_precursor()*
-
+        *quiet(boolean)*:
+            verbosity state
     Return:
         *reads (dict)*:
             dictionary where keys are read_id and
@@ -100,5 +101,6 @@ def annotate(reads, mature_ref, precursors):
                     reads[r].precursors[p] = iso_copy
                     reads[r].precursors[p].mirna = mature
                     # break
-    logger.info("Valid hits (+/-3 reference miRNA): %s" % n_iso)
+    if not quiet:
+        logger.info("Valid hits (+/-3 reference miRNA): %s" % n_iso)
     return reads

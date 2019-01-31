@@ -4,7 +4,7 @@ from __future__ import print_function
 import os.path as op
 
 from mirtop.mirna import fasta, mapper
-from mirtop.bam.bam import read_bam
+from mirtop.bam.bam import read_bam, low_memory_bam
 from mirtop.importer import seqbuster, srnabench, prost, isomirsea
 from mirtop.mirna.annotate import annotate
 from mirtop.gff import body, header, merge
@@ -32,11 +32,15 @@ def reader(args):
                        "name read is different across sample\n"
                        "for the same sequence.")
     for fn in args.files:
+        fn = op.normpath(fn)
         if args.format != "gff":
             sample = op.splitext(op.basename(fn))[0]
             samples.append(sample)
             fn_out = op.join(args.out, sample + ".%s" % args.out_format)
         if args.format == "BAM":
+            if args.low_memory:
+                low_memory_bam(fn, sample, fn_out, args)
+                continue
             reads = _read_bam(fn, args)
         elif args.format == "seqbuster":
             reads = seqbuster.read_file(fn, args)
@@ -56,6 +60,8 @@ def reader(args):
         h = header.create([sample], database, "")
         _write(out_dts[fn], h, fn_out)
     # merge all reads for all samples into one dict
+    if args.low_memory:
+        return None
     merged = merge.merge(out_dts, samples)
     fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
     _write(merged, header.create(samples, database, ""), fn_merged_out)

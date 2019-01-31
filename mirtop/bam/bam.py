@@ -1,4 +1,5 @@
 """ Read bam files"""
+from __future__ import print_function
 
 import os.path as op
 import os
@@ -12,6 +13,8 @@ from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 from mirtop.mirna.realign import isomir, hits, reverse_complement
 from mirtop.bam import filter
+from mirtop.gff import body, header
+from mirtop.mirna.annotate import annotate
 from mirtop.mirna.mapper import liftover_genomic_precursor, read_gtf_chr2mirna
 
 logger = mylog.getLogger(__name__)
@@ -46,6 +49,97 @@ def read_bam(bam_fn, args, clean=True):
     else:
         reads = _read_original_bam(bam_fn, reads, args, clean)
     return reads
+
+
+def low_memory_bam(bam_fn, sample, fn_out, args):
+    if args.format != "BAM":
+        raise ValueError("low-memory option is only valid with BAM files.")
+    precursors = args.precursors
+    bam_fn = _sam_to_bam(bam_fn)
+    bam_fn = _bam_sort(bam_fn)
+    mode = "r" if bam_fn.endswith("sam") else "rb"
+    handle = pysam.Samfile(bam_fn, mode)
+    lines = []
+    current = None
+    out_handle = open(fn_out, 'w')
+    h = header.create([sample], args.database, "")
+    print(h, file=out_handle)
+    for line in handle:
+        if not current or current == line.query_name:
+            lines.append(line)
+            current = line.query_name
+        else:
+            reads = _read_lines(lines, precursors, handle, args)
+            ann = annotate(reads, args.matures, args.precursors, quiet=True)
+            gff_lines = body.create(ann, args.database, sample, args, quiet=True)
+            _write_body(gff_lines, out_handle)
+            current = line.query_name
+            lines = []
+            lines.append(line)
+    reads = _read_lines(lines, precursors, handle, args)
+    ann = annotate(reads, args.matures, args.precursors, quiet=True)
+    gff_lines = body.create(ann, args.database, sample, args, quiet=True)
+    _write_body(gff_lines, out_handle)
+    out_handle.close()
+
+
+def _read_lines(lines, precursors, handle, args, clean=True):
+    reads = defaultdict(hits)
+    for line in lines:
+        if line.reference_id < 0:
+            logger.debug("READ::Sequence not mapped: %s" % line.reference_id)
+            continue
+        if not line.cigarstring:
+            logger.debug("READ::Sequence malformed: %s" % line)
+            continue
+        query_name = line.query_name
+        if query_name not in reads and not line.query_sequence:
+            continue
+        sequence = line.query_sequence if not line.is_reverse else reverse_complement(line.query_sequence)
+        logger.debug(("READ::Read name:{0} and Read sequence:{1}").format(line.query_name, sequence))
+        if line.query_sequence and line.query_sequence.find("N") > -1:
+            continue
+        if query_name not in reads:
+            reads[query_name].set_sequence(sequence)
+            reads[query_name].counts = _get_freq(query_name)
+        if line.is_reverse and not args.genomic:
+            logger.debug("READ::Sequence is reverse: %s" % line.query_name)
+            continue
+        chrom = handle.getrname(line.reference_id)
+        start = line.reference_start
+        # If genomic endcode, liftover to precursor position
+        if not start:
+            continue
+        cigar = line.cigartuples
+        # if line.cigarstring.find("I") > -1:
+        #     indels_skip += 1
+        iso = isomir()
+        iso.align = line
+        iso.set_pos(start, len(reads[query_name].sequence))
+        logger.debug("READ::From BAM start %s end %s at chrom %s" % (iso.start, iso.end, chrom))
+        if len(precursors[chrom]) < start + len(reads[query_name].sequence):
+            logger.debug("READ::%s start + %s sequence size are bigger than"
+                         " size precursor %s" % (
+                                                 line.reference_id,
+                                                 len(reads[query_name].sequence),
+                                                 len(precursors[chrom])))
+            continue
+        iso.subs, iso.add, iso.cigar = filter.tune(
+            reads[query_name].sequence, precursors[chrom],
+            start, cigar)
+        logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
+        logger.debug("READ::iso add %s iso subs %s" % (iso.add, iso.subs))
+        reads[query_name].set_precursor(chrom, iso)
+        if clean:
+            reads = filter.clean_hits(reads)
+    return reads
+
+
+def _write_body(lines, out_handle):
+    for m in lines:
+        for s in sorted(lines[m].keys()):
+            for hit in lines[m][s]:
+                print(hit[4], file=out_handle)
 
 
 def _read_quick_bam(bam_fn, reads, args):

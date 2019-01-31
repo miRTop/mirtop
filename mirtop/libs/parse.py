@@ -90,6 +90,8 @@ def _add_subparser_gff(subparsers):
                         default=None)
     parser.add_argument("--genomic", action="store_true", default=False,
                         help="BAM file is mapped against genome.")
+    parser.add_argument("--low-memory", action="store_true", default=False,
+                        help="Read File by chunks. Only supported for BAM files.")
     parser = _add_debug_option(parser)
     return parser
 

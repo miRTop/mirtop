@@ -63,7 +63,7 @@ def read(fn, args):
     return lines
 
 
-def create(reads, database, sample, args):
+def create(reads, database, sample, args, quiet=False):
     """Read https://github.com/miRTop/mirtop/issues/9"""
     sep = " " if args.out_format == "gtf" else "="
     seen = set()
@@ -140,13 +140,13 @@ def create(reads, database, sample, args):
                 n_hits += 1
             else:
                 n_seen += 1
-
-    logger.info("GFF miRNAs: %s" % len(lines))
-    logger.info("GFF hits %s by %s reads" % (n_hits, n_reads))
-    logger.info("Filtered by being duplicated: %s" % n_seen)
-    logger.info("Filtered by being outside miRNA positions:"
-                " %s" % filter_precursor)
-    logger.info("Filtered by being low score: %s" % filter_score)
+    if not quiet:
+        logger.info("GFF miRNAs: %s" % len(lines))
+        logger.info("GFF hits %s by %s reads" % (n_hits, n_reads))
+        logger.info("Filtered by being duplicated: %s" % n_seen)
+        logger.info("Filtered by being outside miRNA positions:"
+                    " %s" % filter_precursor)
+        logger.info("Filtered by being low score: %s" % filter_score)
     return lines
 
 
