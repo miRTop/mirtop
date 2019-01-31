@@ -30,7 +30,7 @@ def _update_ends(source):
     for name in source:
         source[name] = nts[start_idx] + source[name] + nts[end_idx]
         if end_idx == 3 and start_idx == 3:
-            end_idx = 0
+            end_idx = -1
             start_idx = 0
         if end_idx == 3:
             start_idx += 1

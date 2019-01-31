@@ -1,8 +1,9 @@
 - 0.4.*a
 
+ * Support chunk reading for BAM files.
  * Normalize functions to support different databases.
  * Support miRgeneDB.
- * Export to VCF. Thanks to Rorderic Espin.
+ * Export to VCF. Thanks to Roderic Espin.
  * Support isomiRs that go beyond 5p end
  * Support genomic coordinates.
  * Fix missing reads when using --keep-read in the final mirtop.gff file.
