@@ -91,6 +91,7 @@ Contributors
 * [Victor Barrera](https://github.com/vbarrera) (Bioinformatic Core, Harvard Chan School, Boston, USA)
 * [Steffen Möller](https://github.com/smoe) (University of Rostock)
 * [Kieran O'Neill](https://github.com/oneillkza)
+* [Roderic Espin](Universitat Oberta de Barcelona)
 
 Citizens
 --------
