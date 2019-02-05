@@ -5,6 +5,8 @@ from collections import defaultdict
 import mirtop.libs.logger as mylog
 from mirtop.mirna.realign import isomir, hits
 from mirtop.bam import filter
+from mirtop.gff import body
+from mirtop.mirna.annotate import annotate
 
 logger = mylog.getLogger(__name__)
 
@@ -45,38 +47,89 @@ def read_file(fn, args):
         if header.find("freq") < 0:
             col_fix = 1
         for line in handle:
-            cols = line.strip().split("\t")
-            query_name = cols[1]
-            query_sequence = cols[0]
-            reference_start = int(cols[4-col_fix]) - 1
-            seqbuster_iso = ":".join(cols[6-col_fix:10-col_fix])
-            if query_name not in reads and query_sequence is None:
-                continue
-            if query_sequence and query_sequence.find("N") > -1:
-                continue
-            if query_name not in reads:
-                reads[query_name].set_sequence(query_sequence)
-                reads[query_name].counts = _get_freq(query_name)
-            chrom = cols[13-col_fix]
-            logger.debug("\nSEQBUSTER::NEW::query: {query_sequence}\n"
-                         "  precursor {chrom}\n"
-                         "  name:  {query_name}\n"
-                         "  start: {reference_start}\n"
-                         "  iso: {seqbuster_iso}".format(**locals()))
-            # logger.debug("SEQBUSTER:: cigar {cigar}".format(**locals()))
-            iso = isomir()
-            iso.align = line
-            iso.set_pos(reference_start, len(reads[query_name].sequence))
-            logger.debug("SEQBUSTER:: start %s end %s" % (iso.start, iso.end))
-            if len(precursors[chrom]) < reference_start + len(reads[query_name].sequence):
-                continue
-            iso.subs, iso.add, iso.cigar = filter.tune(reads[query_name].sequence,
-                                                       precursors[chrom],
-                                                       reference_start, None)
-            logger.debug("SEQBUSTER::After tune start %s end %s" % (iso.start, iso.end))
-            if len(iso.subs) < 6:
-                reads[query_name].set_precursor(chrom, iso)
+            reads.update(_read_line(line, col_fix, precursors))
+            # cols = line.strip().split("\t")
+            # query_name = cols[1]
+            # query_sequence = cols[0]
+            # reference_start = int(cols[4-col_fix]) - 1
+            # seqbuster_iso = ":".join(cols[6-col_fix:10-col_fix])
+            # if query_name not in reads and query_sequence is None:
+            #     continue
+            # if query_sequence and query_sequence.find("N") > -1:
+            #     continue
+            # if query_name not in reads:
+            #     reads[query_name].set_sequence(query_sequence)
+            #     reads[query_name].counts = _get_freq(query_name)
+            # chrom = cols[13-col_fix]
+            # logger.debug("\nSEQBUSTER::NEW::query: {query_sequence}\n"
+            #              "  precursor {chrom}\n"
+            #              "  name:  {query_name}\n"
+            #              "  start: {reference_start}\n"
+            #              "  iso: {seqbuster_iso}".format(**locals()))
+            # # logger.debug("SEQBUSTER:: cigar {cigar}".format(**locals()))
+            # iso = isomir()
+            # iso.align = line
+            # iso.set_pos(reference_start, len(reads[query_name].sequence))
+            # logger.debug("SEQBUSTER:: start %s end %s" % (iso.start, iso.end))
+            # if len(precursors[chrom]) < reference_start + len(reads[query_name].sequence):
+            #     continue
+            # iso.subs, iso.add, iso.cigar = filter.tune(reads[query_name].sequence,
+            #                                            precursors[chrom],
+            #                                            reference_start, None)
+            # logger.debug("SEQBUSTER::After tune start %s end %s" %
+            #              (iso.start, iso.end))
+            # if len(iso.subs) < 6:
+            #     reads[query_name].set_precursor(chrom, iso)
     logger.info("Hits: %s" % len(reads))
+    return reads
+
+
+def read_file_low_memory(fn, sample, args, out_handle):
+    precursors = args.precursors
+    reads = defaultdict(hits)
+    col_fix = 0
+    with open(fn) as handle:
+        header = handle.readline()
+        if header.find("freq") < 0:
+            col_fix = 1
+        for line in handle:
+            reads = _read_line(line, col_fix, precursors)
+            ann = annotate(reads, args.matures, args.precursors, quiet=True)
+            gff_lines = body.create(ann, args.database, sample, args, quiet=True)
+            body.write_body_on_handle(gff_lines, out_handle)
+
+
+def _read_line(line, col_fix, precursors):
+    reads = defaultdict(hits)
+    cols = line.strip().split("\t")
+    query_name = cols[1]
+    query_sequence = cols[0]
+    reference_start = int(cols[4-col_fix]) - 1
+    seqbuster_iso = ":".join(cols[6-col_fix:10-col_fix])
+    if query_sequence and query_sequence.find("N") > -1:
+        return reads
+    if query_name not in reads:
+        reads[query_name].set_sequence(query_sequence)
+        reads[query_name].counts = _get_freq(query_name)
+    chrom = cols[13-col_fix]
+    logger.debug("\nSEQBUSTER::NEW::query: {query_sequence}\n"
+                 "  precursor {chrom}\n"
+                 "  name:  {query_name}\n"
+                 "  start: {reference_start}\n"
+                 "  iso: {seqbuster_iso}".format(**locals()))
+    # logger.debug("SEQBUSTER:: cigar {cigar}".format(**locals()))
+    iso = isomir()
+    iso.align = line
+    iso.set_pos(reference_start, len(reads[query_name].sequence))
+    logger.debug("SEQBUSTER:: start %s end %s" % (iso.start, iso.end))
+    if len(precursors[chrom]) < reference_start + len(reads[query_name].sequence):
+        return reads
+    iso.subs, iso.add, iso.cigar = filter.tune(reads[query_name].sequence,
+                                               precursors[chrom],
+                                               reference_start, None)
+    logger.debug("SEQBUSTER::After tune start %s end %s" % (iso.start, iso.end))
+    if len(iso.subs) < 6:
+        reads[query_name].set_precursor(chrom, iso)
     return reads
 
 

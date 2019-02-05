@@ -178,6 +178,25 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
+    @attr(cmd_seqbuster_low_memory=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_seqbuster_low_memory(self):
+        """Run miraligner analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff", "--low-memory",
+                      "--format", "seqbuster",
+                      "--sps", "hsa",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/seqbuster/reads.mirna"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
     @attr(cmd_isomirsea=True)
     @attr(cmd=True)
     def test_srnaseq_annotation_isomirsea(self):

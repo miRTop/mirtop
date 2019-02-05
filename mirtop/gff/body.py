@@ -1,4 +1,5 @@
 """GFF reader and creator helpers"""
+from __future__ import print_function
 
 from collections import defaultdict, OrderedDict
 from mirtop.mirna.realign import get_mature_sequence, align_from_variants, \
@@ -61,6 +62,13 @@ def read(fn, args):
                  line.strip()])
     logger.info("Lines skipped due to corrupted UID: %s" % corrupted_uid)
     return lines
+
+
+def write_body_on_handle(lines, out_handle):
+    for m in lines:
+        for s in sorted(lines[m].keys()):
+            for hit in lines[m][s]:
+                print(hit[4], file=out_handle)
 
 
 def create(reads, database, sample, args, quiet=False):

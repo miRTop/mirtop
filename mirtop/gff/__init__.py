@@ -7,7 +7,7 @@ from mirtop.mirna import fasta, mapper
 from mirtop.bam.bam import read_bam, low_memory_bam
 from mirtop.importer import seqbuster, srnabench, prost, isomirsea
 from mirtop.mirna.annotate import annotate
-from mirtop.gff import body, header, merge
+from mirtop.gff import body, header, merge, read
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
@@ -16,6 +16,9 @@ def reader(args):
     """
     Realign BAM hits to miRBAse to get better accuracy and annotation
     """
+    if args.low_memory:
+        read.reader(args)
+        return None
     samples = []
     database = mapper.guess_database(args)
     args.database = database
@@ -38,9 +41,6 @@ def reader(args):
             samples.append(sample)
             fn_out = op.join(args.out, sample + ".%s" % args.out_format)
         if args.format == "BAM":
-            if args.low_memory:
-                low_memory_bam(fn, sample, fn_out, args)
-                continue
             reads = _read_bam(fn, args)
         elif args.format == "seqbuster":
             reads = seqbuster.read_file(fn, args)
