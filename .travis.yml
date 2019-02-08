@@ -10,8 +10,11 @@ notifications:
     - lorena.pantano@gmail.com
     on_failure: always
 before_install:
-- wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
-- bash Miniconda-latest-Linux-x86_64.sh -b -p ~/install
+- echo $TRAVIS_PYTHON_VERSION
+- miniconda="Miniconda3-latest-Linux-x86_64.sh"
+- if [[ $TRAVIS_PYTHON_VERSION == "2.7" ]] ; then miniconda="Miniconda2-latest-Linux-x86_64.sh"; fi
+- wget -O miniconda.sh http://repo.continuum.io/miniconda/${miniconda}
+- bash miniconda.sh -b -p ~/install
 install:
 - export PATH=~/install/bin/:$PATH
 - conda install --yes ncurses -c conda-forge

@@ -1,5 +1,6 @@
 - 0.4.*a
 
+ * Support chunk reading for seqbuster files.
  * Support chunk reading for BAM files.
  * Normalize functions to support different databases.
  * Support miRgeneDB.
