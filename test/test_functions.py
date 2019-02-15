@@ -7,8 +7,25 @@ from __future__ import print_function
 import os
 import unittest
 import argparse
+import contextlib
+import shutil
 
 from nose.plugins.attrib import attr
+
+
+@contextlib.contextmanager
+def make_workdir():
+    remove_old_dir = True
+    dirname = os.path.join("test", "test_automated_output")
+    if remove_old_dir:
+        if os.path.exists(dirname):
+            shutil.rmtree(dirname)
+        os.makedirs(dirname)
+    orig_dir = os.getcwd()
+    try:
+        yield dirname
+    finally:
+        os.chdir(orig_dir)
 
 
 def annotate(fn, read_file, load=False, create=True, keep_name=False,
@@ -17,6 +34,8 @@ def annotate(fn, read_file, load=False, create=True, keep_name=False,
     args.hairpin = "data/examples/annotate/hairpin.fa"
     args.sps = "hsa"
     args.gtf = "data/examples/annotate/hsa.gff3"
+    args.out = "test/test_automated_output"
+
     if gtf:
         args.gtf = gtf
     args.genomic = genomic
@@ -329,11 +348,12 @@ class FunctionsTest(unittest.TestCase):
         #                bam.read_bam,
         #                gtf="data/db/hsa.gff3", genomic=True))
         print("\ngenomic\n")
-        for example in ["hsa-let-7a-nm", "hsa-let-7a-5ploss1",
-                        "hsa-let-7a-3ploss1", "hsa-let-7a-5ploss1_neg"]:
-            print(annotate("data/examples/annotate/%s.sam" % example,
-                           bam.read_bam,
-                           gtf="data/db/mirbase/hsa.gff3", genomic=True))
+        with make_workdir():
+            for example in ["hsa-let-7a-nm", "hsa-let-7a-5ploss1",
+                            "hsa-let-7a-3ploss1", "hsa-let-7a-5ploss1_neg"]:
+                print(annotate("data/examples/annotate/%s.sam" % example,
+                               bam.read_bam,
+                               gtf="data/db/mirbase/hsa.gff3", genomic=True))
 
     @attr(keep_name=True)
     def test_keep_name(self):
