@@ -4,7 +4,7 @@ from __future__ import print_function
 import os.path as op
 
 from mirtop.mirna import fasta, mapper
-from mirtop.bam.bam import low_memory_bam
+from mirtop.bam.bam import low_memory_bam, low_memory_genomic_bam
 from mirtop.importer import seqbuster
 from mirtop.gff import header
 import mirtop.libs.logger as mylog
@@ -39,7 +39,10 @@ def reader(args):
         out_handle = open(fn_out, 'w')
         print(h, file=out_handle)
         if args.format == "BAM":
-            low_memory_bam(fn, sample, out_handle, args)
+            if args.genomic:
+                low_memory_genomic_bam(fn, sample, out_handle, args)
+            else:
+                low_memory_bam(fn, sample, out_handle, args)
         elif args.format == "seqbuster":
             seqbuster.read_file_low_memory(fn, sample, args, out_handle)
         out_handle.close()

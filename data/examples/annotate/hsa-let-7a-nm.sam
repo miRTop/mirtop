@@ -194,3 +194,5 @@
 @SQ	SN:KI270394.1	LN:970
 @PG	ID:bwa	PN:bwa	VN:0.7.12-r1039	CL:bwa samse /work/Genomes/GRCh38/Sequence_91/Homo_sapiens.GRCh38.dna.primary_assembly.fa reads.sai simulated_miRNA_BF.fa
 hsa-let-7a-5p_no_modification_nm_6	0	9	94175962	0	22M	*	0	0	TGAGGTAGTAGGTTGTATAGTT	*	XT:A:R	NM:i:0	X0:i:3	X1:i:4	XM:i:0	XO:i:0	XG:i:0	MD:Z:22
+hsa-let-7a-5p_no_modification_nm_6	0	3	94175962	0	22M	*	0	0	TGAGGTAGTAGGTTGTATAGTT	*	XT:A:R	NM:i:0	X0:i:3	X1:i:4	XM:i:0	XO:i:0	XG:i:0	MD:Z:22
+hsa-let-7a-5p_3prime_templated_addition_TGG_128	0	9	94175962	0	25M	*	0	0	TGAGGTAGTAGGTTGTATAGTTTGG	*	XT:A:U	NM:i:0	X0:i:1	X1:i:1	XM:i:0	XO:i:0	XG:i:0	MD:Z:25

@@ -141,15 +141,32 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(cmd_bam_genomic=True)
     @attr(complete=True)
-    @attr(bam_genomic=True)
     @attr(cmd=True)
     def test_srnaseq_annotation_genomic_bam(self):
-        """Run miraligner analysis
+        """Run genomic bam analysis
         """
         with make_workdir():
             clcode = ["mirtop",
                       "gff",
                       "--sps", "hsa", "--add-extra", "--genomic",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/db/mirbase/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/annotate/hsa-let-7a-nm.sam"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(cmd_bam_genomic_low_memory=True)
+    @attr(complete=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_genomic_bam_low_memory(self):
+        """Run genomic bam analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff", "--genomic", "--low-memory",
+                      "--sps", "hsa", "--add-extra",
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/db/mirbase/hsa.gff3",
                       "-o", "test_out_mirs",
@@ -230,7 +247,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "-o", "test_out_mirs",
-                      "../../data/examples/srnabench",
+                      "../../data/examples/srnabench/",
                       "-d", "-vd"]
             print("")
             print(" ".join(clcode))
@@ -349,9 +366,11 @@ class AutomatedAnalysisTest(unittest.TestCase):
         """
         import platform
         with make_workdir():
+            shutil.copy("../../data/examples/spikeins/spikeins.fa",
+                        "spikeins.fa")
             clcode = ["mirtop",
                       "spikein",
-                      "../../data/examples/spikeins/spikeins.fa",
+                      "spikeins.fa",
                       "-o",
                       "test_out_spikeins"]
             print("")
