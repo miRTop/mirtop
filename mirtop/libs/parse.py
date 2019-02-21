@@ -81,7 +81,8 @@ def _add_subparser_gff(subparsers):
                         help="GFF file with precursor and mature position to genome.")
     parser.add_argument("--format", help="Input format, default BAM file.",
                         choices=['BAM', 'seqbuster', 'srnabench',
-                                 'prost', 'isomirsea', 'gff'], default="BAM")
+                                 'prost', 'isomirsea',
+                                 'manatee', 'gff'], default="BAM")
     parser.add_argument("--out-format", help="Supported formats: gff3 or gtf",
                         choices=["gff", "gft"], default="gff")
     parser.add_argument("--add-extra", help="Add extra attributes to gff",

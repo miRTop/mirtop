@@ -43,8 +43,8 @@ def read_bam(bam_fn, args, clean=True):
         logger.warning("This is under development and variants can be unexact.")
         bed_fn = os.path.join(args.out, os.path.basename(bam_fn) + ".bed")
         _bed(bam_fn, bed_fn)
-        intersect = _intersect(bed_fn, args.gtf)
-        reads = _read_lifted_bam(intersect, reads, args, clean)
+        intersect_fn = intersect(bed_fn, args.gtf)
+        reads = _read_lifted_bam(intersect_fn, reads, args, clean)
     else:
         reads = _read_original_bam(bam_fn, reads, args, clean)
     return reads
@@ -87,10 +87,10 @@ def low_memory_genomic_bam(bam_fn, sample, out_handle, args):
 
     bed_fn = os.path.join(args.out, os.path.basename(bam_fn) + ".bed")
     _bed(bam_fn, bed_fn)
-    intersect = _intersect(bed_fn, args.gtf)
+    intersect_fn = intersect(bed_fn, args.gtf)
     lines = []
     current = None
-    for line in intersect:
+    for line in intersect_fn:
         # print(line)
         if not current or current == line[3]:
             lines.append(line)
@@ -309,7 +309,7 @@ def _bed(bam_fn, bed_fn):
             outh.write(bed_line + '\n')
 
 
-def _intersect(bam, gtf):
+def intersect(bam, gtf):
     bampy = pybedtools.BedTool(bam)
     gtfpy = pybedtools.BedTool(gtf)
     return bampy.intersect(gtfpy, wo=True, bed=True, s=True)

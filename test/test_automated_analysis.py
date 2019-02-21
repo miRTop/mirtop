@@ -254,6 +254,26 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
+    @attr(cmd_manatee=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_manatee(self):
+        """Run Manatee analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff",
+                      "--format", "manatee",
+                      "--sps", "hsa",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/manatee/simulated.sam",
+                      "-d", "-vd"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
     @attr(cmd_stats=True)
     @attr(cmd=True)
     def test_srnaseq_stats(self):

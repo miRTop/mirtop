@@ -4,8 +4,8 @@ from __future__ import print_function
 import os.path as op
 
 from mirtop.mirna import fasta, mapper
-from mirtop.bam.bam import read_bam, low_memory_bam
-from mirtop.importer import seqbuster, srnabench, prost, isomirsea
+from mirtop.bam.bam import read_bam
+from mirtop.importer import seqbuster, srnabench, prost, isomirsea, manatee
 from mirtop.mirna.annotate import annotate
 from mirtop.gff import body, header, merge, read
 import mirtop.libs.logger as mylog
@@ -50,11 +50,13 @@ def reader(args):
             reads = prost.read_file(fn, precursors, database, args.gtf)
         elif args.format == "isomirsea":
             out_dts[fn] = isomirsea.read_file(fn, args)
+        elif args.format == "manatee":
+            out_dts[fn] = manatee.read_file(fn, database, args)
         elif args.format == "gff":
             samples.extend(header.read_samples(fn))
             out_dts[fn] = body.read(fn, args)
             continue
-        if args.format not in ["isomirsea", "srnabench"]:
+        if args.format not in ["isomirsea", "srnabench", "manatee"]:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample, args)
         h = header.create([sample], database, "")
