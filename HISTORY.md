@@ -1,5 +1,6 @@
 - 0.4.*a
 
+ * Support Manatee output.
  * Support chunk reading for genomic BAM files.
  * Support chunk reading for seqbuster files.
  * Support chunk reading for BAM files.
