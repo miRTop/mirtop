@@ -282,6 +282,8 @@ def _bed(bam_fn, bed_fn):
     mode = "r" if bam_fn.endswith("sam") else "rb"
     handle = pysam.Samfile(bam_fn, mode)
     current = None
+    if os.path.exists(bed_fn):
+        return bed_fn
     with open(bed_fn, 'w') as outh:
         for line in handle:
             if line.reference_id < 0:
