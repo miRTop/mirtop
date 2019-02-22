@@ -7,10 +7,12 @@ import os
 import mirtop.libs.logger as mylog
 from mirtop.bam.bam import intersect
 from mirtop.bam import filter
-from mirtop.mirna.realign import isomir, reverse_complement, make_id
+from mirtop.mirna.realign import isomir, reverse_complement, make_id, hits
 from mirtop.gff.body import paste_columns, variant_with_nt
 # from mirtop.mirna import mapper
 from mirtop.gff.classgff import feature
+from mirtop.gff import body
+from mirtop.mirna.annotate import annotate
 
 logger = mylog.getLogger(__name__)
 
@@ -74,6 +76,7 @@ def _analyze_line(line, precursors, database, sample, sep, args):
     strand = line[5]
     counts = int(line[6])
     Filter = "Pass"
+    reads = dict()
     if not start:
         return None
     if strand == "+":
@@ -96,18 +99,15 @@ def _analyze_line(line, precursors, database, sample, sep, args):
     logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
     logger.debug("READ::iso add %s iso subs %s" % (iso.add, iso.subs))
 
-    cigar = iso.cigar
     idu = make_id(sequence)
-    isoformat = iso.formatGFF()
-    mirna = iso.mirna
-    source = "isomiR" if isoformat != "NA" else "ref_miRNA"
-    read = sequence if not args.keep_name else query_name
-    attrb = ("Read {read}; UID {idu}; Name {mirna};"
-             " Parent {chrom}; Variant {isoformat};"
-             " Cigar {cigar}; Expression {counts};"
-             " Filter {Filter};").format(**locals())
-    line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t"
-            ".\t{strand}\t.\t{attrb}").format(**locals())
+    reads[query_name] = hits()
+    reads[query_name].set_sequence(sequence)
+    reads[query_name].counts = counts
+    reads[query_name].sequence = sequence
+    reads[query_name].set_precursor(chrom, iso)
+    reads = annotate(reads, args.matures, args.precursors, quiet=False)
+    gff_line = body.create(reads, args.database, sample, args, quiet=False)
+    line = gff_line[chrom][start][0][4]
     logger.debug("READ::line:%s" % line)
     if args.add_extra:
         extra = variant_with_nt(line, args.precursors,
