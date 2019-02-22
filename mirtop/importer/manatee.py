@@ -72,7 +72,7 @@ def _analyze_line(line, precursors, database, sample, sep, args):
     start = line[1]
     end = line[2]
     strand = line[5]
-    counts = int(line[6])
+    counts = float(line[6])
     Filter = "Pass"
     if not start:
         return None
@@ -126,6 +126,9 @@ def _bed(handle, bed_fn):
             if line.startswith("@"):
                 continue
             cols = line.strip().split()
+            if cols[2]=="*":
+                logger.debug("READ::Sequence not mapped: %s" % cols[0])
+                continue
             query_name = cols[0]
             query_sequence = cols[9]
             counts = cols[14]
@@ -133,9 +136,6 @@ def _bed(handle, bed_fn):
             strand = cols[1]
             chrom = cols[2]
             # is there no hits
-            # if line.reference_id < 0:
-            #     logger.debug("READ::Sequence not mapped: %s" % line.reference_id)
-            #     continue
             # is the sequence always matching the read, assuming YES now
             # if not current or query_name!=current:
             query_sequence = query_sequence if not strand=="-" else reverse_complement(query_sequence)
