@@ -41,14 +41,15 @@ def read_file(fn, database, args):
     sep = " " if args.out_format == "gtf" else "="
     seen = set()
     with open(fn, 'r') as handle:
-        _bed(handle, bed_fn)
+        if not os.path.exists(bed_fn):
+            _bed(handle, bed_fn)
     intersect_fn = intersect(bed_fn, args.gtf)
     for line in intersect_fn:
         data = _analyze_line(line, precursors, database, sample, sep, args)
         if data:
             start = data["start"]
             chrom = data["chrom"]
-            key = "%s:%s:%s" % (chrom, start, data["line"][0])
+            key = "%s:%s" % (data['mirna'], data["name"])
             if start not in reads[chrom]:
                 reads[chrom][start] = []
             if key not in seen:
@@ -61,11 +62,11 @@ def _analyze_line(line, precursors, database, sample, sep, args):
     start_idx = 10
     end_idx = 11
     attr_idx = 15
+    query_name = line[3]
+    sequence = line[4]
     if str(line).find("miRNA_primary_transcript") < 0: # only working with mirbase
         return None
 
-    query_name = line[3]
-    sequence = line[4]
     logger.debug(("READ::line name:{0}").format(line))
     if sequence and sequence.find("N") > -1:
         return None
@@ -105,8 +106,10 @@ def _analyze_line(line, precursors, database, sample, sep, args):
     reads[query_name].counts = counts
     reads[query_name].sequence = sequence
     reads[query_name].set_precursor(chrom, iso)
-    reads = annotate(reads, args.matures, args.precursors, quiet=False)
-    gff_line = body.create(reads, args.database, sample, args, quiet=False)
+    reads = annotate(reads, args.matures, args.precursors, quiet=True)
+    gff_line = body.create(reads, args.database, sample, args, quiet=True)
+    if start not in gff_line[chrom]:
+        return None
     line = gff_line[chrom][start][0][4]
     logger.debug("READ::line:%s" % line)
     if args.add_extra:
@@ -117,6 +120,8 @@ def _analyze_line(line, precursors, database, sample, sep, args):
     line = paste_columns(feature(line), sep=sep)
     return {'chrom': chrom,
             'start': start,
+            'name': query_name,
+            'mirna': reads[query_name].precursors[chrom].mirna,
             'line': [idu, chrom, counts, sample, line]}
 
 
