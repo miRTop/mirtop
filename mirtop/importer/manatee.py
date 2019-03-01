@@ -7,6 +7,7 @@ import os
 import mirtop.libs.logger as mylog
 from mirtop.bam.bam import intersect
 from mirtop.bam import filter
+from mirtop.mirna.mapper import get_primary_transcript, guess_database
 from mirtop.mirna.realign import isomir, reverse_complement, make_id, hits
 from mirtop.gff.body import paste_columns, variant_with_nt
 # from mirtop.mirna import mapper
@@ -64,7 +65,7 @@ def _analyze_line(line, precursors, database, sample, sep, args):
     attr_idx = 15
     query_name = line[3]
     sequence = line[4]
-    if str(line).find("miRNA_primary_transcript") < 0: # only working with mirbase
+    if str(line).find(get_primary_transcript(guess_database(args))) < 0: # only working with mirbase
         return None
 
     logger.debug(("READ::line name:{0}").format(line))

@@ -131,7 +131,7 @@ def create(reads, database, sample, args, quiet=False):
                     extra = variant_with_nt(line, precursors, matures)
                     line = "%s Changes %s;" % (line, extra)
 
-                line = paste_columns(feature(line), sep=sep)
+                line = feature(line).paste_columns(sep)
                 if annotation in seen_ann and seq.find("N") < 0 and (
                         seen_ann[annotation].split("\t")[0].find("N") < 0):
                     logger.warning(
@@ -156,6 +156,52 @@ def create(reads, database, sample, args, quiet=False):
                     " %s" % filter_precursor)
         logger.info("Filtered by being low score: %s" % filter_score)
     return lines
+
+
+def create_line(read, name, database, args):
+    sep = " " if args.out_format == "gtf" else "="
+
+    if args.add_extra:
+        precursors = args.precursors
+        matures = args.matures
+
+    for (p, iso) in read.precursors.items():
+        if not iso.mirna:
+            continue
+        chrom = p
+        seq = read.sequence
+        seq_name = seq if not args.keep_name else name
+        if iso.get_score(len(seq)) < 1:
+            continue
+        if iso.subs:
+            iso.subs = [] if "N" in iso.subs[0] else iso.subs
+        idseq = read.idseq
+        source = "ref_miRNA" if not iso.is_iso() else "isomiR"
+        strand = iso.strand
+        start, end = iso.start, iso.end
+        score = iso.map_score
+        mirName = iso.mirna
+        preName = p
+        Variant = iso.formatGFF()
+        Cigar = iso.cigar
+        counts = read.counts
+        Filter = iso.filter
+        annotation = "%s.%s.%s" % (chrom, idseq, seq_name)
+        # This get correctly formated with paste_columns below
+        attrb = ("Read {seq_name};UID {idseq};Name {mirName};"
+                 "Parent {preName};"
+                 "Variant {Variant};Cigar {Cigar};"
+                 "Expression {counts};"
+                 "Filter {Filter};").format(**locals())
+        line = ("{chrom}\t{database}\t{source}\t{start}\t{end}"
+                "\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+        logger.debug("GFF::%s" % line)
+        if args.add_extra:
+            extra = variant_with_nt(line, precursors, matures)
+            line = "%s Changes %s;" % (line, extra)
+
+        line = feature(line).paste_columns(sep)
+        return line
 
 
 def guess_format(line):

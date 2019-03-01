@@ -1,10 +1,12 @@
 """ Read bam files"""
 from __future__ import print_function
+from memory_profiler import profile
 
 import os.path as op
 import os
 import pysam
 from collections import defaultdict
+import sqlite3
 
 import pybedtools
 
@@ -12,13 +14,18 @@ from mirtop.libs import do
 from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 from mirtop.mirna.realign import isomir, hits, reverse_complement
+from mirtop.mirna.mapper import get_primary_transcript, guess_database
 from mirtop.bam import filter
 from mirtop.gff import body
 from mirtop.mirna.annotate import annotate
+from mirtop.libs import sql
 
 logger = mylog.getLogger(__name__)
 
+fp = open('memory_profiler.log', 'w+')
 
+
+@profile(stream=fp)
 def read_bam(bam_fn, args, clean=True):
     """
     Read bam file and perform realignment of hits
@@ -42,14 +49,27 @@ def read_bam(bam_fn, args, clean=True):
     if args.genomic:
         logger.warning("This is under development and variants can be unexact.")
         bed_fn = os.path.join(args.out, os.path.basename(bam_fn) + ".bed")
+        logger.info("Making bed file.")
         _bed(bam_fn, bed_fn)
+        logger.info("Intersecting bed file.")
         intersect_fn = intersect(bed_fn, args.gtf)
-        reads = _read_lifted_bam(intersect_fn, reads, args, clean)
+        # logger.info("Analyzing hits.")
+        # reads = _read_lifted_bam(intersect_fn, reads, args, clean)
+        logger.info("Loading database.")
+        conn = _read_lifted_bam_alpha(intersect_fn, bam_fn, args)
+        rows = sql.select_all_reads(conn)
+        logger.info("Analyzing database.")
+        precursors = args.precursors
+        database = guess_database(args)
+        reads = _read_lifted_lines(rows, precursors, database)
+        conn.close()
     else:
         reads = _read_original_bam(bam_fn, reads, args, clean)
+    logger.info("Done.")
     return reads
 
 
+@profile(stream=fp)
 def low_memory_bam(bam_fn, sample, out_handle, args):
     if args.genomic:
         raise ValueError("low-memory option is not compatible with genomic coordinates.")
@@ -84,29 +104,36 @@ def low_memory_genomic_bam(bam_fn, sample, out_handle, args):
     precursors = args.precursors
     bam_fn = _sam_to_bam(bam_fn)
     bam_fn = _bam_sort(bam_fn)
-
+    database = guess_database(args)
     bed_fn = os.path.join(args.out, os.path.basename(bam_fn) + ".bed")
+    logger.info("Making bed file.")
     _bed(bam_fn, bed_fn)
+    logger.info("Intersecting bed file.")
     intersect_fn = intersect(bed_fn, args.gtf)
+    logger.info("Loading database.")
+    conn = _read_lifted_bam_alpha(intersect_fn, bam_fn, args)
+    rows = sql.select_all_reads(conn)
     lines = []
     current = None
-    for line in intersect_fn:
-        # print(line)
-        if not current or current == line[3]:
-            lines.append(line)
-            current = line[3]
+    logger.info("Analyzing database.")
+    for row in rows:
+        if not current or current == row[0]:
+            lines.append(row)
+            current = row[0]
         else:
-            reads = _read_lifted_lines(lines, precursors, args)
+            reads = _read_lifted_lines(lines, precursors, database)
             ann = annotate(reads, args.matures, args.precursors, quiet=True)
             gff_lines = body.create(ann, args.database, sample, args, quiet=True)
             body.write_body_on_handle(gff_lines, out_handle)
-            current = line[3]
+            current = row[0]
             lines = []
-            lines.append(line)
-    reads = _read_lifted_lines(lines, precursors, args)
+            lines.append(row)
+    reads = _read_lifted_lines(lines, precursors, database)
     ann = annotate(reads, args.matures, args.precursors, quiet=True)
     gff_lines = body.create(ann, args.database, sample, args, quiet=True)
     body.write_body_on_handle(gff_lines, out_handle)
+    conn.close()
+    logger.info("Done")
 
 
 def _analyze_line(line, reads, precursors, handle, args):
@@ -157,6 +184,7 @@ def _analyze_line(line, reads, precursors, handle, args):
     return reads
 
 
+@profile(stream=fp)
 def _read_lines(lines, precursors, handle, args, clean=True):
     reads = defaultdict(hits)
     for line in lines:
@@ -166,6 +194,27 @@ def _read_lines(lines, precursors, handle, args, clean=True):
     return reads
 
 
+@profile(stream=fp)
+def _read_lifted_bam_alpha(bed_fn, bam_fn, args):
+    database = guess_database(args)
+    conn = sql.create_connection()
+    key = "name" if args.keep_name else "sequence"
+    sql.create_reads_table(conn, key)
+    cur = conn.cursor()
+    counts = 0
+    for line in bed_fn:
+        fields = _parse_intersect(line, database, bed=True)
+        if fields:
+            counts += 1
+            sql.insert_row_in_reads_table(cur, fields)
+        # if counts == 1000:
+        #     counts = 0
+    logger.info("Read %s lines that intersected with miRNAs." % counts)
+    conn.commit()
+    return conn
+
+
+@profile(stream=fp)
 def _read_original_bam(bam_fn, reads, args, clean):
     mode = "r" if bam_fn.endswith("sam") else "rb"
     handle = pysam.Samfile(bam_fn, mode)
@@ -181,14 +230,31 @@ def _read_original_bam(bam_fn, reads, args, clean):
     return reads
 
 
-def _analyze_lifted_line(line, reads, precursors, bed=False):
+def _parse_intersect(line, database, bed=False):
+    "Parse bedtools intersect between bam_bed file and gtf from database"
     start_idx = 9 if bed else 15
     end_idx = 10 if bed else 16
     attr_idx = 14 if bed else 20
-    if str(line).find("miRNA_primary_transcript") < 0: # only working with mirbase
-        return reads
+    if str(line).find(get_primary_transcript(database)) < 0: # only working with mirbase
+        return None
     query_name = line[3]
     sequence = line[4]
+    chrom = line[attr_idx].strip().split("Name=")[-1]
+    start = line[1]
+    end = line[2]
+    strand = line[5]
+    if not start:
+        return None
+    if strand == "+":
+        start = int(start) - int(line[start_idx]) + 1
+    else:
+        start = int(line[end_idx]) - int(end)
+    return (query_name, sequence, chrom, start)
+
+
+def _analyze_lifted_line(line, reads, precursors, database):
+    query_name = line[0]
+    sequence = line[1]
     logger.debug(("READ::line name:{0}").format(line))
     if sequence and sequence.find("N") > -1:
         return reads
@@ -197,16 +263,8 @@ def _analyze_lifted_line(line, reads, precursors, bed=False):
         reads[query_name].counts = _get_freq(query_name)
         reads[query_name].sequence = sequence
 
-    chrom = line[attr_idx].strip().split("Name=")[-1]
-    start = line[1]
-    end = line[2]
-    strand = line[5]
-    if not start:
-        return reads
-    if strand == "+":
-        start = int(start) - int(line[start_idx]) + 1
-    else:
-        start = int(line[end_idx]) - int(end)
+    chrom = line[2]
+    start = line[3]
     iso = isomir()
     iso.align = line
     iso.set_pos(start, len(reads[query_name].sequence))
@@ -228,20 +286,24 @@ def _analyze_lifted_line(line, reads, precursors, bed=False):
     return reads
 
 
-def _read_lifted_lines(lines, precursors, args, clean=True):
+@profile(stream=fp)
+def _read_lifted_lines(lines, precursors, database, clean=True):
     reads = defaultdict(hits)
     for line in lines:
-        reads = _analyze_lifted_line(line, reads, precursors, bed=True)
+        reads = _analyze_lifted_line(line, reads, precursors, database)
     if clean:
         reads = filter.clean_hits(reads)
     return reads
 
 
+@profile(stream=fp)
 def _read_lifted_bam(handle, reads, args, clean):
     indels_skip = 0
     precursors = args.precursors
+    database = guess_database(args)
     for line in handle:
-        reads = _analyze_lifted_line(line, reads, precursors, bed=True)
+        rows = _parse_intersect(line, database, bed=True)
+        reads = _analyze_lifted_line(rows, reads, precursors, database)
     logger.info("Hits: %s" % len(reads))
     logger.info("Hits with indels %s" % indels_skip)
     if clean:

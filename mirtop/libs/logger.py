@@ -25,9 +25,9 @@ def initialize_logger(output_dir, debug=False, level=False):
     NOTE = 15
     COLOR_FORMAT = "%(log_color)s%(asctime)s%(levelname)s-%(name)s(%(lineno)d)%(reset)s: %(message)s"
     COLOR_FORMAT_INFO = "%(log_color)s%(asctime)s %(levelname)s%(reset)s: %(message)s"
-    DATE_FRT = '%m/%d/%Y %I:%M:%S %p'
-    FORMAT = "%(levelname)s-%(name)s(%(lineno)d): %(message)s"
-    FORMAT_INFO = "%(levelname)s %(message)s"
+    DATE_FRT = '%m/%d/%Y %I:%M:%S'
+    FORMAT = "%(asctime)s %(levelname)s-%(name)s(%(lineno)d): %(message)s"
+    FORMAT_INFO = "%(asctime)s %(levelname)s %(message)s"
     logging.addLevelName(NOTE, "NOTE")
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -50,7 +50,7 @@ def initialize_logger(output_dir, debug=False, level=False):
     if level:
         handler.setLevel(logging.DEBUG)
 
-    formatter = set_format(FORMAT_INFO, COLOR_FORMAT_INFO, datefmt=DATE_FRT)
+    formatter = logging.Formatter(fmt=FORMAT_INFO, datefmt=DATE_FRT)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
@@ -58,14 +58,14 @@ def initialize_logger(output_dir, debug=False, level=False):
     handler = logging.FileHandler(os.path.join(output_dir, "error.log"),
                                   "w", encoding=None, delay="true")
     handler.setLevel(logging.ERROR)
-    formatter = set_format(FORMAT, COLOR_FORMAT, datefmt=DATE_FRT)
+    formatter = logging.Formatter(fmt=FORMAT, datefmt=DATE_FRT)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
     # create debug file handler and set level to debug
     handler = logging.FileHandler(os.path.join(output_dir, "run.log"), "w")
     handler.setLevel(numeric_level)
-    formatter = logging.Formatter(FORMAT)
+    formatter = logging.Formatter(FORMAT, datefmt=DATE_FRT)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 

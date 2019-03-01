@@ -42,6 +42,19 @@ def _guess_database_file(gff):
     return database
 
 
+def get_primary_transcript(database):
+    """
+    Get the ID to identify the primary transcript in the
+      GTF file with the miRNA and precursor coordinates
+      to be able to parse BAM files with genomic
+      coordinates.
+    """
+    if database.find("miRBase") > -1:
+        return "miRNA_primary_transcript"
+    else:
+        raise ValueError("Only miRBase is supported for this action.")
+
+
 def read_gtf_to_mirna(gtf):
     """
     Load GTF file with precursor positions on genome.

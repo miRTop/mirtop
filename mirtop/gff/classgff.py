@@ -5,7 +5,10 @@ from collections import OrderedDict
 class feature:
     """"Class with alignment information."""
 
-    def __init__(self, line):
+    def __init__(self, line, sep = "="):
+        # if isinstance(line, "basestring") # str in python 3
+        if isinstance(line, dict):
+            line = self.create_line(line, sep)
         self.line = line
         self.attributes = {}
         self.columns = {}
@@ -15,12 +18,24 @@ class feature:
     def guess_format(self):
         return "=" if self.line.find("Name=") > -1 else " "
 
+    def create_line(fields, sep):
+        # TODO: need unit test. Check all exists.
+        fields["attrb"] = ("Read {seq_name}; UID {idseq}; Name {name};"
+                           "Parent {parent}; "
+                           "Variant {variant}; Cigar {cigar};"
+                           "Expression {counts}; "
+                           "Filter {filter}; Hits {hits};").format(**fields)
+
+        line = ("{chrom}\t{database}\t{source}\t{start}\t{end}"
+                "\t{score}\t{strand}\t.\t{attrb}").format(**fields)
+        return line
+
     def paste_columns(self, sep=None):
         """
         Create GFF/GTF line from read_gff_line
         """
         sep = self.guess_format()
-        attributes = "; ".join(
+        attributes = "%s;" % "; ".join(
             "%s%s%s" % (a, sep, self.attributes[a]) for a in self.attributes)
         return "\t".join([self.columns['chrom'], self.columns['source'],
                           self.columns['type'],
