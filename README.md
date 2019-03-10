@@ -89,5 +89,5 @@ Contributors
 * [Shruthi Bhat Bandyadka](https://github.com/sbb25) (Partners Personalized Medicine, Cambridge MA, USA)
 * [Iñaki Martínez de Ilarduya](http://www.germanstrias.org/technology-services/high-performance-computing/contact/)(HPC core, IGTP, Badalona, Spain)
 * Rafael Alis
-* [Victor Barrera]((https://github.com/vbarrera) (Bioinformatic Core, Harvard Chan School, Boston, USA)
+* [Victor Barrera](https://github.com/vbarrera) (Bioinformatic Core, Harvard Chan School, Boston, USA)
 * [Steffen Möller](https://github.com/smoe) (University of Rostock)
