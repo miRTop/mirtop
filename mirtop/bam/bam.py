@@ -139,28 +139,28 @@ def low_memory_genomic_bam(bam_fn, sample, out_handle, args):
 def _analyze_line(line, reads, precursors, handle, args):
     if line.reference_id < 0:
         logger.debug("READ::Sequence not mapped: %s" % line.reference_id)
-        return None
+        return reads
     if not line.cigarstring:
         logger.debug("READ::Sequence malformed: %s" % line)
-        return None
+        return reads
     query_name = line.query_name
     if query_name not in reads and not line.query_sequence:
-        return None
+        return reads
     sequence = line.query_sequence if not line.is_reverse else reverse_complement(line.query_sequence)
     logger.debug(("READ::Read name:{0} and Read sequence:{1}").format(line.query_name, sequence))
     if line.query_sequence and line.query_sequence.find("N") > -1:
-        return None
+        return reads
     if query_name not in reads:
         reads[query_name].set_sequence(sequence)
         reads[query_name].counts = _get_freq(query_name)
     if line.is_reverse and not args.genomic:
         logger.debug("READ::Sequence is reverse: %s" % line.query_name)
-        return None
+        return reads
     chrom = handle.getrname(line.reference_id)
     start = line.reference_start
     # If genomic endcode, liftover to precursor position
     if not start:
-        return None
+        return reads
     cigar = line.cigartuples
     # if line.cigarstring.find("I") > -1:
     #     indels_skip += 1
@@ -174,7 +174,7 @@ def _analyze_line(line, reads, precursors, handle, args):
                                              line.reference_id,
                                              len(reads[query_name].sequence),
                                              len(precursors[chrom])))
-        return None
+        return reads
     iso.subs, iso.add, iso.cigar = filter.tune(
         reads[query_name].sequence, precursors[chrom],
         start, cigar)
