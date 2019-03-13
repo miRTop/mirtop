@@ -18,7 +18,7 @@ before_install:
 install:
 - export PATH=~/install/bin/:$PATH
 - conda install --yes ncurses -c conda-forge
-- conda install --yes -c conda-forge -c bioconda bedtools samtools razers3 pip nose pysam pandas dateutil pyyaml pybedtools  biopython setuptools codecov -q
+- conda install --yes -c conda-forge -c bioconda bedtools samtools razers3 pip nose pysam pandas pyyaml pybedtools  biopython setuptools codecov -q
 script:
 - python setup.py develop
 - nosetests --with-coverage

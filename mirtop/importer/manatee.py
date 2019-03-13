@@ -149,6 +149,6 @@ def _bed(handle, bed_fn):
             if query_sequence and query_sequence.find("N") > -1:
                 continue
             end = start + len(query_sequence) - 1
-            bed_line = "\t".join(map(str, [chrom, start, end, query_name,
-                                           query_sequence, strand, counts]))
+            bed_line = "\t".join(list(map(str, [chrom, start, end, query_name,
+                                                query_sequence, strand, counts])))
             outh.write(bed_line + '\n')

@@ -5,8 +5,8 @@ from collections import OrderedDict
 class feature:
     """"Class with alignment information."""
 
-    def __init__(self, line, sep = "="):
-        # if isinstance(line, "basestring") # str in python 3
+    def __init__(self, line, sep="="):
+        # if isinstance(line, basestring) # str in python 3
         if isinstance(line, dict):
             line = self.create_line(line, sep)
         self.line = line
@@ -19,6 +19,9 @@ class feature:
         return "=" if self.line.find("Name=") > -1 else " "
 
     def create_line(fields, sep):
+        """
+        Create GFF/GTF line from dictionary with fields
+        """
         # TODO: need unit test. Check all exists.
         fields["attrb"] = ("Read {seq_name}; UID {idseq}; Name {name};"
                            "Parent {parent}; "
@@ -45,6 +48,9 @@ class feature:
                           attributes])
 
     def read_attributes(self, gff_attrb, sep=" "):
+        """
+        Read GFF/GTF attributes and return dictionary with fields
+        """
         sep = self.guess_format()
         gff_dict = OrderedDict()
         for gff_item in gff_attrb.split(";"):

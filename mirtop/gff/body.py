@@ -118,7 +118,8 @@ def create(reads, database, sample, args, quiet=False):
                 counts = read.counts
                 Filter = iso.filter
                 annotation = "%s.%s.%s" % (chrom, idseq, seq_name)
-                # This get correctly formated with paste_columns below
+                # TODO:  This need to be moved to use the feature class
+                # It needs a dict with all variable in keys
                 attrb = ("Read {seq_name};UID {idseq};Name {mirName};"
                          "Parent {preName};"
                          "Variant {Variant};Cigar {Cigar};"
@@ -299,7 +300,7 @@ def variant_with_nt(line, precursors, matures):
     mature_sequence = get_mature_sequence(
         precursors[attr["Parent"]],
         matures[attr["Parent"]][attr["Name"]],
-        nt = 8)
+        nt=8)
     logger.debug("GFF::BODY::mature_sequence %s" % mature_sequence)
     mm = align_from_variants(read,
                              mature_sequence,
@@ -307,7 +308,7 @@ def variant_with_nt(line, precursors, matures):
     if mm == "Invalid":
         return mm
     if len(mm) > 0:
-        mm = "".join(["".join(map(str, m)) for m in mm])
+        mm = "".join(["".join([str(v) for v in m]) for m in mm])
     else:
         mm = "0"
     return "iso_5p:%s,iso_3p:%s,iso_add3p:%s,iso_snv:%s" % (t5, t3, add, mm)

@@ -62,7 +62,7 @@ def _read_file(fn, precursors, matures, out_dir):
             if len(mm) > 1:
                 continue
             elif len(mm) == 1:
-                mm = "".join(map(str, mm[0]))
+                mm = "".join(list(map(str, mm[0])))
             else:
                 mm = "0"
             hit = attr["Hits"] if "Hits" in attr else "1"

@@ -1,5 +1,6 @@
 - 0.4.*a
 
+ * Cast map object to list to avoid errors in py3.
  * Support Manatee output.
  * Support chunk reading for genomic BAM files.
  * Support chunk reading for seqbuster files.

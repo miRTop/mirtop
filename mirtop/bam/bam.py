@@ -367,7 +367,7 @@ def _bed(bam_fn, bed_fn):
             end = start + len(sequence) - 1
             current = query_name
             strand = "+" if not line.is_reverse else "-"
-            bed_line = "\t".join(map(str, [chrom, start, end, query_name, sequence, strand]))
+            bed_line = "\t".join(list(map(str, [chrom, start, end, query_name, sequence, strand])))
             outh.write(bed_line + '\n')
 
 
