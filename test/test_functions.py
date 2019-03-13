@@ -460,14 +460,16 @@ class FunctionsTest(unittest.TestCase):
     def test_string_variant(self):
         """testing parsing string variants"""
         from mirtop.gff import body
-        gff = body.read_variant("iso_5p:-1,iso_add:2,iso_snp_central_supp")
+        gff = body.read_variant("iso_5p:-1,iso_add3p:2,iso_snp_central_supp")
+        truthk = ["iso_5p", "iso_add3p", "iso_snp_central_supp"]
+        truthv = [-1, 2, True]
         if len(gff) != 3:
             raise ValueError("Error size of output. Expectd 3.")
-        if cmp(["iso_5p", "iso_add", "iso_snp_central_supp"], gff.keys()):
+        if (truthk > gff.keys()) - (gff.keys() > truthk):
             raise ValueError("Not found expected keys.")
         if not isinstance(gff["iso_snp_central_supp"], bool):
             raise ValueError("iso_snp_central_supp should be boolean.")
-        if cmp([-1, 2, True], gff.values()):
+        if (truthv > gff.values()) - (gff.values() > truthv):
             raise ValueError("Not found expected Values.")
 
     @attr(validator=True)
