@@ -125,4 +125,4 @@ def _expand(variant, nts=False):
     else:
         snp = sum(snp_var)
         list_variant.append(snp)
-    return map(str, list_variant)
+    return list(map(str, list_variant))
