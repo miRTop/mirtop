@@ -1,12 +1,11 @@
 """ Read bam files"""
 from __future__ import print_function
-from memory_profiler import profile
+# from memory_profiler import profile
 
 import os.path as op
 import os
 import pysam
 from collections import defaultdict
-import sqlite3
 
 import pybedtools
 
@@ -25,7 +24,7 @@ logger = mylog.getLogger(__name__)
 fp = open('memory_profiler.log', 'w+')
 
 
-@profile(stream=fp)
+# @profile(stream=fp)
 def read_bam(bam_fn, args, clean=True):
     """
     Read bam file and perform realignment of hits
@@ -69,7 +68,7 @@ def read_bam(bam_fn, args, clean=True):
     return reads
 
 
-@profile(stream=fp)
+# @profile(stream=fp)
 def low_memory_bam(bam_fn, sample, out_handle, args):
     if args.genomic:
         raise ValueError("low-memory option is not compatible with genomic coordinates.")
@@ -184,7 +183,6 @@ def _analyze_line(line, reads, precursors, handle, args):
     return reads
 
 
-@profile(stream=fp)
 def _read_lines(lines, precursors, handle, args, clean=True):
     reads = defaultdict(hits)
     for line in lines:
@@ -194,7 +192,6 @@ def _read_lines(lines, precursors, handle, args, clean=True):
     return reads
 
 
-@profile(stream=fp)
 def _read_lifted_bam_alpha(bed_fn, bam_fn, args):
     database = guess_database(args)
     conn = sql.create_connection()
@@ -214,7 +211,6 @@ def _read_lifted_bam_alpha(bed_fn, bam_fn, args):
     return conn
 
 
-@profile(stream=fp)
 def _read_original_bam(bam_fn, reads, args, clean):
     mode = "r" if bam_fn.endswith("sam") else "rb"
     handle = pysam.Samfile(bam_fn, mode)
@@ -286,7 +282,6 @@ def _analyze_lifted_line(line, reads, precursors, database):
     return reads
 
 
-@profile(stream=fp)
 def _read_lifted_lines(lines, precursors, database, clean=True):
     reads = defaultdict(hits)
     for line in lines:
@@ -296,7 +291,6 @@ def _read_lifted_lines(lines, precursors, database, clean=True):
     return reads
 
 
-@profile(stream=fp)
 def _read_lifted_bam(handle, reads, args, clean):
     indels_skip = 0
     precursors = args.precursors
