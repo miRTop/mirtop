@@ -465,11 +465,11 @@ class FunctionsTest(unittest.TestCase):
         truthv = [-1, 2, True]
         if len(gff) != 3:
             raise ValueError("Error size of output. Expectd 3.")
-        if (truthk > gff.keys()) - (gff.keys() > truthk):
+        if (truthk > gff.keys()) - (list(gff.keys()) > truthk):
             raise ValueError("Not found expected keys.")
         if not isinstance(gff["iso_snp_central_supp"], bool):
             raise ValueError("iso_snp_central_supp should be boolean.")
-        if (truthv > gff.values()) - (gff.values() > truthv):
+        if (truthv > gff.values()) - (list(gff.values()) > truthv):
             raise ValueError("Not found expected Values.")
 
     @attr(validator=True)
