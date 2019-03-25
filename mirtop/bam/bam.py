@@ -21,7 +21,7 @@ from mirtop.libs import sql
 
 logger = mylog.getLogger(__name__)
 
-fp = open('memory_profiler.log', 'w+')
+# fp = open('memory_profiler.log', 'w+')
 
 
 # @profile(stream=fp)
