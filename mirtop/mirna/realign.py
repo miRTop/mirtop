@@ -25,7 +25,7 @@ class hits:
         self.idseq = make_id(seq)
 
     def set_precursor(self, precursor, isomir):
-        self.precursors[precursor] = isomir
+        self.precursors[(precursor, isomir.start)] = isomir
 
     def remove_precursor(self, precursor):
         del self.precursors[precursor]
