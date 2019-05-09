@@ -254,6 +254,26 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
+    @attr(cmd_optimir=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_optimir(self):
+        """Run optimir analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff",
+                      "--format", "optimir",
+                      "--sps", "hsa",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/optimir/synthetic_100_full.gff3",
+                      "-d", "-vd"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
     @attr(cmd_manatee=True)
     @attr(cmd=True)
     def test_srnaseq_annotation_manatee(self):

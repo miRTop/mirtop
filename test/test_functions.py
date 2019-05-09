@@ -381,12 +381,21 @@ class FunctionsTest(unittest.TestCase):
 
     @attr(srnabench=True)
     def test_srnabench(self):
-        """testing reading seqbuster files function"""
+        """testing reading srnabench files function"""
         from mirtop.libs import logger
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.importer import srnabench
         annotate("data/examples/srnabench", srnabench.read_file, create=False)
+
+    @attr(optimir=True)
+    def test_optimir(self):
+        """testing reading optimir files function"""
+        from mirtop.libs import logger
+        logger.initialize_logger("test", True, True)
+        logger = logger.getLogger(__name__)
+        from mirtop.importer import optimir
+        annotate("data/examples/optimir/synthetic_100_full.gff3", optimir.read_file, create=False)
 
     @attr(prost=True)
     def test_prost(self):

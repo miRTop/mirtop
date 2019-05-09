@@ -5,7 +5,7 @@ import os.path as op
 
 from mirtop.mirna import fasta, mapper
 from mirtop.bam.bam import read_bam
-from mirtop.importer import seqbuster, srnabench, prost, isomirsea, manatee
+from mirtop.importer import seqbuster, srnabench, prost, isomirsea, manatee, optimir
 from mirtop.mirna.annotate import annotate
 from mirtop.gff import body, header, merge, read
 import mirtop.libs.logger as mylog
@@ -52,11 +52,13 @@ def reader(args):
             out_dts[fn] = isomirsea.read_file(fn, args)
         elif args.format == "manatee":
             out_dts[fn] = manatee.read_file(fn, database, args)
+        elif args.format == "optimir":
+            out_dts[fn] = optimir.read_file(fn, args)
         elif args.format == "gff":
             samples.extend(header.read_samples(fn))
             out_dts[fn] = body.read(fn, args)
             continue
-        if args.format not in ["isomirsea", "srnabench", "manatee"]:
+        if args.format not in ["isomirsea", "srnabench", "manatee", 'optimir']:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample, args)
         h = header.create([sample], database, "")

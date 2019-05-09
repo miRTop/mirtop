@@ -287,8 +287,17 @@ def variant_with_nt(line, precursors, matures):
     gff = feature(line)
     attr = gff.attributes
     read = read_id(attr["UID"])
+    attr["Parent"] = attr["Parent"].split(",")[0]
+    if attr["Parent"] not in matures:
+        logger.warning("Parent miRNA not found in database %s" % attr["Parent"])
+        return ""
+    if attr["Name"] not in matures[attr["Parent"]]:
+        logger.warning("miRNA not found in database %s" % attr["Name"])
+        return ""
+
     logger.debug("GFF::BODY::precursors %s" % precursors[attr["Parent"]])
     logger.debug("GFF:BODY::mature %s" % matures[attr["Parent"]][attr["Name"]])
+
     t5 = variant_to_5p(precursors[attr["Parent"]],
                        matures[attr["Parent"]][attr["Name"]],
                        attr["Variant"])
