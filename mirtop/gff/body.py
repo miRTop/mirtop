@@ -92,7 +92,8 @@ def create(reads, database, sample, args, quiet=False):
         hits = len(hits)
         if len(read.precursors) > 0:
             n_reads += 1
-        for (p, iso) in read.precursors.items():
+        for (ps, iso) in read.precursors.items():
+            p = list(ps)[0]
             if not iso.mirna:
                 filter_precursor += 1
                 continue
@@ -166,7 +167,8 @@ def create_line(read, name, database, args):
         precursors = args.precursors
         matures = args.matures
 
-    for (p, iso) in read.precursors.items():
+    for (ps, iso) in read.precursors.items():
+        p = list(ps)[0]
         if not iso.mirna:
             continue
         chrom = p

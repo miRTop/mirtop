@@ -78,9 +78,10 @@ def annotate(reads, mature_ref, precursors, quiet=False):
     n_iso = 0
     for r in reads:
         logger.debug(("\nANN::READ::read{r}").format(**locals()))
-        for p in reads[r].precursors:
-            start = reads[r].precursors[p].start
-            end = reads[r].precursors[p].end
+        for ps in reads[r].precursors:
+            p = list(ps)[0]
+            start = reads[r].precursors[ps].start
+            end = reads[r].precursors[ps].end
             logger.debug(("\nANN::READ::precursor {start} {end}").format(**locals()))
             for mature in mature_ref[p]:
                 mi = mature_ref[p][mature]
@@ -88,18 +89,18 @@ def annotate(reads, mature_ref, precursors, quiet=False):
                               "cigar: {cigar} "
                               "\n mir:{mature} mir_pos:{mi}\n mir_seqs:{mature_s}"
                               ).format(s=reads[r].sequence,
-                                       mature_s = precursors[p][mi[0]:mi[1] + 1],
-                                       cigar = reads[r].precursors[p].cigar,
+                                       mature_s = precursors[ps][mi[0]:mi[1] + 1],
+                                       cigar = reads[r].precursors[ps].cigar,
                                        **locals()))
-                iso_copy = copy.deepcopy(reads[r].precursors[p])
-                is_iso = _coord(reads[r].sequence, start, mi, precursors[p], iso_copy)
+                iso_copy = copy.deepcopy(reads[r].precursors[ps])
+                is_iso = _coord(reads[r].sequence, start, mi, precursors[ps], iso_copy)
                 logger.debug(("ANN::is_iso:{is_iso}").format(**locals()))
-                logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
-                logger.debug("ANN::annotation:%s Variant:%s" % (r, reads[r].precursors[p].formatGFF()))
+                logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[ps].format()))
+                logger.debug("ANN::annotation:%s Variant:%s" % (r, reads[r].precursors[ps].formatGFF()))
                 if is_iso:
                     n_iso += 1
-                    reads[r].precursors[p] = iso_copy
-                    reads[r].precursors[p].mirna = mature
+                    reads[r].precursors[ps] = iso_copy
+                    reads[r].precursors[ps].mirna = mature
                     # break
     if not quiet:
         logger.info("Valid hits (+/-3 reference miRNA): %s" % n_iso)

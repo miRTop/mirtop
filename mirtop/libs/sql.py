@@ -24,7 +24,7 @@ def create_reads_table(conn, key="sequence"):
     c.execute("CREATE TABLE reads"
               " (name text, sequence text,"
               " chrom text, start int,"
-              " PRIMARY KEY(%s, chrom))" % key)
+              " PRIMARY KEY(%s, chrom, start))" % key)
     conn.commit()
 
 

@@ -199,13 +199,18 @@ def _read_lifted_bam_alpha(bed_fn, bam_fn, args):
     sql.create_reads_table(conn, key)
     cur = conn.cursor()
     counts = 0
+    seen = set()
     for line in bed_fn:
         fields = _parse_intersect(line, database, bed=True)
         if fields:
-            counts += 1
-            sql.insert_row_in_reads_table(cur, fields)
+            hit = ".".join(fields[:3])
+            if hit not in seen:
+                counts += 1
+                sql.insert_row_in_reads_table(cur, fields)
+                seen.add(hit)
         # if counts == 1000:
         #     counts = 0
+    del(hit)
     logger.info("Read %s lines that intersected with miRNAs." % counts)
     conn.commit()
     return conn
