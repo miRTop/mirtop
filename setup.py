@@ -26,6 +26,7 @@ setup(name='mirtop',
       version=version,
       description='Small RNA-seq annotation',
       long_description=readme(),
+      long_description_content_type="text/markdown",
       classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
