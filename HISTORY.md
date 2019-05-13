@@ -1,3 +1,5 @@
+- 0.4.19a
+
 - 0.4.18
 
  * Cast map object to list to avoid errors in py3.
