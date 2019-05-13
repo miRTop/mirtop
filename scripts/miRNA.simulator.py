@@ -1,9 +1,7 @@
 from __future__ import print_function
 
 from optparse import OptionParser
-import sys
 import os
-import re
 import random
 import numpy
 
@@ -14,6 +12,7 @@ from mirtop.gff import body, header
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
+
 def write_collapse_fastq(reads, out_fn):
     idx = 0
     with open(out_fn, 'a') as outh:
@@ -21,6 +20,7 @@ def write_collapse_fastq(reads, out_fn):
             idx += 1
             print(">name%s_x%s" % (idx, r[1]), file=outh)
             print(r[0], file=outh)
+
 
 def write_fastq(reads, out_fn):
     idx = 0
@@ -32,13 +32,15 @@ def write_fastq(reads, out_fn):
             print("+", file=outh)
             print("I" * len(r), file=outh)
 
+
 def create_read(read, count, adapter="TGGAATTCTCGGGTGCCAAGGAACTC", size=36):
     reads = list()
-    for i in  range(0, count):
+    for i in range(0, count):
         rest = size - len(read)
         part = adapter[:rest]
         reads.append(read + part)
     return reads
+
 
 def variation(info, seq):
     randS = random.randint(info[0] - 2, info[0] + 2) + 1
@@ -81,17 +83,15 @@ def variation(info, seq):
             print([randSeq, randE, info[1]])
     return [randSeq, randS, t5Lab, t3Lab, mutLab, addTag]
 
+
 def create_iso(name, mir, seq, numsim, exp):
-    data = dict()
     reads = dict()
     full_read = list()
     clean_read = list()
     seen = set()
     for mirna in mir[name]:
         info = mir[name][mirna]
-        mirSeq = seq[info[0]:info[1] + 1]
         for rand in range(int(numsim)):
-             # expression
             e = 1
             if exp:
                 trial = random.randint(1, 100)
@@ -112,13 +112,14 @@ def create_iso(name, mir, seq, numsim, exp):
             reads[query_name].counts = e
             reads[query_name].set_precursor(name, iso)
             full_read.extend(create_read(randSeq, e))
-            clean_read.append([randSeq, e,])
+            clean_read.append([randSeq, e])
             # print([randSeq, mutLab, addTag, t5Lab, t3Lab, mirSeq])
             # data[randSeq] = [exp, iso] # create real object used in code to generate GFF
     write_fastq(full_read, full_fq)
     write_collapse_fastq(clean_read, clean_fq)
     gff = body.create(reads, "miRBase21", "sim1")
     return gff
+
 
 def _write(lines, header, fn):
     out_handle = open(fn, 'w')
@@ -129,19 +130,21 @@ def _write(lines, header, fn):
                 print(hit[4], file=out_handle)
     out_handle.close()
 
+
 usagetxt = "usage: %prog  --fa precurso.fa --gtf miRNA.gtf -n 10"
+
 
 parser = OptionParser(usage=usagetxt, version="%prog 1.0")
 parser.add_option("--fa",
                   help="", metavar="FILE")
 parser.add_option("--gtf",
-                                help="", metavar="FILE")
+                  help="", metavar="FILE")
 parser.add_option("-n", "--num", dest="numsim",
-                                help="")
+                  help="")
 parser.add_option("-e", "--exp", dest="exp", action="store_true",
-                                help="give expression", default=False)
+                  help="give expression", default=False)
 parser.add_option("-p", "--prefix", help="output name")
-parser.add_option("--seed", help="set up seed for reproducibility.", default = None)
+parser.add_option("--seed", help="set up seed for reproducibility.", default=None)
 
 
 (options, args) = parser.parse_args()

@@ -41,7 +41,7 @@ mirtop gff --format prost -sps hsa --hairpin annotate/hairpin.fa --gtf annotate/
 
 ### From `isomiR-SEA` files to GFF3
 
-miRNA annotation generated from [isomiR-SEA]() tool. 
+miRNA annotation generated from [isomiR-SEA]() tool.
 
 ```
 mirtop gff --format isomirsea -sps hsa --hairpin annotate/hairpin.fa --gtf annotate/hsa.gff3 -o  test_out examples/isomir-sea/tagMir-all.gff
@@ -73,6 +73,14 @@ To be compatible with [isomiRs](https://bioconductor.org/packages/release/bioc/h
 ```
 cd mirtop/data
 mirtop export -o test_out_mirs --hairpin examples/annotate/hairpin.fa --gtf examples/annotate/hsa.gff3 examples/gff/correct_file.gff                                   
+```
+
+### Export file to VCF format
+
+```
+cd mirtop/data
+mirtop export -o test_out_mirs --format vcf --hairpin examples/annotate/hairpin.fa --gtf examples/a
+nnotate/hsa.gff3 examples/gff/correct_file.gff
 ```
 
 ### Get count file

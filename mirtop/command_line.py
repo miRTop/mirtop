@@ -9,8 +9,10 @@ from mirtop.gff import reader
 from mirtop.gff.stats import stats
 from mirtop.gff.compare import compare
 from mirtop.gff.convert import convert_gff_counts
-from mirtop.exporter import isomirs
+from mirtop.exporter import export
 from mirtop.gff import validator
+from mirtop.libs import spikeins
+from mirtop.gff import update
 import mirtop.libs.logger as mylog
 
 import time
@@ -40,10 +42,16 @@ def main(**kwargs):
         convert_gff_counts(kwargs["args"])
     elif "export" in kwargs:
         logger.info("Run export of GFF into other format.")
-        isomirs.convert(kwargs["args"])
+        export(kwargs["args"])
     elif "validator" in kwargs:
         logger.info("Run validator.")
         validator.check_multiple(kwargs["args"])
-    elif "query" in kwargs["args"]:
+    elif "query" in kwargs:
         logger.info("Not yet ready: This will allow queries to GFF files.")
+    elif "spikein" in kwargs:
+        logger.info("Run spike-in tools")
+        spikeins.convert(kwargs["args"])
+    elif "update" in kwargs:
+        logger.info("Run update tools")
+        update.convert(kwargs["args"])
     logger.info('It took %.3f minutes' % ((time.time()-start)/60))

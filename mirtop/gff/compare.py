@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import os
 
-from mirtop.gff.body import read_gff_line
+from mirtop.gff.classgff import feature
 from mirtop.mirna.realign import read_id
 import mirtop.libs.logger as mylog
 
@@ -25,7 +25,6 @@ def compare(args):
     Returns:
         *(out_file)*: comparison of the GFF files with the reference.
     """
-    out = list()
     result = dict()
     reference = read_reference(args.files[0])
     for fn in args.files[1:]:
@@ -57,8 +56,8 @@ def read_reference(fn):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = read_gff_line(line)
-            attr = cols['attrb']
+            gff = feature(line)
+            attr = gff.attributes
             srna[attr['UID']] = [_simplify(attr['Variant']), attr]
     return srna
 
@@ -75,11 +74,11 @@ def _compare_to_reference(fn, reference):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = read_gff_line(line)
-            attr = cols['attrb']
+            gff = feature(line)
+            attr = gff.attributes
             if attr['UID'] in reference:
                 mirna = "Y" if attr['Name'] == reference[attr['UID']][1]['Name'] else attr['Name']
-                accuracy =  _accuracy(_simplify(attr['Variant']), reference[attr['UID']][0])
+                accuracy = _accuracy(_simplify(attr['Variant']), reference[attr['UID']][0])
                 results.append([attr['UID'], "D", mirna, accuracy])
                 if _simplify(attr['Variant']) == reference[attr['UID']][0]:
                     same += 1
@@ -93,7 +92,7 @@ def _compare_to_reference(fn, reference):
     for uid in reference:
         if uid not in seen_reference:
             results.append([uid, "M", "N", _accuracy("", reference[uid][0])])
-            miss.append("| miss %s" %  reference[uid][1])
+            miss.append("| miss %s" % reference[uid][1])
     logger.info("Number of sequences found in reference: %s" % seen)
     logger.info("Number of sequences matches reference: %s" % same)
     logger.info("Number of sequences different than reference: %s" % len(diff))
@@ -124,9 +123,9 @@ def _accuracy(target, reference):
     """
     logger.debug("COMPARE::ACCURACY::values %s vs %s" % (target, reference))
     accuracy = dict()
-    types =  ["iso_5p", "iso_3p", "iso_add", "iso_snp",
-              "iso_snp_seed", "iso_snp_central",
-              "iso_snp_central_supp", "iso_snp_central_offset"]
+    types = ["iso_5p", "iso_3p", "iso_add3p", "iso_snv",
+             "iso_snv_seed", "iso_snv_central",
+             "iso_snv_central_supp", "iso_snv_central_offset"]
     for t in types:
         if t in reference:
             accuracy[t] = "TP" if t in target else "FN"

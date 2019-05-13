@@ -8,12 +8,10 @@ import subprocess
 import unittest
 import shutil
 import contextlib
-import collections
 import functools
 
 from nose import SkipTest
 from nose.plugins.attrib import attr
-import yaml
 
 
 @contextlib.contextmanager
@@ -107,6 +105,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
     @attr(complete=True)
     @attr(annotate=True)
     @attr(bam=True)
+    @attr(cmd=True)
     def test_srnaseq_annotation_bam(self):
         """Run miraligner analysis
         """
@@ -123,7 +122,62 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
+    @attr(low_memory=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_bam_chunk(self):
+        """Run miraligner analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff", "--low-memory",
+                      "--sps", "hsa", "--add-extra",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/annotate/sim_isomir.sam"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(cmd_bam_genomic=True)
+    @attr(complete=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_genomic_bam(self):
+        """Run genomic bam analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff",
+                      "--sps", "hsa", "--add-extra", "--genomic",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/db/mirbase/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/annotate/hsa-let-7a-nm.sam"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(cmd_bam_genomic_low_memory=True)
+    @attr(complete=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_genomic_bam_low_memory(self):
+        """Run genomic bam analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff", "--genomic", "--low-memory",
+                      "--sps", "hsa", "--add-extra",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/db/mirbase/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/annotate/hsa-let-7a-nm.sam"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
     @attr(cmd_seqbuster=True)
+    @attr(cmd=True)
     def test_srnaseq_annotation_seqbuster(self):
         """Run miraligner analysis
         """
@@ -140,9 +194,28 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print(" ".join(clcode))
             subprocess.check_call(clcode)
 
+    @attr(complete=True)
+    @attr(cmd_seqbuster_low_memory=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_seqbuster_low_memory(self):
+        """Run miraligner analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff", "--low-memory",
+                      "--format", "seqbuster",
+                      "--sps", "hsa",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/seqbuster/reads.mirna"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
 
     @attr(complete=True)
     @attr(cmd_isomirsea=True)
+    @attr(cmd=True)
     def test_srnaseq_annotation_isomirsea(self):
         """Run isomirsea analysis
         """
@@ -162,6 +235,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_srnabench=True)
+    @attr(cmd=True)
     def test_srnaseq_annotation_srnabench(self):
         """Run srnabench analysis
         """
@@ -173,7 +247,47 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "-o", "test_out_mirs",
-                      "../../data/examples/srnabench",
+                      "../../data/examples/srnabench/",
+                      "-d", "-vd"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_optimir=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_optimir(self):
+        """Run optimir analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff",
+                      "--format", "optimir",
+                      "--sps", "hsa",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/optimir/synthetic_100_full.gff3",
+                      "-d", "-vd"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_manatee=True)
+    @attr(cmd=True)
+    def test_srnaseq_annotation_manatee(self):
+        """Run Manatee analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "gff",
+                      "--format", "manatee",
+                      "--sps", "hsa",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/manatee/simulated.sam",
                       "-d", "-vd"]
             print("")
             print(" ".join(clcode))
@@ -181,6 +295,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
 
     @attr(complete=True)
     @attr(cmd_stats=True)
+    @attr(cmd=True)
     def test_srnaseq_stats(self):
         """Run stats analysis
         """
@@ -194,7 +309,22 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
+    @attr(cmd_stats=True)
+    @attr(cmd=True)
+    def test_srnaseq_stats(self):
+        """Run stats analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "stats",
+                      "../../data/examples/gff/correct_file.gff"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
     @attr(cmd_merge=True)
+    @attr(cmd=True)
     def test_merge_bam(self):
         """
         Run collapse two samples
@@ -213,8 +343,9 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
-    @attr(cmd_export=True)
-    def test_export(self):
+    @attr(cmd_export_seqbuster=True)
+    @attr(cmd=True)
+    def test_export_seqbuster(self):
         """
         Run export command
         """
@@ -230,7 +361,28 @@ class AutomatedAnalysisTest(unittest.TestCase):
             subprocess.check_call(clcode)
 
     @attr(complete=True)
+    @attr(cmd_export_vcf=True)
+    @attr(cmd=True)
+    def test_export_vcf(self):
+        """
+        Run export command
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "export",
+                      "-o", "test_out_mirs",
+                      "--format", "vcf",
+                      "-d", "-vd",
+                      "--hairpin", "../../data/examples/annotate/hairpin.fa",
+                      "--gtf", "../../data/examples/annotate/hsa.gff3",
+                      "../../data/examples/gff/correct_file.gff"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
     @attr(cmd_count=True)
+    @attr(cmd=True)
     def test_count(self):
         """
         Run count command
@@ -242,6 +394,61 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
                       "../../data/examples/synthetic/let7a-5p.gtf"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_spikeins=True)
+    @attr(cmd=True)
+    def test_spikeins_cmd(self):
+        """Run spikeins analysis
+        """
+        import platform
+        with make_workdir():
+            shutil.copy("../../data/examples/spikeins/spikeins.fa",
+                        "spikeins.fa")
+            clcode = ["mirtop",
+                      "spikein",
+                      "spikeins.fa",
+                      "-o",
+                      "test_out_spikeins"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+            if platform.system() == "Linux":
+                clcode = ["razers3", "-dr", "0", "-i", "80", "-rr", "90",
+                          "-f", "-o", "spikeins.sam",
+                          "test_out_spikeins/spikeins_pre.fasta",
+                          "../../data/examples/spikeins/test-spikeins.fa"]
+                print(" ".join(clcode))
+                subprocess.check_call(clcode)
+            else:
+                shutil.copy("../../data/examples/spikeins/spikeins.sam",
+                            "spikeins.sam")
+            clcode = ["mirtop",
+                      "gff",
+                      "--add-extra",
+                      "--hairpin", "test_out_spikeins/spikeins_pre.fasta",
+                      "--gtf", "test_out_spikeins/spikeins_pre.gff",
+                      "-o", "test_out_mirs",
+                      "spikeins.sam"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_update=True)
+    @attr(cmd=True)
+    def test_update_cmd(self):
+        """Run update analysis
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "update",
+                      "-o", "test_out_mirs",
+                      "../../data/examples/versions/version1.0.gff"]
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)

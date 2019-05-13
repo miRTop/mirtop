@@ -1,6 +1,7 @@
-from mirtop.gff.body import read_gff_line
+from mirtop.gff.classgff import feature
 import mirtop.libs.logger as mylog
 from mirtop.gff import gff_versions as version
+from mirtop.mirna.realign import read_id
 
 logger = mylog.getLogger(__name__)
 
@@ -29,7 +30,9 @@ def _check_header(header):
 def _check_line(line, num, num_samples):
     """ Check file for minimum
     """
-    fields = read_gff_line(line)
+    gff = feature(line)
+    fields = gff.columns
+    attr = gff.attributes
 
     # Check seqID
     if not fields['chrom']:
@@ -67,8 +70,16 @@ def _check_line(line, num, num_samples):
     if str(fields['strand']) not in ["+", "-"]:
         logger.error('INCORRECT STRAND in line %s' % (num))
 
+    # Check UID
+    if 'UID' not in attr:
+        logger.error('UID not found in line %s' % (num))
+    else:
+        if not read_id(attr['UID']):
+            logger.error('UID is not in a correct format in line %s. '
+                         'Use mirtop gff to fix this or open an issue.' % num)
+
     # Check attribute-variant
-    variant = (fields['attrb']['Variant']).lower()
+    variant = (attr['Variant']).lower()
     valid_variant = False
     valid_variants = version.GFFv[version.current]
     if (any(s.lower() in variant for s in valid_variants)):
@@ -79,8 +90,8 @@ def _check_line(line, num, num_samples):
 
     # Check attribute-expression
 
-    expression = fields['attrb']['Expression'].strip().split(",")
-    expression = filter(None, expression)
+    expression = attr['Expression'].strip().split(",")
+    expression = list(filter(None, expression))
     if len(expression) != num_samples:
         logger.error('INCORRECT number of EXPRESSION VALUES \
         in line %s' % (num))

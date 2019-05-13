@@ -59,7 +59,7 @@ def read_file(fn, hairpins, database, mirna_gtf):
                 continue
             miRNA = ann_type[ann[query_sequence]][1]
             preNames = ann_type[ann[query_sequence]][0]
-            if query_name not in reads and query_sequence==None:
+            if query_name not in reads and not query_sequence:
                 continue
             if query_sequence and query_sequence.find("N") > -1:
                 continue
@@ -139,21 +139,21 @@ def _make_variant(cols):
     logger.debug("PROST::variant: %s" % cols)
     variant = []
     if cols[0] != "0":
-        variant.append("iso_5p:%s" % cols[0])
+        variant.append("iso_5p:%s" % -1 * int(cols[0]))
     if cols[1] != "0":
         variant.append("iso_3p:%s" % cols[1])
     if cols[2] != "0":
-        variant.append("iso_add:%s" % cols[2])
+        variant.append("iso_add3p:%s" % int(cols[2]))
     if cols[3] == "True":
-        variant.append("iso_snp_seed")
+        variant.append("iso_snv_seed")
     if cols[4] == "True":
-        variant.append("iso_snp_central_offset")
+        variant.append("iso_snv_central_offset")
     if cols[5] == "True":
-        variant.append("iso_snp_central")
+        variant.append("iso_snv_central")
     if cols[6] == "True":
-        variant.append("iso_snp_supp")
+        variant.append("iso_snv_supp")
     if cols[7] == "True":
-        variant.append("iso_snp")
+        variant.append("iso_snv")
     if not variant:
         return "NA"
     return ",".join(variant)

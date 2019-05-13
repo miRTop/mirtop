@@ -1,14 +1,5 @@
-import traceback
-import os.path as op
-import os
-import re
-import shutil
-import pandas as pd
-import pysam
 from collections import defaultdict
 from mirtop.mirna.realign import hits, cigar_correction, make_cigar, align
-from mirtop.libs import do
-from mirtop.libs.utils import file_exists
 import mirtop.libs.logger as mylog
 
 logger = mylog.getLogger(__name__)
@@ -38,43 +29,57 @@ def tune(seq, precursor, start, cigar):
 
             cigar (str): updated cigar
     """
+    end = len(seq)
+    if start < 0:
+        end = end + start
+        start = 0
     if cigar:
         seq, mature = cigar_correction(cigar, seq, precursor[start:])
     else:
-        seq, mature, score, p, size = align(seq, precursor[start:start + len(seq)])
+        seq, mature, score, p, size = align(seq, precursor[start:start + end])
         cigar = make_cigar(seq, mature)
     if seq.startswith("-"):
         seq = seq[1:]
     if seq.endswith("-"):
         seq = seq[:-1]
     logger.debug("TUNE:: %s %s %s" % (cigar, seq, mature))
+
     error = set()
-    pattern_addition = [[1, 1, 0], [1, 0, 1], [0, 1, 0], [0, 1, 1], [0, 0, 1], [1, 1, 1]]
     for pos in range(0, len(seq)):
         if seq[pos] != mature[pos]:
             error.add(pos)
 
     subs, add = [], []
-    for e in error:
-        if e < len(seq) - 3:
-            subs.append([e, seq[e], mature[e]])
 
-    pattern, error_add = [], []
-    for e in range(len(seq) - 3, len(seq)):
+    prob = 0
+    add_position = []
+    for e in range(len(seq) - 1, len(seq) - 6, -1):
         if e in error:
-            pattern.append(1)
-            error_add.append(e)
-        else:
-            pattern.append(0)
-    for p in pattern_addition:
-        if pattern == p:
-            add = seq[error_add[0]:].replace("-", "")
+            prob = 1
+        if prob == 1:
+            add.append(seq[e])
+            add_position.append(e)
+        if e not in error and prob == 0 and seq[e] in ["A", "T"]:
+            add.append(seq[e])
+            add_position.append(e)
+            continue
+        if e not in error:
+            if add:
+                add.pop()
+                add_position.pop()
+            if prob == 0:
+                add = []
+                add_position = []
             break
-    if not add and error_add:
-        for e in error_add:
+
+    for e in error:
+        if e not in add_position:
             subs.append([e, seq[e], mature[e]])
 
-    return subs, add, make_cigar(seq, mature)
+    logger.debug("TUNE:: %s %s" % (subs, add))
+
+    return subs, "".join(add), make_cigar(seq, mature)
+
 
 def clean_hits(reads):
     """
@@ -105,5 +110,3 @@ def clean_hits(reads):
                 new_reads[r].remove_precursor(p)
 
     return new_reads
-
-

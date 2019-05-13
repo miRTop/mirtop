@@ -4,3 +4,4 @@ pandas
 biopython
 pyyaml
 pybedtools
+six

@@ -4,8 +4,9 @@ import os
 from collections import defaultdict
 
 import mirtop.libs.logger as mylog
-from mirtop.gff.body import paste_columns, variant_with_nt, read_gff_line
+from mirtop.gff.body import paste_columns, variant_with_nt
 from mirtop.mirna.realign import make_cigar, make_id
+from mirtop.gff.classgff import feature
 
 logger = mylog.getLogger(__name__)
 
@@ -120,7 +121,7 @@ def read_file(folder, args):
                                             args.matures)
                     line = "%s Changes %s;" % (line, extra)
 
-                line = paste_columns(read_gff_line(line), sep=sep)
+                line = paste_columns(feature(line), sep=sep)
                 if start not in reads[chrom]:
                     reads[chrom][start] = []
                 if Filter == "Pass":
@@ -161,6 +162,7 @@ def _read_iso(fn):
 
 
 def _translate(isomirs, description):
+    # TODO: make unit test for this
     iso = []
     labels = isomirs.split("@")
     logger.debug("TRANSLATE::label:%s" % isomirs)
@@ -176,12 +178,16 @@ def _translate(isomirs, description):
         if label.find("lv3p") > -1:
             iso.append("iso_3p:%s" % number_nts)
         if label.find("lv5p") > -1:
+            if number_nts.startswith("+"):
+                number_nts = number_nts.replace("+", "-")
+            else:
+                number_nts = number_nts.replace("-", "+")
             iso.append("iso_5p:%s" % number_nts)
         if label.find("nta") > -1:
             number_nts = label.split("|")[1].split("#")[-1]
             if number_nts.find("-") < 0:
-                number_nts = "+%s" % number_nts
-            iso.append("iso_add:%s" % number_nts)
+                number_nts = "%s" % number_nts
+            iso.append("iso_add3p:%s" % number_nts)
         if label.find("NucVar") > -1:
             for nt in description.split(","):
                 logger.debug("TRANSLATE::change:%s" % description)
@@ -195,13 +201,13 @@ def _translate(isomirs, description):
 def _iso_snp(pos):
     iso = []
     if pos > 1 and pos < 8:
-        iso.append("iso_snp_seed")
+        iso.append("iso_snv_seed")
     elif pos == 8:
-        iso.append("iso_snp_central_offset")
+        iso.append("iso_snv_central_offset")
     elif pos > 8 and pos < 13:
-        iso.append("iso_snp+central")
+        iso.append("iso_snv_central")
     elif pos > 12 and pos < 18:
-        iso.append("iso_snp_central_supp")
+        iso.append("iso_snv_central_supp")
     else:
-        iso.append("iso_snp")
+        iso.append("iso_snv")
     return iso

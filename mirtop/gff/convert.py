@@ -6,7 +6,8 @@ import os.path as op
 
 from mirtop.mirna import fasta, mapper
 from mirtop.mirna.realign import read_id
-from mirtop.gff.body import read_gff_line, variant_with_nt
+from mirtop.gff.classgff import feature
+from mirtop.gff.body import variant_with_nt
 import mirtop.libs.logger as mylog
 
 logger = mylog.getLogger(__name__)
@@ -25,19 +26,19 @@ def convert_gff_counts(args):
     """
     sep = "\t"
     variant_header = sep.join(['iso_5p', 'iso_3p',
-                               'iso_add', 'iso_snp'])
+                               'iso_add3p', 'iso_snp'])
     if args.add_extra:
         precursors = fasta.read_precursor(args.hairpin, args.sps)
         matures = mapper.read_gtf_to_precursor(args.gtf)
         variant_header = sep.join([variant_header,
                                    'iso_5p_nt', 'iso_3p_nt',
-                                   'iso_add_nt', 'iso_snp_nt'])
+                                   'iso_add3p_nt', 'iso_snp_nt'])
 
     logger.info("INFO Reading GFF file %s", args.gff)
     logger.info("INFO Writing TSV file to directory %s", args.out)
 
     gff_file = open(args.gff, 'r')
-    out_file = op.join(args.out, "expression_counts.tsv")
+    out_file = op.join(args.out, "%s.tsv" % op.splitext(op.basename(args.gff))[0])
     missing_parent = 0
     missing_mirna = 0
     unvalid_uid = 0
@@ -52,19 +53,20 @@ def convert_gff_counts(args):
                 break
 
         for mirna_line in gff_file:
-            mirna_values = read_gff_line(mirna_line)
-            Read = mirna_values["attrb"]["Read"]
-            UID = mirna_values["attrb"]["UID"]
-            mirna = mirna_values["attrb"]["Name"]
-            parent = mirna_values["attrb"]["Parent"]
-            variant = mirna_values["attrb"]["Variant"]
+            gff = feature(mirna_line)
+            attr = gff.attributes
+            UID = attr["UID"]
+            Read = attr["Read"]
+            mirna = attr["Name"]
+            parent = attr["Parent"]
+            variant = attr["Variant"]
             try:
                 read_id(UID)
             except KeyError:
                 unvalid_uid += 1
                 continue
 
-            expression = sep.join(mirna_values["attrb"]["Expression"].strip().split(","))
+            expression = sep.join(attr["Expression"].strip().split(","))
             cols_variants = sep.join(_expand(variant))
             logger.debug("COUNTS::Read:%s" % Read)
             logger.debug("COUNTS::EXTRA:%s" % variant)
@@ -93,14 +95,14 @@ def convert_gff_counts(args):
 
 
 def _expand(variant, nts=False):
-    """Expand Variant field into list for iso_5p, iso_3p, iso_add, iso_snp"""
+    """Expand Variant field into list for iso_5p, iso_3p, iso_add3p, iso_snv"""
     list_variant = []
     isomir = {}
     snp_var = []
     for v in variant.split(","):
         if v.find(":") > 0:
             isomir[v.split(":")[0]] = v.split(":")[1]
-        elif v.find("snp") > 0:
+        elif v.find("snv") > 0:
             snp_var.append(1)
 
     if "iso_5p" in isomir:
@@ -111,16 +113,16 @@ def _expand(variant, nts=False):
         list_variant.append(isomir["iso_3p"])
     else:
         list_variant.append(0)
-    if "iso_add" in isomir:
-        list_variant.append(isomir["iso_add"])
+    if "iso_add3p" in isomir:
+        list_variant.append(isomir["iso_add3p"])
     else:
         list_variant.append(0)
     if nts:
-        if "iso_snp" in isomir:
-            list_variant.append(isomir["iso_snp"])
+        if "iso_snv" in isomir:
+            list_variant.append(isomir["iso_snv"])
         else:
             list_variant.append(0)
     else:
         snp = sum(snp_var)
         list_variant.append(snp)
-    return map(str, list_variant)
+    return list(map(str, list_variant))

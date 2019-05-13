@@ -12,11 +12,15 @@ def _coord(sequence, start, mirna, precursor, iso):
     """
     insertion = 0
     deletion = 0
+    add = 0
     if iso.subs:
-        insertion = 1 if iso.subs[0][-1] == "-" else 0
+        insertion = sum([1  if s[-1] == "-" else 0 for s in iso.subs])
     if iso.subs:
-        deletion = 1 if iso.subs[0][1] == "-" else 0
-    end = (iso.end - len(iso.add) - insertion + deletion)
+        deletion = sum([1  if s[1] == "-" else 0 for s in iso.subs])
+    if iso.add:
+        add = len(iso.add)
+    end = (iso.end - add - insertion + deletion)
+
     logger.debug("COOR:: s:%s len:%s end:%s fixedEnd:%s mirna:%s iso:%s" % (
         start, len(sequence), iso.end, end, mirna, iso.format())
         )
@@ -37,22 +41,21 @@ def _coord(sequence, start, mirna, precursor, iso):
     if iso.add:
         iso.add = iso.add.replace("-", "")
         sequence = sequence[:-len(iso.add)]
-    # if dif > 3:
-    #    return None
     if end > mirna[1]:
         iso.t3 = sequence[-dif:].upper()
     elif end < mirna[1]:
         iso.t3 = precursor[mirna[1] + 1 - dif:(mirna[1] + 1)].lower()
     elif end == mirna[1]:
         iso.t3 = 0
-    if dif > 4:
-        logger.debug("COOR::end > 3 %s %s %s %s %s" % (
+
+    if dif > 6:
+        logger.debug("COOR::end > 6 %s %s %s %s %s" % (
             len(sequence), end, dif, mirna, iso.format()))
         return None
     return True
 
 
-def annotate(reads, mature_ref, precursors):
+def annotate(reads, mature_ref, precursors, quiet=False):
     """
     Using coordinates, mismatches and realign to annotate isomiRs
 
@@ -65,7 +68,8 @@ def annotate(reads, mature_ref, precursors):
 
         *precursors dict object (key : fasta)*:
             that comes from *mirtop.mirna.fasta.read_precursor()*
-
+        *quiet(boolean)*:
+            verbosity state
     Return:
         *reads (dict)*:
             dictionary where keys are read_id and
@@ -73,27 +77,31 @@ def annotate(reads, mature_ref, precursors):
     """
     n_iso = 0
     for r in reads:
-        for p in reads[r].precursors:
-            start = reads[r].precursors[p].start
-            end = reads[r].precursors[p].end
+        logger.debug(("\nANN::READ::read{r}").format(**locals()))
+        for ps in reads[r].precursors:
+            p = list(ps)[0]
+            start = reads[r].precursors[ps].start
+            end = reads[r].precursors[ps].end
+            logger.debug(("\nANN::READ::precursor {start} {end}").format(**locals()))
             for mature in mature_ref[p]:
                 mi = mature_ref[p][mature]
                 logger.debug(("\nANN::NEW::read:{s}\n pre:{p} start:{start} end: {end} "
                               "cigar: {cigar} "
                               "\n mir:{mature} mir_pos:{mi}\n mir_seqs:{mature_s}"
                               ).format(s=reads[r].sequence,
-                                       mature_s = precursors[p][mi[0]:mi[1] + 1],
-                                       cigar = reads[r].precursors[p].cigar,
+                                       mature_s = precursors[ps][mi[0]:mi[1] + 1],
+                                       cigar = reads[r].precursors[ps].cigar,
                                        **locals()))
-                iso_copy =  copy.deepcopy(reads[r].precursors[p])
-                is_iso = _coord(reads[r].sequence, start, mi, precursors[p], iso_copy)
+                iso_copy = copy.deepcopy(reads[r].precursors[ps])
+                is_iso = _coord(reads[r].sequence, start, mi, precursors[ps], iso_copy)
                 logger.debug(("ANN::is_iso:{is_iso}").format(**locals()))
-                logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[p].format()))
-                logger.debug("ANN::annotation:%s Variant:%s" % (r, reads[r].precursors[p].formatGFF()))
+                logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[ps].format()))
+                logger.debug("ANN::annotation:%s Variant:%s" % (r, reads[r].precursors[ps].formatGFF()))
                 if is_iso:
                     n_iso += 1
-                    reads[r].precursors[p] = iso_copy
-                    reads[r].precursors[p].mirna = mature
+                    reads[r].precursors[ps] = iso_copy
+                    reads[r].precursors[ps].mirna = mature
                     # break
-    logger.info("Valid hits (+/-3 reference miRNA): %s" % n_iso)
+    if not quiet:
+        logger.info("Valid hits (+/-3 reference miRNA): %s" % n_iso)
     return reads

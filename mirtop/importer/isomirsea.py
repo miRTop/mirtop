@@ -6,8 +6,9 @@ from collections import defaultdict, Counter
 import mirtop.libs.logger as mylog
 from mirtop.mirna import mapper
 from mirtop.mirna.realign import expand_cigar, make_id
-from mirtop.gff.body import read_attributes, paste_columns
-from mirtop.gff.body import variant_with_nt, read_gff_line
+from mirtop.gff.body import paste_columns, read_attributes
+from mirtop.gff.body import variant_with_nt
+from mirtop.gff.classgff import feature
 
 logger = mylog.getLogger(__name__)
 
@@ -24,6 +25,7 @@ def header(fn):
     """
     h = ""
     return h
+
 
 def read_file(fn, args):
     """
@@ -102,7 +104,7 @@ def read_file(fn, args):
                 extra = variant_with_nt(line, args.precursors, args.matures)
                 line = "%s Changes %s;" % (line, extra)
 
-            line = paste_columns(read_gff_line(line), sep=sep)
+            line = paste_columns(feature(line), sep=sep)
             if start not in reads[chrom]:
                 reads[chrom][start] = []
             if Filter == "Pass":
@@ -133,9 +135,9 @@ def cigar2variants(cigar, sequence, tag):
     logger.debug("\nISOMIRSEA:: expanded: %s" % expand_cigar(cigar))
     for l in expand_cigar(cigar):
         if l == "I":
-            iso5p += 1
-        elif l == "D":
             iso5p -= 1
+        elif l == "D":
+            iso5p += 1
         else:
             break
     iso3p = 0
@@ -157,7 +159,7 @@ def cigar2variants(cigar, sequence, tag):
     if tag[-1] == "T" or iso3p < 0:
         iso3p = "iso_3p:%s" % _fix(iso3p) if iso3p else ""
     else:
-        iso3p = "iso_add:%s" % _fix(iso3p) if iso3p else ""
+        iso3p = "iso_add3p:%s" % iso3p if iso3p else ""
 
     variant = ""
     for iso in [iso5p, iso3p, _define_snp(isosnp)]:
@@ -167,21 +169,22 @@ def cigar2variants(cigar, sequence, tag):
     variant = "NA;" if not variant else variant
     return variant[:-1]
 
+
 def _define_snp(subs):
     value = ""
     logger.debug("\nISOMIRSEA:: subs %s" % subs)
     for sub in subs:
         if sub:
             if sub[0] > 1 and sub[0] < 8:
-                value += "iso_snp_seed,"
+                value += "iso_snv_seed,"
             elif sub[0] == 8:
-                value += "iso_snp_central_offset,"
+                value += "iso_snv_central_offset,"
             elif sub[0] > 8 and sub[0] < 13:
-                value += "iso_snp_central,"
+                value += "iso_snv_central,"
             elif sub[0] > 12 and sub[0] < 18:
-                value += "iso_snp_central_supp,"
+                value += "iso_snv_central_supp,"
             else:
-                value += "iso_snp,"
+                value += "iso_snv,"
     return value[:-1]
 
 

@@ -1,5 +1,32 @@
-- 0.3.*a
+- 0.4.*a
 
+ * Cast map object to list to avoid errors in py3.
+ * Support Manatee output.
+ * Support chunk reading for genomic BAM files.
+ * Support chunk reading for seqbuster files.
+ * Support chunk reading for BAM files.
+ * Normalize functions to support different databases.
+ * Support miRgeneDB.
+ * Export to VCF. Thanks to Roderic Espin.
+ * Support isomiRs that go beyond 5p end
+ * Support genomic coordinates.
+ * Fix missing reads when using --keep-read in the final mirtop.gff file.
+ * Allow longer truncation and addition events.
+ * Accept seqbuster input without frequency column.
+ * Allow keep name of the sequence.
+ * Accept indels in snv category.
+ * Additions are only last nucleotides that are mismatches.
+ * Adapt mintplate license.
+ * Revert sign in iso_5p, replace snp by snv.
+ * Skip lines that contain malformed UID.
+ * Add FASTA as an exporter from GFF.
+ * Fix BAM parsing to new GFF rules.
+ * Add the possibility to work with spikeins to detect random variability.
+ * Fixing UID attribute for tools that don't use our cypher system
+ * Add class to parse GFF line as a first move toward isolation
+ * Add JSON log for stats command.
+
+- 0.3.17
  * Normalize the read of the tool outputs.
  * Add docs with autodoc plugin.
  * Validator by @Vbarrera.

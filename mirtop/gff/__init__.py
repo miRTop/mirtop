@@ -1,13 +1,13 @@
-"""GFF proxy converter"""
+"""mirGFF3 proxy converter"""
 from __future__ import print_function
 
 import os.path as op
 
 from mirtop.mirna import fasta, mapper
 from mirtop.bam.bam import read_bam
-from mirtop.importer import seqbuster, srnabench, prost, isomirsea
+from mirtop.importer import seqbuster, srnabench, prost, isomirsea, manatee, optimir
 from mirtop.mirna.annotate import annotate
-from mirtop.gff import body, header, merge
+from mirtop.gff import body, header, merge, read
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
@@ -16,8 +16,11 @@ def reader(args):
     """
     Realign BAM hits to miRBAse to get better accuracy and annotation
     """
+    if args.low_memory:
+        read.reader(args)
+        return None
     samples = []
-    database = mapper.guess_database(args.gtf)
+    database = mapper.guess_database(args)
     args.database = database
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     args.precursors = precursors
@@ -26,7 +29,13 @@ def reader(args):
     # TODO check numbers of miRNA and precursors read
     # TODO print message if numbers mismatch
     out_dts = dict()
+    if args.keep_name and len(args.files) > 1:
+        logger.warning("--keep-name when running multiple samples\n"
+                       "can generate wrong results if the\n"
+                       "name read is different across sample\n"
+                       "for the same sequence.")
     for fn in args.files:
+        fn = op.normpath(fn)
         if args.format != "gff":
             sample = op.splitext(op.basename(fn))[0]
             samples.append(sample)
@@ -41,16 +50,22 @@ def reader(args):
             reads = prost.read_file(fn, precursors, database, args.gtf)
         elif args.format == "isomirsea":
             out_dts[fn] = isomirsea.read_file(fn, args)
+        elif args.format == "manatee":
+            out_dts[fn] = manatee.read_file(fn, database, args)
+        elif args.format == "optimir":
+            out_dts[fn] = optimir.read_file(fn, args)
         elif args.format == "gff":
             samples.extend(header.read_samples(fn))
             out_dts[fn] = body.read(fn, args)
             continue
-        if args.format not in ["isomirsea", "srnabench"]:
+        if args.format not in ["isomirsea", "srnabench", "manatee", 'optimir']:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample, args)
         h = header.create([sample], database, "")
         _write(out_dts[fn], h, fn_out)
     # merge all reads for all samples into one dict
+    if args.low_memory:
+        return None
     merged = merge.merge(out_dts, samples)
     fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
     _write(merged, header.create(samples, database, ""), fn_merged_out)

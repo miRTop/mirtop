@@ -1,5 +1,4 @@
-mirtop
----------
+# mirtop <img src="artwork/logo.png" width="80" height="80">
 
 [![](https://travis-ci.org/miRTop/mirtop.svg?branch=master)](https://travis-ci.org/miRTop/mirtop#)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
@@ -89,5 +88,28 @@ Contributors
 * [Shruthi Bhat Bandyadka](https://github.com/sbb25) (Partners Personalized Medicine, Cambridge MA, USA)
 * [Iñaki Martínez de Ilarduya](http://www.germanstrias.org/technology-services/high-performance-computing/contact/)(HPC core, IGTP, Badalona, Spain)
 * Rafael Alis
-* [Victor Barrera]((https://github.com/vbarrera) (Bioinformatic Core, Harvard Chan School, Boston, USA)
+* [Victor Barrera](https://github.com/vbarrera) (Bioinformatic Core, Harvard Chan School, Boston, USA)
 * [Steffen Möller](https://github.com/smoe) (University of Rostock)
+* [Kieran O'Neill](https://github.com/oneillkza)
+* [Roderic Espin](Universitat Oberta de Barcelona)
+
+Citizens
+--------
+
+Here we cite any person who has contribute somehow to the project different than through code development and/or
+bioinformatic concepts.
+
+Gianvito Urgese,
+Jan Oppelt(CEITEC Masaryk University, Brno, Czech Republic),
+Thomas Desvignes,
+Bastian,
+Kieran O'Neill (BC Cancer),
+Charles Reid (University of California Davis),
+Radhika Khetani (Harvard Chan School of Public Health),
+Shannan Ho Sui (Harvard Chan School of Public Health),
+Simonas Juzenas(CAU),
+Rafael Alis (Catholic University of Valencia),
+Aida Arcas (Instituto de Neurociencias (CSIC-UMH)),
+Yufei Lin (Harvard University),
+Victor Barrera(Harvard Chan School of Public Health),
+Marc Halushka (Johns Hopkins University)

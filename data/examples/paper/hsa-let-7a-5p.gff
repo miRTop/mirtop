@@ -1,0 +1,4 @@
+## mirGFF3. VERSION 1.1
+## source-ontology: miRBasev21 doi:10.25504/fairsharing.hmgte8
+## COLDATA: hsa-let-7a-5p
+hsa-let-7a-3	miRBasev21	isomiR	4	25	0	+	.	Read=GAGCTAGTAGGTTGTATAGTAA; UID=iso-22-5I1P7WH3F; Name=hsa-let-7a-5p; Parent=hsa-let-7a-3; Variant=iso_snv_seed,iso_add3p:2,iso_5p:+1,iso_3p:-1; Cigar=3MC16MAA; Expression=1; Filter=Pass; Hits=1; Changes=iso_5p:t,iso_3p:t,iso_add3p:AA,iso_snv:4CG

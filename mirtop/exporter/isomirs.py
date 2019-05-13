@@ -5,10 +5,11 @@ import os
 
 import mirtop.libs.logger as mylog
 from mirtop.mirna import fasta, mapper
-from mirtop.gff.body import read_attributes
+from mirtop.gff.classgff import feature
 from mirtop.gff.header import read_samples
 from mirtop.mirna.realign import get_mature_sequence, align_from_variants
-from mirtop.mirna.realign import read_id, variant_to_5p, variant_to_3p, variant_to_add
+from mirtop.mirna.realign import read_id, variant_to_5p, \
+                                 variant_to_3p, variant_to_add
 
 logger = mylog.getLogger(__name__)
 
@@ -40,8 +41,9 @@ def _read_file(fn, precursors, matures, out_dir):
         for line in inh:
             if line.startswith("#"):
                 continue
-            cols = line.strip().split("\t")
-            attr = read_attributes(line)
+            gff = feature(line)
+            cols = gff.columns
+            attr = gff.attributes
             read = read_id(attr["UID"])
             t5 = variant_to_5p(precursors[attr["Parent"]],
                                matures[attr["Parent"]][attr["Name"]],
@@ -60,15 +62,17 @@ def _read_file(fn, precursors, matures, out_dir):
             if len(mm) > 1:
                 continue
             elif len(mm) == 1:
-                mm = "".join(map(str, mm[0]))
+                mm = "".join(list(map(str, mm[0])))
             else:
                 mm = "0"
             hit = attr["Hits"] if "Hits" in attr else "1"
             logger.debug("exporter::isomir::decode %s" % [attr["Variant"],
                                                           t5, t3, add, mm])
             # Error if attr["Read"] doesn't exist
-            line = [read, attr["Read"], "0", attr["Name"], cols[1], cols[2],
-                    mm, add, t5, t3, "NA", "NA", "miRNA",  attr["Parent"], hit]
+            print(cols)
+            line = [read, attr["Read"], "0", attr["Name"],
+                    cols['source'], cols['type'],
+                    mm, add, t5, t3, "NA", "NA", "miRNA", attr["Parent"], hit]
             for sample, counts in zip(samples, attr["Expression"].split(",")):
                 with open(os.path.join(out_dir, "%s.mirna" % sample),
                           'a') as outh:

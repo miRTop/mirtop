@@ -32,10 +32,10 @@ def read_precursor(precursor, sps=None):
                     name = line.strip().replace(">", " ").split()[0]
                 else:
                     name = None
-                logger.debug(name)
+                logger.debug("PRECURSOR::name %s" % name)
             elif name:
                 hairpin[name] += line.strip().replace("U", "T")
-                logger.debug(hairpin[name])
+                logger.debug("PRECURSOR::sequence %s" % hairpin[name])
         if name:
             hairpin[name] = hairpin[name] + "NNNNNNNNNNNN"
     return hairpin
