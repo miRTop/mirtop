@@ -158,8 +158,9 @@ def _analyze_line(line, reads, precursors, handle, args):
     chrom = handle.getrname(line.reference_id)
     start = line.reference_start
     # If genomic endcode, liftover to precursor position
-    if not start:
-        return reads
+ #   if not start:
+ #       logger.debug(("READ::not start found %s" % line.reference_start))
+ #       return reads
     cigar = line.cigartuples
     # if line.cigarstring.find("I") > -1:
     #     indels_skip += 1

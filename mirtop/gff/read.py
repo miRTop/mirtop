@@ -45,4 +45,6 @@ def reader(args):
                 low_memory_bam(fn, sample, out_handle, args)
         elif args.format == "seqbuster":
             seqbuster.read_file_low_memory(fn, sample, args, out_handle)
+        else:
+            raise ValueError("%s not supported for low memory" % args.format)
         out_handle.close()

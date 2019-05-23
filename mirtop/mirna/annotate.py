@@ -31,13 +31,13 @@ def _coord(sequence, start, mirna, precursor, iso):
         iso.t5 = precursor[mirna[0]:mirna[0] + dif].lower()
     elif start == mirna[0]:
         iso.t5 = 0
-    if dif > 4:
-        logger.debug("COOR::start > 3 %s %s %s %s %s" % (
+    if dif > 6:
+        logger.debug("COOR::start > 6 start:%s len:%s dif:%s mirna:%s iso:%s" % (
                         start, len(sequence),
                         dif, mirna, iso.format()))
         return None
 
-    dif = abs(mirna[1] - end)
+    dif = abs(mirna[1] - iso.end)
     if iso.add:
         iso.add = iso.add.replace("-", "")
         sequence = sequence[:-len(iso.add)]
@@ -48,8 +48,8 @@ def _coord(sequence, start, mirna, precursor, iso):
     elif end == mirna[1]:
         iso.t3 = 0
 
-    if dif > 6:
-        logger.debug("COOR::end > 6 %s %s %s %s %s" % (
+    if dif > 7:
+        logger.debug("COOR::end > 7 len:%s end:%s dif:%s mirna:%s iso:%s" % (
             len(sequence), end, dif, mirna, iso.format()))
         return None
     return True
@@ -77,7 +77,7 @@ def annotate(reads, mature_ref, precursors, quiet=False):
     """
     n_iso = 0
     for r in reads:
-        logger.debug(("\nANN::READ::read{r}").format(**locals()))
+        logger.debug(("\nANN::READ::read {r}").format(**locals()))
         for ps in reads[r].precursors:
             p = list(ps)[0]
             start = reads[r].precursors[ps].start
@@ -103,5 +103,5 @@ def annotate(reads, mature_ref, precursors, quiet=False):
                     reads[r].precursors[ps].mirna = mature
                     # break
     if not quiet:
-        logger.info("Valid hits (+/-3 reference miRNA): %s" % n_iso)
+        logger.info("Valid hits (+/- reference miRNA): %s" % n_iso)
     return reads
