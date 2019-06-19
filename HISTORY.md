@@ -1,4 +1,7 @@
-- 0.4.19a
+- 0.4.19
+
+* Add --version option
+* Fix bug that ignore sequences starting at 0 in bam files 
 
 - 0.4.18
 

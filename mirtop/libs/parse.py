@@ -3,11 +3,11 @@ from __future__ import print_function
 import argparse
 import sys
 
+from mirtop import __version__
 
 def parse_cl(in_args):
     """Function to parse the subcommands arguments.
     """
-    print(in_args)
     sub_cmds = {"gff": _add_subparser_gff,
                 "stats": _add_subparser_stats,
                 "compare": _add_subparser_compare,
@@ -20,18 +20,28 @@ def parse_cl(in_args):
                 "update": _add_subparser_update
                 }
     parser = argparse.ArgumentParser(description="small RNA analysis")
+    parser.add_argument("--version", action="store_true",help="show version.")
     sub_cmd = None
     if len(in_args) > 0 and in_args[0] in sub_cmds:
+        print(in_args)
         subparsers = parser.add_subparsers(help="mirtop supplemental commands")
         sub_cmds[in_args[0]](subparsers)
         sub_cmd = in_args[0]
+    elif (len(in_args) > 0):
+        args = parser.parse_args()
+        if args.version:
+            print("mirtop %s" % __version__)
+            sys.exit(0)
     else:
         print("use %s" % sub_cmds.keys())
+        print("mirtop %s" % __version__)
         sys.exit(0)
+
     args = parser.parse_args()
     if "files" in args:
         if not args.files:
             print("use %s -h to see help." % in_args[0])
+            print("mirtop %s" % __version__)
             sys.exit(1)
 
     assert sub_cmd is not None
