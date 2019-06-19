@@ -389,11 +389,11 @@ class AutomatedAnalysisTest(unittest.TestCase):
         """
         with make_workdir():
             clcode = ["mirtop",
-                      "count",
+                      "counts",
                       "-o", "test_out_mirs",
                       "--hairpin", "../../data/examples/annotate/hairpin.fa",
                       "--gtf", "../../data/examples/annotate/hsa.gff3",
-                      "../../data/examples/synthetic/let7a-5p.gtf"]
+                      "--gff", "../../data/examples/synthetic/let7a-5p.gff"]
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)
