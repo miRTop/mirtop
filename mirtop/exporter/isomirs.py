@@ -69,7 +69,7 @@ def _read_file(fn, precursors, matures, out_dir):
             logger.debug("exporter::isomir::decode %s" % [attr["Variant"],
                                                           t5, t3, add, mm])
             # Error if attr["Read"] doesn't exist
-            print(cols)
+            # print(cols)
             line = [read, attr["Read"], "0", attr["Name"],
                     cols['source'], cols['type'],
                     mm, add, t5, t3, "NA", "NA", "miRNA", attr["Parent"], hit]

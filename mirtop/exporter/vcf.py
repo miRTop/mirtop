@@ -15,6 +15,13 @@ logger = mylog.getLogger(__name__)
 
 
 def convert(args):
+    """
+    Main function to convert from GFF3 to VCF.
+
+    Args:
+      *args*: supported options for this sub-command.
+        See *mirtop.libs.parse.add_subparser_export()*.
+    """
     for fn in args.files:
         out_file = op.join(args.out, "%s.vcf" % op.splitext(op.basename(fn))[0])
         logger.info("Reading %s" % fn)

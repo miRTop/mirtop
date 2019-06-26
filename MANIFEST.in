@@ -1,3 +1,4 @@
 include README.md
 include LICENSE
+include artwork/logo.png
 recursive-include mirtop *.py

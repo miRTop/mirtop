@@ -19,6 +19,13 @@ exporter
 .. automodule:: mirtop.exporter.isomirs
    :members:
 
+.. automodule:: mirtop.exporter.fasta
+  :members:
+
+.. automodule:: mirtop.exporter.vcf
+   :members:
+
+
 gff
 ===
 
@@ -37,6 +44,12 @@ gff
 .. automodule:: mirtop.gff.stats
    :members:
 
+.. automodule:: mirtop.gff.update
+  :members:
+
+.. automodule:: mirtop.gff.validator
+  :members:
+
 importer
 ========
 
@@ -51,6 +64,12 @@ importer
 
 .. automodule:: mirtop.importer.srnabench
    :members:
+
+.. automodule:: mirtop.importer.optimir
+  :members:
+
+.. automodule:: mirtop.importer.manatee
+  :members:
 
 libs
 ====

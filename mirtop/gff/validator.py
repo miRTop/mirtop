@@ -124,6 +124,16 @@ def _check_file(file):
 
 
 def check_multiple(args):
+    """
+    Check GFF3 format.
+
+    Args:
+        *args (namedtupled)*: arguments parsed from command line with
+            *mirtop.libs.parse.add_subparser_validator()*.
+
+    Returns:
+        *(std_out)*: warnings or errors of the files showing issues with the format.
+    """  
     for file in args.files:
         _check_file(file)
         logger.info('%s checked' % file)

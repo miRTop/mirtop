@@ -1,3 +1,7 @@
+- 0.4.20a
+
+* Improve docs
+
 - 0.4.19
 
 * Add --version option

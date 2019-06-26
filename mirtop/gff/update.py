@@ -14,6 +14,16 @@ logger = mylog.getLogger(__name__)
 
 
 def convert(args):
+    """
+    Update previous GFF3 versions.
+
+    Args:
+        *args (namedtupled)*: arguments parsed from command line with
+            *mirtop.libs.parse.add_subparser_update()*.
+
+    Returns:
+        *(out_file)*: most updated GFF3 file.
+    """    
     for fn in args.files:
         out_fn = os.path.join(args.out, os.path.basename(fn))
         update_file(fn, out_fn)

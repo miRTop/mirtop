@@ -175,7 +175,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'mirtop', u'mirtop Documentation',
-     author, 'mirtop', 'One line description of project.',
+     author, 'mirtop', 'API to work with the mirGFF3 format to unify miRNA/isomiR annotation.',
      'Miscellaneous'),
 ]
 
