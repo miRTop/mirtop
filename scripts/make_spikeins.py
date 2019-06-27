@@ -47,26 +47,10 @@ def _write_fasta(sequences, filename):
     return filename
 
 
-def _sam_to_bam(bam_fn):
-    bam_out = "%s.bam" % os.path.splitext(bam_fn)[0]
-    cmd = "samtools view -Sbh {bam_fn} -o {bam_out}"
-    runner.run(cmd.format(**locals()))
-    return bam_fn
-
-
-def _bam_sort(bam_fn):
-    bam_sort_by_n = os.path.splitext(bam_fn)[0] + "_sort.bam"
-    runner.run(("samtools sort -n -o {bam_sort_by_n} {bam_fn}").format(
-               **locals()))
-    return bam_sort_by_n
-
-
 def _parse_hits(sam, source):
     uniques = defaultdict(list)
-    bam_fn = _sam_to_bam(sam)
-    bam_fn = _bam_sort(bam_fn)
     # read sequences and score hits (ignore same sequence)
-    handle = pysam.Samfile(bam_fn, "rb")
+    handle = pysam.Samfile(sam, "rb")
     for line in handle:
         reference = handle.getrname(line.reference_id)
         name = line.query_name
@@ -85,7 +69,7 @@ def _parse_hits(sam, source):
     return source
 
 
-parser = argparse.ArgumentParser(version="%prog 0.9")
+parser = argparse.ArgumentParser()
 parser.add_argument("--fa",
                     help="File with mature sequences.", required=True)
 parser.add_argument("-s", "--size", default=22,
@@ -114,8 +98,8 @@ logger.info("source updated with extended nts: %s" % source)
 
 # Map all vs all with razers3
 modified = _write_fasta(source, os.path.join(os.path.dirname(args.out), "modified.fa"))
-sam = os.path.join(os.path.dirname(args.out), "modified.sam")
-runner.run(("razers3 -i 75 -rr 80 -f -o {output} {target} {query}").format(output=sam, target=modified, query=modified))
+sam = os.path.join(os.path.dirname(args.out), "modified.bam")
+runner.run(("razers3 -i 75 -rr 80 -f -so 1 -o {output} {target} {query}").format(output=sam, target=modified, query=modified))
 uniques = _parse_hits(sam, source)
 print(uniques)
 if args.universe:
