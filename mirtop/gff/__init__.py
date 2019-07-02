@@ -61,7 +61,7 @@ def reader(args):
         if args.format not in ["isomirsea", "srnabench", "manatee", 'optimir']:
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample, args)
-        h = header.create([sample], database, "")
+        h = header.create([sample], database, header.make_tools(args.format))
         _write(out_dts[fn], h, fn_out)
     # merge all reads for all samples into one dict
     if args.low_memory:

@@ -121,19 +121,21 @@ def create(reads, database, sample, args, quiet=False):
                 annotation = "%s.%s.%s" % (chrom, idseq, seq_name)
                 # TODO:  This need to be moved to use the feature class
                 # It needs a dict with all variable in keys
-                attrb = ("Read {seq_name};UID {idseq};Name {mirName};"
-                         "Parent {preName};"
-                         "Variant {Variant};Cigar {Cigar};"
-                         "Expression {counts};"
-                         "Filter {Filter};Hits {hits};").format(**locals())
-                line = ("{chrom}\t{database}\t{source}\t{start}\t{end}"
-                        "\t{score}\t{strand}\t.\t{attrb}").format(**locals())
+                fields = {'seq_name': seq_name, 'idseq': idseq,
+                          'name': mirName, 'parent': preName,
+                          'variant': Variant, 'cigar': Cigar,
+                          'counts': counts, 'filter': Filter,
+                          'hits': hits, 'chrom': chrom, 
+                          'start': start, 'end': end,
+                          'database': database, 'source': source,
+                          'score': score, 'strand': strand}
+                line = feature(fields).line
+                # TODO: convert to genomic if args.out_genomic
                 logger.debug("GFF::%s" % line)
                 if args.add_extra:
                     extra = variant_with_nt(line, precursors, matures)
                     line = "%s Changes %s;" % (line, extra)
 
-                line = feature(line).paste_columns(sep)
                 if annotation in seen_ann and seq.find("N") < 0 and (
                         seen_ann[annotation].split("\t")[0].find("N") < 0):
                     logger.warning(

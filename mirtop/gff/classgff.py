@@ -18,7 +18,7 @@ class feature:
     def guess_format(self):
         return "=" if self.line.find("Name=") > -1 else " "
 
-    def create_line(fields, sep):
+    def create_line(self, fields, sep):
         """
         Create GFF/GTF line from dictionary with fields
         """

@@ -12,7 +12,7 @@ def _check_header(header):
     # Check mandatory fields present:
     num_samples = 0
     matching = []
-    mandatory_fields = ["source-ontology", "COLDATA", "VERSION"]
+    mandatory_fields = ["source-ontology", "COLDATA", "VERSION", "TOOLS"]
     for field in mandatory_fields:
             match = ([s for s in header if field in s])
             if len(match) != 0:
@@ -33,10 +33,12 @@ def _check_line(line, num, num_samples):
     gff = feature(line)
     fields = gff.columns
     attr = gff.attributes
+    errors = 0
 
     # Check seqID
     if not fields['chrom']:
         logger.error('MISSING seqID in line %s' % (num))
+        errors += 1
 
     # Check source
     source = (fields['source']).lower()
@@ -46,7 +48,7 @@ def _check_line(line, num, num_samples):
         valid_source = True
 
     if valid_source is False:
-        logger.error('INCORRECT SOURCE in line %s' % (num))
+        logger.warning('NOT STANDARD SOURCE in line %s' % (num))
 
     # Check type
     type = fields['type']
@@ -58,25 +60,31 @@ def _check_line(line, num, num_samples):
 
     if valid_type is False:
         logger.error('INCORRECT TYPE in line %s' % (num))
+        errors += 1
 
     # Check start/end
     if not fields['start']:
         logger.error('MISSING START value in line %s' % (num))
+        errors += 1
 
     if not fields['end']:
         logger.error('MISSING END value in line %s' % (num))
+        errors += 1
 
     # Check strand
     if str(fields['strand']) not in ["+", "-"]:
         logger.error('INCORRECT STRAND in line %s' % (num))
+        errors += 1
 
     # Check UID
     if 'UID' not in attr:
         logger.error('UID not found in line %s' % (num))
+        errors += 1
     else:
         if not read_id(attr['UID']):
             logger.error('UID is not in a correct format in line %s. '
                          'Use mirtop gff to fix this or open an issue.' % num)
+            errors += 1
 
     # Check attribute-variant
     variant = (attr['Variant']).lower()
@@ -87,6 +95,7 @@ def _check_line(line, num, num_samples):
 
     if valid_variant is False:
         logger.error('INCORRECT VARIANT type in line %s' % (num))
+        errors += 1
 
     # Check attribute-expression
 
@@ -94,12 +103,17 @@ def _check_line(line, num, num_samples):
     expression = list(filter(None, expression))
     if len(expression) != num_samples:
         logger.error('INCORRECT number of EXPRESSION VALUES \
-        in line %s' % (num))
+                      in line %s' % (num))
+        errors += 1
+
+    return errors
+
 
 
 def _check_file(file):
     """
     """
+    errors = 0
     # Get header to check.
     header = []
     with open(file) as ch:
@@ -112,15 +126,16 @@ def _check_file(file):
     if all_present is False:
         logger.error("%s doesn't contain all \
         the mandatory fields for the header." % file)
+        errors += 1
     logger.info("HEADER CHECKED")
     # Check lines
-
     with open(file) as ch:
         for num, line in enumerate(ch, 1):
             if line.startswith("##"):
                 next
             else:
-                _check_line(line, num, num_samples)
+                errors += _check_line(line, num, num_samples)
+    return errors
 
 
 def check_multiple(args):

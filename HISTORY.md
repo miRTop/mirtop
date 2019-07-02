@@ -1,5 +1,7 @@
 - 0.4.20a
 
+* Make TOOLS mandatory in header
+* Implement method to create gff line
 * Improve docs
 
 - 0.4.19

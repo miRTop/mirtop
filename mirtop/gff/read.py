@@ -13,7 +13,7 @@ logger = mylog.getLogger(__name__)
 
 def reader(args):
     """
-    Realign BAM hits to miRBAse to get better accuracy and annotation
+    Realign BAM hits to miRBase to get better accuracy and annotation
     """
     samples = []
     database = mapper.guess_database(args)

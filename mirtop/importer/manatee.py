@@ -141,8 +141,8 @@ def _bed(handle, bed_fn):
             start = int(cols[3])
             strand = cols[1]
             chrom = cols[2]
-            # is there no hits
-            # is the sequence always matching the read, assuming YES now
+            # if there no hits
+            # if the sequence always matching the read, assuming YES now
             # if not current or query_name!=current:
             query_sequence = query_sequence if not strand=="-" else reverse_complement(query_sequence)
             # logger.debug(("READ::Read name:{0} and Read sequence:{1}").format(line.query_name, sequence))

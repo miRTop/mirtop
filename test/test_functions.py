@@ -35,6 +35,7 @@ def annotate(fn, read_file, load=False, create=True, keep_name=False,
     args.sps = "hsa"
     args.gtf = "data/examples/annotate/hsa.gff3"
     args.out = "test/test_automated_output"
+    args.database = None
 
     if gtf:
         args.gtf = gtf
@@ -485,9 +486,17 @@ class FunctionsTest(unittest.TestCase):
     def test_validator(self):
         """test validator functions"""
         from mirtop.gff.validator import _check_file
-        _check_file("data/examples/gff/2samples.gff")
-        _check_file("data/examples/gff/coldata_missing.gff")
-        _check_file("data/examples/gff/3wrong_type.gff")
+
+        for file in ["coldata_missing.gff", "3wrong_type.gff",
+                     "missing_tools_header.gff"]:
+            errors = _check_file(os.path.join("data/examples/gff/", file))
+            if errors == 0:
+                raise ValueError("Validator didn't catch the error in %s." % file)
+
+        errors = _check_file("data/examples/gff/correct_file.gff")
+        if errors > 0:
+            raise ValueError("Validator did catch an unexpected error in correct_file.gff.") 
+
 
     @attr(spikeins=True)
     def test_spikeins(self):

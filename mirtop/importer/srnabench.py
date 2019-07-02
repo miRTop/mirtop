@@ -62,7 +62,7 @@ def read_file(folder, args):
 
             counts = int(cols[1])
 
-            hit = len(set([mirna.split("#")[1] for mirna in cols[4].split("$")]))
+            hits = len(set([mirna.split("#")[1] for mirna in cols[4].split("$")]))
 
             for nhit in cols[4].split("$"):
                 logger.debug("SRNABENCH::line hit: %s" % nhit)
@@ -97,7 +97,7 @@ def read_file(folder, args):
                              "  name:  {query_name}\n"
                              "  start: {start}\n"
                              "  external: {isoformat}\n"
-                             "  hit: {hit}".format(**locals()))
+                             "  hit: {hits}".format(**locals()))
                 logger.debug("SRNABENCH:: start %s end %s" % (start, end))
                 if len(precursors[chrom]) < start + len(query_sequence):
                     n_out += 1
@@ -110,12 +110,22 @@ def read_file(folder, args):
                 score = "."
                 strand = "+"
                 idu = make_id(query_sequence)
-                attrb = ("Read {query_sequence}; UID {idu}; Name {mirName};"
-                         " Parent {preName}; Variant {isoformat};"
-                         " Cigar {cigar}; Expression {counts};"
-                         " Filter {Filter}; Hits {hit};").format(**locals())
-                line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t"
-                        "{score}\t{strand}\t.\t{attrb}").format(**locals())
+                # attrb = ("Read {query_sequence}; UID {idu}; Name {mirName};"
+                #          " Parent {preName}; Variant {isoformat};"
+                #          " Cigar {cigar}; Expression {counts};"
+                #          " Filter {Filter}; Hits {hits};").format(**locals())
+                # line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t"
+                #         "{score}\t{strand}\t.\t{attrb}").format(**locals())
+                fields = {'seq_name': query_sequence, 'idseq': idu,
+                          'name': mirName, 'parent': preName,
+                          'variant': isoformat, 'cigar': cigar,
+                          'counts': counts, 'filter': Filter,
+                          'hits': hits, 'chrom': chrom,
+                          'start': start, 'end': end,
+                          'database': database, 'source': source,
+                          'score': score, 'strand': strand}
+                # TODO: convert to genomic if args.out_genomic
+                line = feature(fields).line
                 if args.add_extra:
                     extra = variant_with_nt(line, args.precursors,
                                             args.matures)

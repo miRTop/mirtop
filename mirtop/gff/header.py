@@ -33,6 +33,9 @@ def get_gff_version():
             " %s\n" % version.current)
 
 
+def make_tools(tools):
+    return("## TOOLS: %s" % ",".join(tools) )
+
 def _get_samples(samples):
     return "## COLDATA: %s" % ",".join(samples)
 

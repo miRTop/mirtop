@@ -93,13 +93,17 @@ def read_file(fn, args):
             start = start if not tstart else tstart
             chrom = chrom if not tstart else tchrom
             end = start + len(query_sequence)
-            hit = hits[idu]
-            attrb = ("Read {query_sequence}; UID {idu}; Name {mirName};"
-                     " Parent {preName}; Variant {isoformat};"
-                     " Isocode {isotag}; Cigar {cigar}; Expression {counts};"
-                     " Filter {Filter}; Hits {hit};").format(**locals())
-            line = ("{chrom}\t{database}\t{source}\t{start}\t{end}\t"
-                    "{score}\t{strand}\t.\t{attrb}").format(**locals())
+            hits = hits[idu]
+            fields = {'seq_name': query_sequence, 'idseq': idu,
+                      'name': mirName, 'parent': preName,
+                      'variant': isoformat, 'cigar': cigar,
+                      'counts': counts, 'filter': Filter,
+                      'hits': hits, 'chrom': chrom,
+                      'start': start, 'end': end,
+                      'database': database, 'source': source,
+                      'score': score, 'strand': strand}
+            # TODO: convert to genomic if args.out_genomic
+            line = feature(fields).line
             if args.add_extra:
                 extra = variant_with_nt(line, args.precursors, args.matures)
                 line = "%s Changes %s;" % (line, extra)

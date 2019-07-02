@@ -20,11 +20,10 @@ def guess_database(args):
 
     TODO: this needs to be generic to other databases.
     """
-    return _guess_database_file(args.gtf)
+    return _guess_database_file(args.gtf, args.database)
 
 
-def _guess_database_file(gff):
-    database = None
+def _guess_database_file(gff, database=None):
     with open(gff) as in_handle:
         for line in in_handle:
             if not line.startswith("#"):
