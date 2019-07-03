@@ -8,6 +8,7 @@ from mirtop.bam.bam import read_bam
 from mirtop.importer import seqbuster, srnabench, prost, isomirsea, manatee, optimir
 from mirtop.mirna.annotate import annotate
 from mirtop.gff import body, header, merge, read
+from mirtop.mirna.mapper import read_gtf_to_mirna
 import mirtop.libs.logger as mylog
 logger = mylog.getLogger(__name__)
 
@@ -62,22 +63,28 @@ def reader(args):
             ann = annotate(reads, matures, precursors)
             out_dts[fn] = body.create(ann, database, sample, args)
         h = header.create([sample], database, header.make_tools(args.format))
-        _write(out_dts[fn], h, fn_out)
+        _write(out_dts[fn], h, fn_out, args)
     # merge all reads for all samples into one dict
     if args.low_memory:
         return None
     merged = merge.merge(out_dts, samples)
     fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
-    _write(merged, header.create(samples, database, ""), fn_merged_out)
+    _write(merged, header.create(samples, database, ""), fn_merged_out, args)
 
 
-def _write(lines, header, fn):
+def _write(lines, header, fn, args = None):
     out_handle = open(fn, 'w')
     print(header, file=out_handle)
+    mapper = read_gtf_to_mirna(args.gtf)
     for m in lines:
         for s in sorted(lines[m].keys()):
             for hit in lines[m][s]:
-                print(hit[4], file=out_handle)
+                # TODO: convert to genomic if args.out_genomic
+                if args and args.out_genomic:
+                    lifted = body.lift_to_genome(hit[4], mapper)
+                    print(lifted, file=out_handle)
+                else:
+                    print(hit[4], file=out_handle)
     out_handle.close()
 
 

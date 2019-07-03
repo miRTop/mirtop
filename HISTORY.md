@@ -1,5 +1,6 @@
 - 0.4.20a
 
+* Support genomic coordinates as output in the gff
 * Make TOOLS mandatory in header
 * Implement method to create gff line
 * Improve docs

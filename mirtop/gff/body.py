@@ -130,7 +130,6 @@ def create(reads, database, sample, args, quiet=False):
                           'database': database, 'source': source,
                           'score': score, 'strand': strand}
                 line = feature(fields).line
-                # TODO: convert to genomic if args.out_genomic
                 logger.debug("GFF::%s" % line)
                 if args.add_extra:
                     extra = variant_with_nt(line, precursors, matures)
@@ -160,6 +159,54 @@ def create(reads, database, sample, args, quiet=False):
                     " %s" % filter_precursor)
         logger.info("Filtered by being low score: %s" % filter_score)
     return lines
+
+
+def lift_to_genome(line, mapper):
+    """
+    Function to get a class of type feature from classgff.py
+      and map the precursors coordinates to the genomic coordinates
+    
+    Args:
+        *line(str)*: string GFF line.
+        *mapper(dict)*: dict with mirna-precursor-genomic coordinas from
+          mirna.mapper.read_gtf_to_mirna function.
+
+    Returns:
+        *(line)*: string with GFF line with updated chr, star, end, strand
+ 
+    """
+    features = feature(line)
+    features.attributes["Variant"]
+    chr, start, end, strand, id = mapper[features.attributes["Name"]][features.attributes["Parent"]]
+    logger.debug("LIFT2GENOME:: %s of %s found in %s(%s) " % (features.attributes["Name"],
+                                                            features.attributes["Parent"],
+                                                            chr, strand))
+    nstart = start
+    nend = end
+    variants = read_variant(features.attributes["Variant"])
+    logger.debug("LIFT2GENOME:: variants %s " % (features.attributes["Variant"]))
+    if 'iso_5p' in variants:
+        if strand == "+":
+            nstart = start + variants['iso_5p']
+        else:
+            nend = end - variants['iso_5p']
+    if 'iso_3p' in variants:
+        if strand == "+":
+            nend = end + variants['iso_3p']
+        else:
+            nstart = start - variants['iso_3p']
+    if 'iso_add3p' in variants:
+        if strand == "+":
+            nend = nend + variants['iso_add3p']
+        else:
+            nstart = nstart - variants['iso_add3p']
+    logger.debug("LIFT2GENOME:: start %s to %s |  end %s to %s " % (start, nstart, end, nend))
+    features.columns['chrom'] = chr
+    features.columns['start'] = str(start)
+    features.columns['end'] = str(end)
+    features.columns['strand'] = strand
+    
+    return features.paste_columns()
 
 
 def create_line(read, name, database, args):
@@ -245,8 +292,8 @@ def read_variant(attrb, sep=" "):
             gff_dict[item_pair[0].strip()] = int(item_pair[1].strip())
         else:
             gff_dict[item_pair[0].strip()] = True
-    logger.debug("Keys found: %s" % gff_dict.keys())
-    logger.debug("Values found: %s" % gff_dict.values())
+    logger.debug("VARIANTS::Keys found: %s" % gff_dict.keys())
+    logger.debug("VARIANTS::Values found: %s" % gff_dict.values())
     return gff_dict
 
 

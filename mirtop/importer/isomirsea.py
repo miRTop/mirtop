@@ -93,12 +93,12 @@ def read_file(fn, args):
             start = start if not tstart else tstart
             chrom = chrom if not tstart else tchrom
             end = start + len(query_sequence)
-            hits = hits[idu]
+            hit = hits[idu]
             fields = {'seq_name': query_sequence, 'idseq': idu,
                       'name': mirName, 'parent': preName,
                       'variant': isoformat, 'cigar': cigar,
                       'counts': counts, 'filter': Filter,
-                      'hits': hits, 'chrom': chrom,
+                      'hits': hit, 'chrom': chrom,
                       'start': start, 'end': end,
                       'database': database, 'source': source,
                       'score': score, 'strand': strand}

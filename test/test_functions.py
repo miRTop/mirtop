@@ -69,6 +69,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna import mapper
         args = argparse.Namespace()
         args.gtf = "data/examples/annotate/hsa.gff3"
+        args.database = None
         db = mapper.guess_database(args)
         print("Database is %s" % db)
         if db != "miRBasev21":
