@@ -23,8 +23,8 @@ def create(samples, database, custom, filter=None):
     header = ""
     header += get_gff_version()
     header += _get_database(database)
-    header += _get_samples(samples)
     header += custom
+    header += _get_samples(samples)
     return header
 
 
@@ -34,7 +34,8 @@ def get_gff_version():
 
 
 def make_tools(tools):
-    return("## TOOLS: %s" % ",".join(tools) )
+    return("## TOOLS: %s\n" % ",".join(tools))
+
 
 def _get_samples(samples):
     return "## COLDATA: %s" % ",".join(samples)

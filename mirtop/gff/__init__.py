@@ -69,7 +69,7 @@ def reader(args):
         return None
     merged = merge.merge(out_dts, samples)
     fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
-    _write(merged, header.create(samples, database, ""), fn_merged_out, args)
+    _write(merged, header.create(samples, database, header.make_tools([args.format])), fn_merged_out, args)
 
 
 def _write(lines, header, fn, args = None):

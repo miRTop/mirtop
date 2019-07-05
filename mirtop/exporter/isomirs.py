@@ -10,6 +10,7 @@ from mirtop.gff.header import read_samples
 from mirtop.mirna.realign import get_mature_sequence, align_from_variants
 from mirtop.mirna.realign import read_id, variant_to_5p, \
                                  variant_to_3p, variant_to_add
+from mirtop.gff.body import variant_with_nt
 
 logger = mylog.getLogger(__name__)
 
@@ -18,63 +19,113 @@ def convert(args):
     """
     Main function to convert from GFF3 to isomiRs Bioc Package.
 
+    Reads a GFF file to produces output file containing Expression counts
+
     Args:
-      *args*: supported options for this sub-command.
-        See *mirtop.libs.parse.add_subparser_export()*.
+        *args(namedtuple)*: arguments parsed from command line with
+            *mirtop.libs.parse.add_subparser_counts()*.
+
+    Returns:
+        *file (file)*: with columns like:
+            UID miRNA Variant Sample1 Sample2 ... Sample N
     """
+    logger.info("INFO Writing TSV file to directory %s", args.out)
+    for gff in args.files:
+        logger.info("INFO Reading GFF file %s", gff)
+        _convert_file(gff, args)
+
+
+def _convert_file(gff, args):
+    sep = "\t"
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     matures = mapper.read_gtf_to_precursor(args.gtf)
-    for fn in args.files:
-        logger.info("Reading %s" % fn)
-        _read_file(fn, precursors, matures, args.out)
+    variant_header = sep.join(['mism', 'add', 't5', 't3'])
 
+    gff_file = open(gff, 'r')
+    out_file = os.path.join(args.out, "%s_rawData.tsv" % os.path.splitext(os.path.basename(gff))[0])
+    missing_parent = 0
+    missing_mirna = 0
+    unvalid_uid = 0
+    with open(out_file, 'w') as outh:
 
-def _read_file(fn, precursors, matures, out_dir):
-    samples = read_samples(fn)
-    for sample in samples:
-        with open(os.path.join(out_dir, "%s.mirna" % sample), 'w') as outh:
-            print("\t".join(
-                ["seq", "name", "freq", "mir", "start", "end",
-                 "mism", "add", "t5", "t3", "s5", "s3", "DB",
-                 "precursor", "ambiguity"]), file=outh)
-    with open(fn) as inh:
-        for line in inh:
-            if line.startswith("#"):
-                continue
-            gff = feature(line)
-            cols = gff.columns
+        for samples_line in gff_file:
+            if samples_line.startswith("## COLDATA:"):
+                samples = sep.join(samples_line.strip().split("COLDATA:")[1].strip().split(","))
+                header = sep.join(['seq', 'mir',
+                                   variant_header, samples])
+                print(header, file=outh)
+                break
+
+        for mirna_line in gff_file:
+            gff = feature(mirna_line)
             attr = gff.attributes
-            read = read_id(attr["UID"])
-            t5 = variant_to_5p(precursors[attr["Parent"]],
-                               matures[attr["Parent"]][attr["Name"]],
-                               attr["Variant"])
-            t3 = variant_to_3p(precursors[attr["Parent"]],
-                               matures[attr["Parent"]][attr["Name"]],
-                               attr["Variant"])
-            add = variant_to_add(read,
-                                 attr["Variant"])
-            mature_sequence = get_mature_sequence(
-                precursors[attr["Parent"]],
-                matures[attr["Parent"]][attr["Name"]])
-            mm = align_from_variants(read,
-                                     mature_sequence,
-                                     attr["Variant"])
-            if len(mm) > 1:
+            UID = attr["UID"]
+            Read = attr["Read"]
+            mirna = attr["Name"]
+            parent = attr["Parent"]
+            variant = attr["Variant"]
+            try:
+                Read = read_id(UID)
+            except KeyError:
+                unvalid_uid += 1
                 continue
-            elif len(mm) == 1:
-                mm = "".join(list(map(str, mm[0])))
-            else:
-                mm = "0"
-            hit = attr["Hits"] if "Hits" in attr else "1"
-            logger.debug("exporter::isomir::decode %s" % [attr["Variant"],
-                                                          t5, t3, add, mm])
-            # Error if attr["Read"] doesn't exist
-            # print(cols)
-            line = [read, attr["Read"], "0", attr["Name"],
-                    cols['source'], cols['type'],
-                    mm, add, t5, t3, "NA", "NA", "miRNA", attr["Parent"], hit]
-            for sample, counts in zip(samples, attr["Expression"].split(",")):
-                with open(os.path.join(out_dir, "%s.mirna" % sample),
-                          'a') as outh:
-                    line[2] = counts
-                    print("\t".join(line), file=outh)
+
+            expression = sep.join(attr["Expression"].strip().split(","))
+            cols_variants = sep.join(_expand(variant))
+            logger.debug("COUNTS::Read:%s" % Read)
+            logger.debug("COUNTS::EXTRA:%s" % variant)
+            if parent not in precursors:
+                missing_parent += 1
+                continue
+            if mirna not in matures[parent]:
+                missing_mirna += 1
+                continue
+            extra = variant_with_nt(mirna_line, precursors, matures)
+            if extra == "Invalid":
+                continue
+            logger.debug("COUNTS::EXTRA:%s" % extra)
+            cols_variants = sep.join(_expand(extra, True))
+            summary = sep.join([Read,  mirna,
+                                cols_variants, expression])
+            logger.debug(summary)
+            print(summary, file=outh)
+
+    gff_file.close()
+    logger.info("Missing Parents in hairpin file: %s" % missing_parent)
+    logger.info("Missing MiRNAs in GFF file: %s" % missing_mirna)
+    logger.info("Non valid UID: %s" % unvalid_uid)
+    logger.info("Output file is at %s" % out_file)
+
+
+def _expand(variant, nts=False):
+    """Expand Variant field into list for iso_5p, iso_3p, iso_add3p, iso_snv"""
+    list_variant = []
+    isomir = {}
+    snp_var = []
+    for v in variant.split(","):
+        if v.find(":") > 0:
+            isomir[v.split(":")[0]] = v.split(":")[1]
+        elif v.find("snv") > 0:
+            snp_var.append(1)
+    if nts:
+        if "iso_snv" in isomir:
+            list_variant.append(isomir["iso_snv"])
+        else:
+            list_variant.append(0)
+    else:
+        snp = sum(snp_var)
+        list_variant.append(snp)
+    if "iso_add3p" in isomir:
+        list_variant.append(isomir["iso_add3p"])
+    else:
+        list_variant.append(0)
+    if "iso_5p" in isomir:
+        list_variant.append(isomir["iso_5p"])
+    else:
+        list_variant.append(0)
+    if "iso_3p" in isomir:
+        list_variant.append(isomir["iso_3p"])
+    else:
+        list_variant.append(0)
+
+    return list(map(str, list_variant))

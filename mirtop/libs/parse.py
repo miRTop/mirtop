@@ -119,7 +119,7 @@ def _add_subparser_export(subparsers):
     parser.add_argument("--hairpin", help="hairpin.fa")
     parser.add_argument("--gtf", help="gtf file with precursor and mature position to genome.")
     parser.add_argument("--format", help="Output format",
-                        choices=['seqbuster', 'fasta', 'vcf'], default="seqbuster")
+                        choices=['seqbuster', 'fasta', 'vcf', 'isomir'], default="isomir")
     parser = _add_debug_option(parser)
     return parser
 
