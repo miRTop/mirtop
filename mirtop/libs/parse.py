@@ -15,7 +15,7 @@ def parse_cl(in_args):
                 "simulator": _add_subparser_simulator,
                 "counts": _add_subparser_counts,
                 "export": _add_subparser_export,
-                "validator": _add_subparser_validator,
+                "validate": _add_subparser_validator,
                 "spikein": _add_subparser_spikein,
                 "update": _add_subparser_update
                 }
@@ -169,7 +169,7 @@ def _add_subparser_counts(subparsers):
 
 
 def _add_subparser_validator(subparsers):
-    parser = subparsers.add_parser("validator", help="validate if the file has the correct format")
+    parser = subparsers.add_parser("validate", help="validate if the file has the correct format")
     parser.add_argument("files", nargs="*", help="GFF files")
     parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
                         help="folder of output files")

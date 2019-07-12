@@ -483,7 +483,7 @@ class FunctionsTest(unittest.TestCase):
         if (truthv > list(gff.values())) - (list(gff.values()) > truthv):
             raise ValueError("Not found expected Values.")
 
-    @attr(validator=True)
+    @attr(validate=True)
     def test_validator(self):
         """test validator functions"""
         from mirtop.gff.validator import _check_file

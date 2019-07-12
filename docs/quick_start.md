@@ -44,10 +44,18 @@ mirtop gff --format prost -sps hsa --hairpin  examples/annotate/hairpin.fa --gtf
 miRNA annotation generated from [isomiR-SEA]() tool.
 
 ```
-mirtop gff --format isomirsea -sps hsa --hairpin  examples/annotate/hairpin.fa --gtf  examples/annotate/hsa.gff3 -o  test_out examples/isomir-sea/tagMir-all.gff
+mirtop validate examples/gff/correct_file.gff
 ```
 
 ## Operations
+
+### Validator
+
+To validate your mirGFF3 file and make sure if follows the current format:
+
+```
+mirtop gff --format isomirsea -sps hsa --hairpin  examples/annotate/hairpin.fa --gtf  examples/annotate/hsa.gff3 -o  test_out examples/isomir-sea/tagMir-all.gff
+```
 
 ### Get statistics from GFF
 

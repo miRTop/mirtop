@@ -2,6 +2,7 @@
 
 [![](https://travis-ci.org/miRTop/mirtop.svg?branch=master)](https://travis-ci.org/miRTop/mirtop#)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![biorxiv](https://img.shields.io/badge/biorxiv-published-red.svg)](https://www.biorxiv.org/content/10.1101/505222v1)
 
 Command line tool to annotate with a standard naming miRNAs e isomiRs.
 
@@ -14,7 +15,7 @@ Chat
 [Contributors to code](https://gitter.im/mirtop/devel)
 
 Cite
----------
+----
 
 http://mirtop.github.io
 
@@ -79,7 +80,7 @@ mirtop gff --sps hsa --hairpin examples/annotate/hairpin.fa --gtf examples/annot
 Output
 ------
 
-The `mirtop gff` generates the GFF3 adapter format to capture miRNA variations. The output is explained [here](https://github.com/miRTop/incubator/blob/master/format/definition.md).
+The `mirtop gff` generates the GFF3 adapted format to capture miRNA variations. The output is explained [here](https://github.com/miRTop/mirGFF3).
 
 Contributors
 ------------

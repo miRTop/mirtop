@@ -124,7 +124,7 @@ def _check_file(file):
                 break
     all_present, num_samples = _check_header(header)
     if all_present is False:
-        logger.error("%s doesn't contain all \
+        logger.warning("%s doesn't contain all \
         the mandatory fields for the header." % file)
         errors += 1
     logger.info("HEADER CHECKED")
