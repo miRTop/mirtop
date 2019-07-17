@@ -1,4 +1,4 @@
-- 0.4.20a
+- 0.4.20
 
 * Support export isomiR rawData output
 * Support genomic coordinates as output in the gff
