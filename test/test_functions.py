@@ -317,29 +317,21 @@ class FunctionsTest(unittest.TestCase):
     def test_alignment(self):
         """testing alignments function"""
         from mirtop.bam import bam
-        print("\nlast1D\n")
-        print(annotate("data/aligments/let7-last1D.sam", bam.read_bam))
-        # mirna TGAGGTAGTAGGTTGTATAGTT
-        # seq   AGAGGTAGTAGGTTGTA
-        print("\n1D\n")
-        print(annotate("data/aligments/let7-1D.sam", bam.read_bam))
-        # mirna TGAGGTAG-TAGGTTGTATAGTT
-        # seq   TGAGGTAGGTAGGTTGTATAGTTA
-        print("\nlast7M1I\n")
-        print(annotate("data/aligments/let7-last7M1I.sam", bam.read_bam))
-        # mirna TGAGGTAGTAGGTTGTATAGTT
-        # seq   TGAGGTAGTAGGTTGTA-AGT
-        print("\nmiddle1D\n")
-        print(annotate("data/aligments/let7-middle1D.sam", bam.read_bam))
-        # mirna TGAGGTAGTAGGTTGTATAGTT
-        # seq   TGAGGTAGTAGGTTGTATAGTT
-        print("\nperfect\n")
-        print(annotate("data/aligments/let7-perfect.sam", bam.read_bam))
-        # mirna TGAGGTAGTAGGTTGTATAGTT
-        # seq   TGAGGTAGTAGGTTGTATAG (3tt 3TT)
-        print("\ntriming\n")
-        print(annotate("data/aligments/let7-triming.sam", bam.read_bam))
-
+        from mirtop.gff.classgff import feature
+        fns = {"let7-last1D.sam": {56:"iso_add3p:1,iso_snv"},
+               "let7-1D.sam": {5:"iso_snv,iso_3p:-5"},
+               "let7-last7M1I.sam": {5:"iso_add3p:1,iso_snv_seed"},
+               "let7-middle1D.sam": {5:"iso_snv_central_supp,iso_3p:-2"},
+               "let7-perfect.sam": {5:"NA"},
+               "let7-triming.sam": {5:"iso_3p:+2",4:"iso_5p:-1",6:"iso_5p:+1,iso_3p:-3"}}
+        #import pdb; pdb.set_trace()
+        for fn in fns:
+            gff = annotate("data/aligments/%s" % fn, bam.read_bam)
+            for pos in gff['hsa-let-7a-1']:
+                f = feature(gff['hsa-let-7a-1'][pos][0][4])
+                if not set(f.attributes['Variant'].split(",")) == set(fns[fn][pos].split(",")):
+                    raise ValueError("Error in %s" % fn)
+   
     @attr(alignment_genomic=True)
     def test_alignment_genomic(self):
         """testing alignments function"""
