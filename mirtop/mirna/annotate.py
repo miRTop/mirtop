@@ -76,6 +76,7 @@ def annotate(reads, mature_ref, precursors, quiet=False):
             values are *mirtop.realign.hits*
     """
     n_iso = 0
+    n_skip_precursor = 0
     for r in reads:
         logger.debug(("\nANN::READ::read {r}").format(**locals()))
         for ps in reads[r].precursors:
@@ -93,7 +94,10 @@ def annotate(reads, mature_ref, precursors, quiet=False):
                                        cigar = reads[r].precursors[ps].cigar,
                                        **locals()))
                 iso_copy = copy.deepcopy(reads[r].precursors[ps])
-                is_iso = _coord(reads[r].sequence, start, mi, precursors[ps], iso_copy)
+                if not precursors[ps[0]]:
+                    n_skip_precursor += 1
+                    continue
+                is_iso = _coord(reads[r].sequence, start, mi, precursors[ps[0]], iso_copy)
                 logger.debug(("ANN::is_iso:{is_iso}").format(**locals()))
                 logger.debug("ANN::annotation:%s iso:%s" % (r, reads[r].precursors[ps].format()))
                 logger.debug("ANN::annotation:%s Variant:%s" % (r, reads[r].precursors[ps].formatGFF()))
@@ -104,4 +108,5 @@ def annotate(reads, mature_ref, precursors, quiet=False):
                     # break
     if not quiet:
         logger.info("Valid hits (+/- reference miRNA): %s" % n_iso)
+        logger.info("Skipped due to not precursor sequence: %s" % n_skip_precursor)
     return reads

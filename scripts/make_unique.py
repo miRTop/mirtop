@@ -17,6 +17,8 @@ parser.add_argument("-o", "--out", default="spikeins.fa",
                     help="Name used for output files.")
 parser.add_argument("--seed", help="set up seed for reproducibility.",
                     default=42)
+parser.add_argument("--max_size", help="maximum size allowed in the final output.",
+                    default=25)
 
 args = parser.parse_args()
 random.seed(args.seed)
@@ -45,11 +47,12 @@ def _read_fasta(fa):
     return source
 
 
-def _write_fasta(sequences, filename):
+def _write_fasta(sequences, filename, max=25):
     with open(filename, 'w') as outh:
         for name in sequences:
             if sequences[name]:
-                print(">%s\n%s" % (name, sequences[name]), file=outh)
+                if len(sequences[name]) < max:
+                    print(">%s\n%s" % (name, sequences[name]), file=outh)
     return filename
 
 
@@ -83,4 +86,4 @@ runner.run(("razers3 -dr 5 -i 75 -rr 80 -f -so 1 -o {output} {target} {query}").
 uniques = _parse_hits(sam, source)
 
 # Write uniques to fasta
-_write_fasta(uniques, args.out)
+_write_fasta(uniques, args.out, args.max_size)

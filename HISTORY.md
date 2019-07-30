@@ -1,3 +1,7 @@
+- 0.4.21a
+
+* Missing trimming events since 0.4.19
+
 - 0.4.20
 
 * Support export isomiR rawData output
