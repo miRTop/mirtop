@@ -1,4 +1,4 @@
-- 0.4.21a
+- 0.4.21
 
 * Missing trimming events since 0.4.19
 

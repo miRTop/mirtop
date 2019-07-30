@@ -3,7 +3,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '0.4.21a'
+version = '0.4.21'
 url = 'http://github.com/mirtop/mirtop'
 
 
