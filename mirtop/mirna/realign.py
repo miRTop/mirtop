@@ -464,13 +464,14 @@ def align_from_variants(sequence, mature, variants):
     if "iso_add3p" in k:
         sequence = sequence[:-1 * var_dict["iso_add3p"]]
     if "iso_3p" in k:
-        mature = mature[:-(7 + (-1 * var_dict["iso_3p"]))]
+        shift = 7 + (-1 * var_dict["iso_3p"])
+        if shift != 0:
+            mature = mature[:-(shift)]
     else:
         mature = mature[:-7]
     logger.debug("realign::align_from_variants::snp %s" % snp)
     logger.debug("realign::align_from_variants::sequence %s" % sequence)
     logger.debug("realign::align_from_variants::mature %s" % mature)
-
     if len(sequence) != len(mature):  # in case of indels, align again
         a = align(sequence, mature)
         sequence = a[0]
