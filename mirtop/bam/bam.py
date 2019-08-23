@@ -110,6 +110,7 @@ def low_memory_genomic_bam(bam_fn, sample, out_handle, args):
     logger.info("Intersecting bed file.")
     intersect_fn = intersect(bed_fn, args.gtf)
     logger.info("Loading database.")
+    # TODO this'll return conn_reads and conn_counts
     conn = _read_lifted_bam_alpha(intersect_fn, bam_fn, args)
     rows = sql.select_all_reads(conn)
     lines = []
@@ -120,6 +121,8 @@ def low_memory_genomic_bam(bam_fn, sample, out_handle, args):
             lines.append(row)
             current = row[0]
         else:
+            # TODO counts of sequence = conn_counts.query UID
+            # it could be counts only same location UID+chrom+start, or counts all UID
             reads = _read_lifted_lines(lines, precursors, database)
             ann = annotate(reads, args.matures, args.precursors, quiet=True)
             gff_lines = body.create(ann, args.database, sample, args, quiet=True)
@@ -152,15 +155,14 @@ def _analyze_line(line, reads, precursors, handle, args):
     if query_name not in reads:
         reads[query_name].set_sequence(sequence)
         reads[query_name].counts = _get_freq(query_name)
+        # TODO if args.quant set to 0
+    # TODO if args.quant increase by 1
     if line.is_reverse and not args.genomic:
         logger.debug("READ::Sequence is reverse: %s" % line.query_name)
         return reads
     chrom = handle.getrname(line.reference_id)
     start = line.reference_start
-    # If genomic endcode, liftover to precursor position
- #   if not start:
- #       logger.debug(("READ::not start found %s" % line.reference_start))
- #       return reads
+
     cigar = line.cigartuples
     # if line.cigarstring.find("I") > -1:
     #     indels_skip += 1
@@ -177,7 +179,7 @@ def _analyze_line(line, reads, precursors, handle, args):
         return reads
     iso.subs, iso.add, iso.cigar = filter.tune(
         reads[query_name].sequence, precursors[chrom],
-        start, cigar, line)
+        start, cigar)
     logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
     logger.debug("READ::iso add %s iso subs %s" % (iso.add, iso.subs))
     reads[query_name].set_precursor(chrom, iso)
@@ -198,11 +200,13 @@ def _read_lifted_bam_alpha(bed_fn, bam_fn, args):
     conn = sql.create_connection()
     key = "name" if args.keep_name else "sequence"
     sql.create_reads_table(conn, key)
+    # TODO create counts table sequence and autoincrement or from read
     cur = conn.cursor()
     counts = 0
     seen = set()
     for line in bed_fn:
         fields = _parse_intersect(line, database, bed=True)
+        # TODO add sequence to count table args.quant on/off name=UID or name=UID+chrom+pos
         if fields:
             hit = ".".join(fields[:3])
             if hit not in seen:
@@ -211,9 +215,10 @@ def _read_lifted_bam_alpha(bed_fn, bam_fn, args):
                 seen.add(hit)
         # if counts == 1000:
         #     counts = 0
-    del(hit)
+    del(seen)
     logger.info("Read %s lines that intersected with miRNAs." % counts)
     conn.commit()
+    # TODO this'll return conn_reads and conn_counts
     return conn
 
 
