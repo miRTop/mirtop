@@ -168,7 +168,7 @@ def _analyze_line(line, reads, precursors, handle, args):
     iso.align = line
     iso.set_pos(start, len(reads[query_name].sequence))
     logger.debug("READ::From BAM start %s end %s at chrom %s" % (iso.start, iso.end, chrom))
-    if len(precursors[chrom]) < start + len(reads[query_name].sequence):
+    if len(precursors[chrom].replace("N","")) + 3 < start + len(reads[query_name].sequence):
         logger.debug("READ::%s start + %s sequence size are bigger than"
                      " size precursor %s" % (
                                              line.reference_id,
@@ -177,7 +177,7 @@ def _analyze_line(line, reads, precursors, handle, args):
         return reads
     iso.subs, iso.add, iso.cigar = filter.tune(
         reads[query_name].sequence, precursors[chrom],
-        start, cigar)
+        start, cigar, line)
     logger.debug("READ::After tune start %s end %s" % (iso.start, iso.end))
     logger.debug("READ::iso add %s iso subs %s" % (iso.add, iso.subs))
     reads[query_name].set_precursor(chrom, iso)

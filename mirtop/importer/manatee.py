@@ -139,7 +139,7 @@ def _bed(handle, bed_fn):
             query_sequence = cols[9]
             counts = cols[14]
             start = int(cols[3])
-            strand = cols[1]
+            strand = "-" if cols[1] == "16" else "+"
             chrom = cols[2]
             # if there no hits
             # if the sequence always matching the read, assuming YES now

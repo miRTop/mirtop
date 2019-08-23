@@ -24,7 +24,7 @@ def main(**kwargs):
                       kwargs['args'].print_debug)
     logger = mylog.getLogger(__name__)
     start = time.time()
-
+    logger.warning("This is devel-live changes")
     if "gff" in kwargs:
         logger.info("Run annotation")
         reader(kwargs["args"])
