@@ -1,89 +1,137 @@
-import os
+# import os
 import argparse
 import sqlite3
 import re
+from datetime import datetime
+import time
 
-conn = sqlite3.connect('mirtop.db')
-parser = argparse.ArgumentParser(description='Create and query the contents of GFF3 through sqlite')
-subparsers = parser.add_subparsers(help='commands')
-
-# Options for creating database
-create_parser = subparsers.add_parser('create', help="Create new database")
-create_parser.add_argument('--gff', metavar='', action='store', required=True, help="/path/to/GFF/file/file.gff")
-create_parser.add_argument('--db', metavar='', action='store', help='Database name to create. (default: mirtop.db)')
-
-# Query from database
-query_parser = subparsers.add_parser('query', help='Query from database')
-query_parser.add_argument('--db', metavar='', action='store', required=True, help='Database name to query from ...')
-query_parser.add_argument('--ex', metavar='', action='store', help='Expression of SQL query')
-
-args = parser.parse_args()
-user_options = vars(args)
-
-'''
-header:
-
-    (R) small RNA GFF version ## VERSION: 1.2 
-    (R) database: ##source-ontology using FAIRSharing.org: miRBase: (FAIRsharing) doi:10.25504/fairsharing.hmgte8 
-    mirGeneDB: http://mirgenedb.org mirCarta: https://mircarta.cs.uni-saarland.de/ Custom database: please,
-     provide a link to an archive release if this is the case 
-    (R) tools used starting with the label ## TOOLS: and followed by tools used to call isomiRs separated by 
-    comma (,). 
-    (O) commands used to generate the file. At least information about adapter removal, filtering, 
-    aligner, mirna tool. All of them starting like: ## CMD: . Can be multiple lines starting with this tag. 
-    (O) genome/database version used (maybe try to get from BAM file if GFF3 generated from it): ## REFERENCE: (R) sample 
-    names used in attribute:Expression: ## COLDATA: separated by comma: ,. 
-    (O) Filter tags meaning: See Filter attribute below. Different filter tags should be separated by , character. 
-    Example: ## FILTER: and example would be ## FILTER: PASS(is ok), REJECT(false positive), REJECT 
-    lowcount(rejected due to low count in data). 
-
-'''
+now = datetime.now()
+# dd/mm/YY H:M:S
+d2 = now.strftime("%B %d, %Y %H:%M:%S")
 
 
-def insert_sql():
+# print("date and time =", d2)
+
+def insert_sql(args):
+    if args.db:
+        conn = sqlite3.connect(args.db + '.db')
+        c = conn.cursor()
+    else:
+        conn = sqlite3.connect('mirtop.db')
+        c = conn.cursor()
+
     with open(args.gff, 'r') as f:
+        version = source = data_sets = tools = commands_exec = filter_tags = citation = num_records = ""
+        cnt = 0
+        c.execute('''CREATE TABLE IF NOT EXISTS data_sets(seqID text, source_file text, type text, start real, 
+        end real, score text, strand text, phase text, UID text, Read text, Name text, Parent text, Variant text, 
+        iso_5p real, iso_3p real, iso_add3p real, iso_snp	real, iso_5p_nt	real, iso_3p_nt	real, iso_add3p_nt real, 
+        iso_snp_nt real, source text, cigar text, hits real, alias text, genomic_pos text, expression text, filter, 
+        seed_fam text)''')
+        conn.commit()
         for text in f:
             # HEADER INFORMATION
-            if re.search("## VERSION", text):
+            if re.search("^## VERSION", text):  # (R)
                 version = (text.strip().split(' ')[-1])
-            if re.search("## source-ontology", text):
+            elif re.search("^## source-ontology", text):  # (R)
                 source = (text.strip().split(' ')[-1])
-            if re.search("## COLDATA", text):
-                data_sets = (text.strip().split(' ')[-1])  # Might contain more than one data set, need to edit in furute
-            if re.search("## TOOLS", text):
+            elif re.search("^## COLDATA", text):  # (R)
+                data_sets = (
+                    text.strip().split(' ')[-1])  # Might contain more than one data set, need to edit in future
+            elif re.search("^## TOOLS", text):  # (R)
                 tools = (text.strip().split(' ')[-1])
-            if re.search("## CMD", text):
+            elif re.search("^## CMD", text):  # (O)
                 commands_exec = (text.strip().split(' ')[-1])
-            if re.search("## FILTER", text):
+            elif re.search("^## FILTER", text):  # (O)
                 filter_tags = (text.strip().split(' ')[-1])
-            if re.search("## REFERENCE", text):
-                references = (text.strip().split(' ')[-1])
-            if not text.startswith('#'):
-                text = f.readline().strip().split('\t')
-                print(text, end='')
-                break
-        pass
+            elif re.search("^## REFERENCE", text):  # (O)
+                citation = (text.strip().split(' ')[-1])
+            # BODY - INFORMATION
+            elif not re.search("^#", text):
+                cnt += 1
+                # print(str(cnt) + "    " + text)
+                lines = text.strip().split('\t')
+                if '=' in lines[-1]:
+                    lines[-1].replace('=', ' ')
+
+                info = lines[-1].split('; ')
+                info_dict = variant_dict = dict()
+                for elements in info:
+                    (k, v) = elements.split(' ')
+                    info_dict.update([(k, v)])
+                    # iso_snp, iso_add: +4, iso_5p: -1;
+                    if 'Variant' in k and ":" in v:
+                        value_list = v.split(',')
+                        for iso_vars in value_list:
+                            if ":" in iso_vars:
+                                (sub_k, sub_v) = iso_vars.split(':')
+                                # print(sub_k + " ------> Here I am " + sub_v)
+                                # time.sleep(3)
+                                variant_dict.update([(str(sub_k), str(sub_v))])
+
+                c.execute(
+                    "INSERT INTO data_sets(seqID, source_file, type, start, end, score, strand, phase, UID, Read, "
+                    "Name, Parent, Variant, iso_5p, iso_3p, iso_add3p, iso_snp, iso_5p_nt, iso_3p_nt, iso_add3p_nt, "
+                    "iso_snp_nt, source, cigar, hits, alias, genomic_pos, expression, filter, seed_fam) VALUES (?, "
+                    "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (lines[0], lines[1], lines[2], lines[3], lines[4], lines[5], lines[6], lines[7],
+                     info_dict.get('UID'), info_dict.get('Read'), info_dict.get('Name'), info_dict.get('Parent'),
+                     info_dict.get('Variant'), str(info_dict.setdefault('iso_5p', None)),
+                     str(info_dict.setdefault('iso_3p', None)), str(info_dict.setdefault('iso_add3p', None)),
+                     str(info_dict.setdefault('iso_snp', None)), str(info_dict.setdefault('iso_5p_nt', None)),
+                     str(info_dict.setdefault('iso_3p_nt', None)), str(info_dict.setdefault('iso_add3p_nt', None)),
+                     str(info_dict.setdefault('iso_snp_nt', None)), source, info_dict.setdefault('Cigar', None),
+                     info_dict.setdefault('Hits', None), info_dict.setdefault('Alias', None),
+                     info_dict.setdefault('Genomic', None), info_dict.setdefault('Expression', 0),
+                     info_dict.setdefault('Filter', None), info_dict.setdefault('Seed_fam', None)))
+                conn.commit()
+                # break
+
+        c.execute('''CREATE TABLE IF NOT EXISTS summary(version text, source text, data_sets text, tools text,
+         commands_exec text, filter_tags text, citation text, records real, date_stamp text)''')
+        c.execute("INSERT INTO summary(version, source, data_sets, tools, commands_exec, filter_tags, citation, "
+                  "records, date_stamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (version, source, data_sets, tools, commands_exec, filter_tags, citation, cnt, d2))
+
+        # info_dict.setdefault('Sex', None)
+
+        conn.commit()
+
     print()
     print("I am in create db")
     print(args.gff)
 
 
-def query_sql():
+def query_sql(args):
     print("I am in query")
     print(args.db)
     pass
 
 
-def main():
+def gff2sql():
+    parser = argparse.ArgumentParser(description='Create and query the contents of GFF3 through sqlite')
+    subparsers = parser.add_subparsers(help='commands')
+
+    # Options for creating database
+    create_parser = subparsers.add_parser('create', help="Create new database")
+    create_parser.add_argument('--gff', metavar='', action='store', required=True, help="/path/to/GFF/file/file.gff")
+    create_parser.add_argument('--db', metavar='', action='store', help='Database name to create. (default: mirtop.db)')
+
+    # Query from database
+    query_parser = subparsers.add_parser('query', help='Query from database')
+    query_parser.add_argument('--db', metavar='', action='store', required=True, help='Database name to query from ...')
+    query_parser.add_argument('--ex', metavar='', action='store', help='Expression of SQL query')
+
+    args = parser.parse_args()
+    user_options = vars(args)
     if 'gff' in user_options.keys():
-        insert_sql()
+        insert_sql(args)
     elif 'db' in user_options.keys():
-        query_sql()
+        query_sql(args)
     else:
         print("Version: v1.0.0")
         print()
         print("usage: gff2sql [-h] {create,query} ... ")
 
 
-if __name__ == "__main__":
-    main()
+gff2sql()
