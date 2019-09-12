@@ -17,7 +17,8 @@ def parse_cl(in_args):
                 "export": _add_subparser_export,
                 "validate": _add_subparser_validator,
                 "spikein": _add_subparser_spikein,
-                "update": _add_subparser_update
+                "update": _add_subparser_update,
+		"convert": _add_subparser_convert
                 }
     parser = argparse.ArgumentParser(description="small RNA analysis")
     parser.add_argument("--version", action="store_true",help="show version.")
@@ -193,5 +194,17 @@ def _add_subparser_update(subparsers):
     parser.add_argument("files", nargs="*", help="GFF/GTF files.")
     parser.add_argument("-o", "--out", dest="out", default="tmp_mirtop",
                         help="folder of output files")
+    parser = _add_debug_option(parser)
+    return parser
+
+def _add_subparser_convert(subparsers):
+    parser = subparsers.add_parser("convert", help="Convert GFF to user specified format.")
+    parser.add_argument("--format", help="Convert GFF to <option> format, default sql file.",
+                        choices=['sql'], default="sql")
+    parser.add_argument("--gff",
+                        help="GFF file with precursor and mature position to genome.")
+    parser.add_argument("-o", "--out", dest="out", required=1,
+                        help="dir of output files")
+    parser.add_argument('--db', metavar='', action='store', help='SQL Database name. (default: mirtop.db)')
     parser = _add_debug_option(parser)
     return parser
