@@ -1,4 +1,9 @@
-- 0.4.21a
+- 0.4.22
+
+* fix when reads map halfway on to the edge
+* fix edge case where limit==variant_size 
+
+- 0.4.21
 
 * Missing trimming events since 0.4.19
 
