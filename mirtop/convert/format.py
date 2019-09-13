@@ -15,7 +15,7 @@ d2 = now.strftime("%B %d, %Y %H:%M:%S")
 
 def insert_sql(args):
     if args.db:
-        out_file = op.join(args.out, (args.db))
+        out_file = op.join(args.out, args.db)
         conn = sqlite3.connect(out_file)
         c = conn.cursor()
     else:
@@ -52,7 +52,6 @@ def insert_sql(args):
             # BODY - INFORMATION
             elif not re.search("^#", text):
                 cnt += 1
-                # print(str(cnt) + "    " + text)
                 lines = text.strip().split('\t')
                 if '=' in lines[-1]:
                     lines[-1].replace('=', ' ')
@@ -62,14 +61,11 @@ def insert_sql(args):
                 for elements in info:
                     (k, v) = elements.split(' ')
                     info_dict.update([(k, v)])
-                    # iso_snp, iso_add: +4, iso_5p: -1;
                     if 'Variant' in k and ":" in v:
                         value_list = v.split(',')
                         for iso_vars in value_list:
                             if ":" in iso_vars:
                                 (sub_k, sub_v) = iso_vars.split(':')
-                                # print(sub_k + " ------> Here I am " + sub_v)
-                                # time.sleep(3)
                                 variant_dict.update([(str(sub_k), str(sub_v))])
 
                 c.execute(
@@ -100,59 +96,29 @@ def insert_sql(args):
 
         conn.commit()
 
-    print()
-    print("I am in create db")
-    print(args.gff)
-
 
 def query_sql(args):
-    print("I am in query")
+    print("Function query is being implemented, will be updated soon!!!")
     print(args.db)
     pass
 
 
 def sql(args):
-    #insert_sql(args)
     user_options = vars(args)
-    if args.gff: 
-    #if 'gff' in user_options.keys():
+    if args.gff:
         insert_sql(args)
     elif args.db:
         query_sql(args)
     else:
         print("Usage: mirtop convert --format sql --gff <input.gff> --db <input_dabasename>")
         print()
-    print(user_options)
-    print("Passed argument was SQL and requirement fulfilled")
-    pass
+    # print(user_options)
+    # print("Passed argument was SQL and requirement fulfilled")
 
 
 def format_option(args):
-    print(args)
+    # print(args)
     if args.format == 'sql':
         sql(args)
     else:
         pass
-
-#    parser = argparse.ArgumentParser(description='Create and query the contents of GFF3 through sqlite')
-#    subparsers = parser.add_subparsers(help='commands')
-#
-#    # Options for creating database
-#    create_parser = subparsers.add_parser('create', help="Create new database")
-#    create_parser.add_argument('--gff', metavar='', action='store', required=True, help="/path/to/GFF/file/file.gff")
-#    create_parser.add_argument('--db', metavar='', action='store', help='Database name to create. (default: mirtop.db)')
-#
-#    # Query from database
-#    query_parser = subparsers.add_parser('query', help='Query from database')
-#    query_parser.add_argument('--db', metavar='', action='store', required=True, help='Database name to query from ...')
-#    query_parser.add_argument('--ex', metavar='', action='store', help='Expression of SQL query')
-#    query_parser.add_argument('--overview', metavar='', action='store', help='Expression of SQL query')
-#
-#    args = parser.parse_args()
-#    user_options = vars(args)
-#    else:
-#        print("Version: v1.0.0")
-#        print()
-#        print("usage: gff2sql [-h] {create,query} ... ")
-#
-
