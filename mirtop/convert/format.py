@@ -34,7 +34,7 @@ def insert_sql(args):
         conn.commit()
         for text in f:
             # HEADER INFORMATION
-            if re.search("^## VERSION", text):  # (R)
+            if re.search("^## .* VERSION", text):  # (R)
                 version = (text.strip().split(' ')[-1])
             elif re.search("^## source-ontology", text):  # (R)
                 source = (text.strip().split(' ')[-1])
@@ -54,9 +54,11 @@ def insert_sql(args):
                 cnt += 1
                 lines = text.strip().split('\t')
                 if '=' in lines[-1]:
-                    lines[-1].replace('=', ' ')
+                    lines_info_array = lines[-1].replace("=", " ")
+                else:
+                    lines_info_array = lines[-1]
 
-                info = lines[-1].split('; ')
+                info = lines_info_array.split('; ')
                 info_dict = variant_dict = dict()
                 for elements in info:
                     (k, v) = elements.split(' ')
