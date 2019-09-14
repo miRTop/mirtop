@@ -72,7 +72,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
         mirna = "TGAGGTAGTAGGTTGTATAGTT"
         correct = 0
         n = 0
-        with open("../data/examples/simulation/res/reads.mirna") as inh:
+        with open("data/examples/simulation/res/reads.mirna") as inh:
             header = inh.readline()
             for line in inh:
                 cols = line.strip().split()
@@ -486,8 +486,8 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)
+			
     
-
     @attr(complete=True)
     @attr(cmd_convert=True)
     @attr(cmd=True)
@@ -503,4 +503,4 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "--gff", "../../data/examples/gff/correct_file.gff"]
             print("")
             print(" ".join(clcode))
-            subprocess.check_call(clcode)
+            subprocess.check_call(clcode)			

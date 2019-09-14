@@ -31,10 +31,10 @@ def make_workdir():
 def annotate(fn, read_file, load=False, create=True, keep_name=False,
              gtf=None, genomic=None):
     args = argparse.Namespace()
-    args.hairpin = "../data/examples/annotate/hairpin.fa"
+    args.hairpin = "data/examples/annotate/hairpin.fa"
     args.sps = "hsa"
-    args.gtf = "../data/examples/annotate/hsa.gff3"
-    args.out = "../test/test_automated_output"
+    args.gtf = "data/examples/annotate/hsa.gff3"
+    args.out = "test/test_automated_output"
     args.database = None
 
     if gtf:
@@ -68,7 +68,7 @@ class FunctionsTest(unittest.TestCase):
     def test_database(self):
         from mirtop.mirna import mapper
         args = argparse.Namespace()
-        args.gtf = "../data/examples/annotate/hsa.gff3"
+        args.gtf = "data/examples/annotate/hsa.gff3"
         args.database = None
         db = mapper.guess_database(args)
         print("Database is %s" % db)
@@ -81,15 +81,15 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = mapper.read_gtf_to_precursor(
-            "../data/examples/annotate/hsa.gff3")
+            "data/examples/annotate/hsa.gff3")
         print(map_mir)
         if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 5:
             raise ValueError("GFF is not loaded correctly.")
         fasta_precursor = fasta.read_precursor(
-            "../data/examples/annotate/hairpin.fa", "hsa")
+            "data/examples/annotate/hairpin.fa", "hsa")
         print(fasta_precursor)
         fasta_precursor2 = fasta.read_precursor(
-            "../data/examples/annotate/hairpin.fa", None)
+            "data/examples/annotate/hairpin.fa", None)
         print(fasta_precursor2)
         if fasta_precursor != fasta_precursor2:
             raise ValueError("species value generates two different dicts.")
@@ -102,7 +102,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = mapper.read_gtf_to_precursor(
-            "../data/db/mirgenedb/hsa.gff")
+            "data/db/mirgenedb/hsa.gff")
         print(map_mir)
 
     @attr(read_mir2chr=True)
@@ -110,7 +110,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna import mapper
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
-        map_mir = mapper.read_gtf_chr2mirna("../data/examples/annotate/hsa.gff3")
+        map_mir = mapper.read_gtf_chr2mirna("data/examples/annotate/hsa.gff3")
         print(map_mir)
         # print(mapper.read_gtf_chr2mirna2("data/examples/annotate/hsa.gff3"))
 
@@ -119,14 +119,14 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna import mapper
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
-        map_mir = mapper.read_gtf_to_mirna("../data/examples/annotate/hsa.gff3")
+        map_mir = mapper.read_gtf_to_mirna("data/examples/annotate/hsa.gff3")
         print(map_mir)
 
     @attr(read_line=True)
     def test_read_line(self):
         """Read GFF/GTF line"""
         from mirtop.gff.body import read_gff_line
-        with open("../data/examples/gff/2samples.gff") as inh:
+        with open("data/examples/gff/2samples.gff") as inh:
             for line in inh:
                 print(read_gff_line(line))
 
@@ -256,10 +256,10 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.mirna import fasta, mapper
         from mirtop.mirna.realign import get_mature_sequence, \
             align_from_variants
-        precursors = fasta.read_precursor("../data/examples/annotate/hairpin.fa",
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa",
                                           "hsa")
         matures = mapper.read_gtf_to_precursor(
-            "../data/examples/annotate/hsa.gff3")
+            "data/examples/annotate/hsa.gff3")
         res = get_mature_sequence("GAAAATTTTTTTTTTTAAAAG", [5, 15])
         if res != "AAAATTTTTTTTTTTAAAA":
             raise ValueError("Results for GAAAATTTTTTTTTTTAAAAG was %s" % res)
@@ -326,7 +326,7 @@ class FunctionsTest(unittest.TestCase):
                "let7-triming.sam": {5:"iso_3p:+2",4:"iso_5p:-1",6:"iso_5p:+1,iso_3p:-3"}}
         #import pdb; pdb.set_trace()
         for fn in fns:
-            gff = annotate("../data/aligments/%s" % fn, bam.read_bam)
+            gff = annotate("data/aligments/%s" % fn, bam.read_bam)
             for pos in gff['hsa-let-7a-1']:
                 f = feature(gff['hsa-let-7a-1'][pos][0][4])
                 if not set(f.attributes['Variant'].split(",")) == set(fns[fn][pos].split(",")):
@@ -345,14 +345,14 @@ class FunctionsTest(unittest.TestCase):
         with make_workdir():
             for example in ["hsa-let-7a-nm", "hsa-let-7a-5ploss1",
                             "hsa-let-7a-3ploss1", "hsa-let-7a-5ploss1_neg"]:
-                print(annotate("../data/examples/annotate/%s.sam" % example,
+                print(annotate("data/examples/annotate/%s.sam" % example,
                                bam.read_bam,
-                               gtf="../data/db/mirbase/hsa.gff3", genomic=True))
+                               gtf="data/db/mirbase/hsa.gff3", genomic=True))
 
     @attr(keep_name=True)
     def test_keep_name(self):
         from mirtop.bam import bam
-        line = annotate("../data/aligments/let7-perfect.sam",
+        line = annotate("data/aligments/let7-perfect.sam",
                         bam.read_bam,
                         keep_name=True)
         print(line)
@@ -367,11 +367,11 @@ class FunctionsTest(unittest.TestCase):
         logger = logger.getLogger(__name__)
         from mirtop.importer import seqbuster
         print("\nperfect\n")
-        annotate("../data/examples/seqbuster/reads20.mirna", seqbuster.read_file)
+        annotate("data/examples/seqbuster/reads20.mirna", seqbuster.read_file)
         print("\naddition\n")
-        annotate("../data/examples/seqbuster/readsAdd.mirna", seqbuster.read_file)
+        annotate("data/examples/seqbuster/readsAdd.mirna", seqbuster.read_file)
         print("\nno frequency\n")
-        annotate("../data/examples/seqbuster/seqbuster_nofreq.mirna", seqbuster.read_file)
+        annotate("data/examples/seqbuster/seqbuster_nofreq.mirna", seqbuster.read_file)
 
     @attr(srnabench=True)
     def test_srnabench(self):
@@ -380,7 +380,7 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.importer import srnabench
-        annotate("../data/examples/srnabench", srnabench.read_file, create=False)
+        annotate("data/examples/srnabench", srnabench.read_file, create=False)
 
     @attr(optimir=True)
     def test_optimir(self):
@@ -389,7 +389,7 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.importer import optimir
-        annotate("../data/examples/optimir/synthetic_100_full.gff3", optimir.read_file, create=False)
+        annotate("data/examples/optimir/synthetic_100_full.gff3", optimir.read_file, create=False)
 
     @attr(prost=True)
     def test_prost(self):
@@ -398,13 +398,13 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.mirna import fasta
-        precursors = fasta.read_precursor("../data/examples/annotate/hairpin.fa",
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa",
                                           "hsa")
-        fn = "../data/examples/prost/prost.example.txt"
+        fn = "data/examples/prost/prost.example.txt"
         from mirtop.importer import prost
         reads = prost.read_file(
             fn, precursors, "miRBasev21", "data/examples/annotate/hsa.gff3")
-        annotate("../data/example/prost/prost.example.txt", reads, True)
+        annotate("data/example/prost/prost.example.txt", reads, True)
 
     @attr(gff=True)
     def test_gff(self):
@@ -413,7 +413,7 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.bam import bam
-        bam_fn = "../data/aligments/let7-perfect.sam"
+        bam_fn = "data/aligments/let7-perfect.sam"
         annotate(bam_fn, bam.read_bam)
         return True
 
@@ -424,7 +424,7 @@ class FunctionsTest(unittest.TestCase):
         logger.initialize_logger("test", True, True)
         logger = logger.getLogger(__name__)
         from mirtop.bam import bam
-        bam_fn = "../data/aligments/collapsing-isomirs.sam"
+        bam_fn = "data/aligments/collapsing-isomirs.sam"
         annotate(bam_fn, bam.read_bam)
         return True
 
@@ -439,11 +439,11 @@ class FunctionsTest(unittest.TestCase):
         logger = logger.getLogger(__name__)
 
         args = argparse.Namespace()
-        args.hairpin = "../data/examples/annotate/hairpin.fa"
+        args.hairpin = "data/examples/annotate/hairpin.fa"
         args.sps = "hsa"
-        args.gtf = "../data/examples/annotate/hsa.gff3"
-        args.gff = '../data/examples/synthetic/let7a-5p.gff'
-        args.out = '../data/examples/synthetic'
+        args.gtf = "data/examples/annotate/hsa.gff3"
+        args.gff = 'data/examples/synthetic/let7a-5p.gff'
+        args.out = 'data/examples/synthetic'
         args.add_extra = True
         convert_gff_counts(args)
         os.remove(os.path.join(args.out, "let7a-5p.tsv"))
@@ -455,7 +455,7 @@ class FunctionsTest(unittest.TestCase):
         """testing stats function"""
         from mirtop.gff import stats
         from mirtop import version
-        df = stats._calc_stats("../data/examples/gff/correct_file.gff")
+        df = stats._calc_stats("data/examples/gff/correct_file.gff")
         stats._dump_log(df, version, None)
         print(df)
 
@@ -482,11 +482,11 @@ class FunctionsTest(unittest.TestCase):
 
         for file in ["coldata_missing.gff", "3wrong_type.gff",
                      "missing_tools_header.gff"]:
-            errors = _check_file(os.path.join("../data/examples/gff/", file))
+            errors = _check_file(os.path.join("data/examples/gff/", file))
             if errors == 0:
                 raise ValueError("Validator didn't catch the error in %s." % file)
 
-        errors = _check_file("../data/examples/gff/correct_file.gff")
+        errors = _check_file("data/examples/gff/correct_file.gff")
         if errors > 0:
             raise ValueError("Validator did catch an unexpected error in correct_file.gff.") 
 
@@ -496,7 +496,7 @@ class FunctionsTest(unittest.TestCase):
         """Test spikeins reading and annotation"""
         from mirtop.libs import spikeins
         from mirtop.mirna.realign import get_mature_sequence
-        load = spikeins.read_spikeins("../data/examples/spikeins/spikeins.fa")
+        load = spikeins.read_spikeins("data/examples/spikeins/spikeins.fa")
         print(load)
         load1 = load['spikein-1']
         mature_from_data = get_mature_sequence(load1['precursor'],
@@ -506,8 +506,8 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Sequences doesn't match \n%s\n%s" %
                              (mature_from_data, load1['mature']))
 
-        file_fasta = "../data/examples/spikeins/spikeins_pre.fasta"
-        file_gff = "../data/examples/spikeins/spikeins_pre.gff"
+        file_fasta = "data/examples/spikeins/spikeins_pre.fasta"
+        file_gff = "data/examples/spikeins/spikeins_pre.gff"
         spikeins.write_precursors(load, file_fasta)
         spikeins.write_gff(load, file_gff)
 
@@ -521,14 +521,14 @@ class FunctionsTest(unittest.TestCase):
     def test_export_fasta(self):
         from mirtop.exporter.fasta import _process
         print("\n")
-        _process("../data/examples/gff/2samples.gff", None)
+        _process("data/examples/gff/2samples.gff", None)
 
     @attr(update=True)
     def test_update(self):
         from mirtop.gff.update import update_file
         print("\n")
-        update_file("../data/examples/versions/version1.0.gff", None)
-    
+        update_file("data/examples/versions/version1.0.gff", None)
+
 
     @attr(convert=True)
     def test_convert(self):
@@ -543,8 +543,8 @@ class FunctionsTest(unittest.TestCase):
         args = argparse.Namespace()
         args.format = "sql"
         args.db = "test_sqlite.db"
-        args.gff = '../data/examples/gff/correct_file.gff'
-        args.out = '../data/examples/convert'
+        args.gff = 'data/examples/gff/correct_file.gff'
+        args.out = 'data/examples/convert'
         format.format_option(args)
         os.remove(os.path.join(args.out, "test_sqlite.db"))
 
