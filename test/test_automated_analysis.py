@@ -307,20 +307,10 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)
-
-    @attr(complete=True)
-    @attr(cmd_stats=True)
-    @attr(cmd=True)
-    def test_srnaseq_stats(self):
-        """Run stats analysis
-        """
-        with make_workdir():
-            clcode = ["mirtop",
-                      "stats",
-                      "../../data/examples/gff/correct_file.gff"]
-            print("")
-            print(" ".join(clcode))
-            subprocess.check_call(clcode)
+            if not os.path.exists("test_out_mirs/mirtop_stats.txt"):
+                raise ValueError("File doesn't exist, something is wrong with stats cmd.")
+            if sum(1 for line in open('test_out_mirs/mirtop_stats.txt')) == 1:
+                raise ValueError("File is empty, something is wrong with stats cmd.")
 
     @attr(complete=True)
     @attr(cmd_merge=True)
