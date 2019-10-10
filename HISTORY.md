@@ -1,3 +1,7 @@
+- 0.4.23a
+
+* fix empty stats file [#61](https://github.com/miRTop/mirtop/issues/61) by @leontienvdbent
+
 - 0.4.22
 
 * fix when reads map halfway on to the edge

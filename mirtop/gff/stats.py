@@ -73,7 +73,7 @@ def _calc_stats(fn):
             cols = gff.columns
             attr = gff.attributes
             logger.debug("## STATS: attribute %s" % attr)
-            if ok.match(attr['Filter']):
+            if not ok.match(attr['Filter']):
                 continue
             if "-".join([attr['UID'], attr['Variant'], attr['Name']]) in seen:
                 continue
