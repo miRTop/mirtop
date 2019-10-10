@@ -1,4 +1,4 @@
-- 0.4.23a
+- 0.4.23
 
 * fix empty stats file [#61](https://github.com/miRTop/mirtop/issues/61) by @leontienvdbent
 
