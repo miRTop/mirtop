@@ -13,6 +13,7 @@ from mirtop.exporter import export
 from mirtop.gff import validator
 from mirtop.libs import spikeins
 from mirtop.gff import update
+from mirtop.sql import sql 
 import mirtop.libs.logger as mylog
 
 import time
@@ -24,7 +25,7 @@ def main(**kwargs):
                       kwargs['args'].print_debug)
     logger = mylog.getLogger(__name__)
     start = time.time()
-    #logger.warning("This is devel-live changes")
+
     if "gff" in kwargs:
         logger.info("Run annotation")
         reader(kwargs["args"])
@@ -54,4 +55,7 @@ def main(**kwargs):
     elif "update" in kwargs:
         logger.info("Run update tools")
         update.convert(kwargs["args"])
+    elif "sql" in kwargs:
+        logger.info("Run Convert GFF.")
+        sql.sql_options(kwargs["args"])
     logger.info('It took %.3f minutes' % ((time.time()-start)/60))
