@@ -213,12 +213,15 @@ def _add_subparser_sql(subparsers):
 
     group2 = parser.add_argument_group('SQL query usage mode:') 
     group2.add_argument("-t", "--table", metavar='', help="Specify table name to use")
+    group2.add_argument("-miR", "--miRNA", metavar='', help="Specify the miRNA names to query. For multiple miRNAs use comma(,) as separator.")
+    #  group2.add_argument("-imiR", "--isomiR", metavar='', help="Specify the miRNA name to query")
     #  group2.add_argument("-s", "--schema", metavar='', help="Show the schema of the select tables; (-s <table_name>)")
     group2.add_argument("-e", "--expr", metavar='', 
-        help=""" Expression is the query that you want to run; (-e \"<statement>\")
+        help="""Expression is the query that you want to run; (-e \"<statement>\")
     Choices supports the following: 
-       show-tables     - Displays tables in the database (default: mirtop.db) 
-       show-schema     - Displays the table schema (requires -t)
+       show-tables           - Displays tables in the database (default: mirtop.db) 
+       show-schema           - Displays the table schema (requires -t)
+       isomirs-per-mirna     - Displays the count of isomiRs for miRNA (requires -miR)
        ...
        choiceN         - the Nth option
     """)

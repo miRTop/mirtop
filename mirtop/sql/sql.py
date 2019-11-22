@@ -123,8 +123,8 @@ def insert_sql(args):
 
 
 def query_sql(args):
-    print("Function query is being implemented, will be updated soon!!!")
-    print(args)
+    #print("Function query is being implemented, will be updated soon!!!")
+    #print(args)
     if args.db:
         out_file = op.join(args.db)
         conn = sqlite3.connect(out_file)
@@ -134,9 +134,9 @@ def query_sql(args):
         conn = sqlite3.connect(out_file)
         c = conn.cursor()
 
-    c.execute("SELECT name FROM sqlite_master WHERE type = 'table';")
-    record = c.fetchall()
-    print(args.db)
+    #c.execute("SELECT name FROM sqlite_master WHERE type = 'table';")
+    #record = c.fetchall()
+    #print(args.db)
     if args.expr == "show-tables":
         show_tables(conn)
     if args.expr == "show-schema":
@@ -145,11 +145,16 @@ def query_sql(args):
         else:
             print("Error: Require table name")
             print("Usage: mirtop sql --query --db <input_database> -e show-schema -t <table_name>")
+    if args.expr == "isomirs-per-mirna":
+        if args.miRNA:
+            stats_isomiR_per_miRNA(conn, args.miRNA)
+        else:
+            print("Error: Require miRNA name")
+            print("Usage: mirtop sql --query --db <input_database> -e isomirs-per-mirna -miR <miRNA>")
     pass
 
 
 def show_tables(connection):
-    print()
     print(" +" + 25 * "-" + " +")
     print(' | Tables                   |')
     print(" +" + 25 * "-" + " +")
@@ -198,6 +203,31 @@ def show_schema(connection, table_name):
                     pk=" *{}".format(columnPK) if columnPK else "    ",
                 ))
             print(" +" + 57 * "-" + "+")
+
+def stats_isomiR_per_miRNA(connection, miRNA_name):
+    cur = connection.cursor()
+    #cur.execute('SELECT * FROM data_sets WHERE seqID=?', (miRNA_name,))
+    miR_array=miRNA_name.split(',')
+    print()
+    stat_counts=0
+    print("OUTPUT:")
+    for miRs in miR_array:
+        t=(miRs, )
+        cur.execute("SELECT COUNT(*) FROM data_sets WHERE seqID=? AND type='isomiR'", t)
+        rows = cur.fetchall()
+        for row in rows:
+            stat_counts+=1
+            row = row[0]
+            print(str(stat_counts) +". " +"isomiRs for miRNA "+ miRs + ": "+ str(row))
+    #cur.execute('SELECT * FROM data_sets limit 5')
+    #print(cur.fetchone())
+    #print(cur.fetchall())
+    #cur.execute('SELECT * FROM data_sets limit 5')
+    #rows = cur.fetchall()
+    print()
+    pass
+
+
 
 
 def sql_options(args):
