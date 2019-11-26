@@ -204,26 +204,48 @@ def _add_subparser_sql(subparsers):
     parser.add_argument('--db', metavar='', action='store', help='SQL Database name. (default: mirtop.db)')
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-c','--create', help="Creates a SQLite database from GFF.", action='store_true') 
-    group.add_argument('-q', '--query', help="Query from a SQLite database.",  action='store_true')
+    group.add_argument('-c','--create', help="Creates a SQLite database from GFF", action='store_true') 
+    group.add_argument('-q', '--query', help="Query from a SQLite database",  action='store_true')
 
     group1 = parser.add_argument_group('SQL create usage mode')
-    group1.add_argument("--gff", metavar='', help="GFF file with precursor and mature position to genome.")
+    group1.add_argument("--gff", metavar='', help="GFF file with precursor and mature position to genome")
     group1.add_argument("-o", "--out", metavar='', dest="out", default="tmp_mirtop", help="Directory of output files")
 
-    group2 = parser.add_argument_group('SQL query usage mode:') 
+    group2 = parser.add_argument_group('SQL query usage mode') 
     group2.add_argument("-t", "--table", metavar='', help="Specify table name to use")
-    group2.add_argument("-miR", "--miRNA", metavar='', help="Specify the miRNA names to query. For multiple miRNAs use comma(,) as separator.")
+    #group2.add_argument("-txti", "--txt-in", metavar='', help="Provide the list of miRNA's in the text file as input. NOTE: List of miRNA's should be separated by new line")
+    group2.add_argument("-txto", "--txtout", metavar='', help="Writes the output of the query to a file speficied. Format (-fmt) is a tab-delimited text file by default")
+    #group2.add_argument("-a", "--all", metavar='', help="Selects all the columns from the table")
+    group2.add_argument("-col", "--columns", metavar='', help="Select specific columns from the table to display (Default: all columns), or use with -n option to return n-counts. For information of the available columns see 'show-schema' or 'show-columns'. NOTE: options -e select must be applied!.")
+    group2.add_argument("-n", "--count", metavar='', help="Returns 'n' counts for the query. Options 'T' for True, if not 'F' (Default: -n F). NOTE: options -e select must be applied! and accepts only one column from -col option." )
+    group2.add_argument("-miR", "--miRNA", metavar='', help="Specify the miRNA names to query. For multiple miRNAs use comma(,) as separator; or text file (.txt) separated with new line character")
+    group2.add_argument("-var", "--variant", metavar='', help="""Specify one or more types of variants to query. Use comma(,) as separator 
+    Choices supports the following:
+        iso_5p                  - indicates the shift at the reference 5' miRNA
+        iso_3p                  - indicates the shift at the reference 3' miRNA
+        iso_add3p               - Number of non-template nucleotides added at 3p
+        iso_add5p               - Number of non-template nucleotides added at 5p
+        iso_snv_seed            - when affected nucleotides are between [2-7]
+        iso_snv_central_offset  - when affected nucleotides is at position [8]
+        iso_snv_central         - when affected nucleotides are between [9-12]
+        iso_snv_central_supp    - when affected nucleotides are between [13-17]
+        iso_snv                 - anything else
+        """)
+    group2.add_argument("-f", "--filter", metavar='', help="Specify Filter tag attribute. Options: Pass, Reject. (Default: None)")
+    group2.add_argument("-l", "--limit", metavar='', help="Specify the number of rows to output. (Example: --limit 30, to limit the first 30 rows)")
     #  group2.add_argument("-imiR", "--isomiR", metavar='', help="Specify the miRNA name to query")
     #  group2.add_argument("-s", "--schema", metavar='', help="Show the schema of the select tables; (-s <table_name>)")
     group2.add_argument("-e", "--expr", metavar='', 
         help="""Expression is the query that you want to run; (-e \"<statement>\")
     Choices supports the following: 
-       show-tables           - Displays tables in the database (default: mirtop.db) 
-       show-schema           - Displays the table schema (requires -t)
-       isomirs-per-mirna     - Displays the count of isomiRs for miRNA (requires -miR)
-       ...
-       choiceN         - the Nth option
+       show-tables              - Displays tables in the database (default: mirtop.db) 
+       show-schema              - Displays the table schema (requires -t)
+       show-columns             - Displays available columns in the table
+       describe-gff             - Prints out the header information from the GFF file
+       isomirs-per-mirna        - Displays the count of isomiRs for miRNA (requires -miR)
+       select                   - Allows specific query construction. 
+                                  Example: mirtop sql --db tmp_mirtop/SRR333680_revised2.db -qe select -var iso_5p,iso_3p -miR hsa-let-7a-5p,hsa-let-7d-5p -l 30
+                                  The above expression evaluates to selecting miRNAs in -miR with variants in -var and prints out first 30 rows in --limit 
     """)
 
     parser = _add_debug_option(parser)
