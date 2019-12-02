@@ -380,7 +380,10 @@ def format_results(header, output, args):
         print(header)
         if args.count:
             output = list(output[0])
-            print("Unique counts for "+ args.columns + " is: " + str(output))
+            if args.columns:
+                print("Unique counts for "+ str(args.columns) + " is: " + str(output[0]))
+            else:
+                print("Unique counts for all rows is: " + str(output[0]))
         else:
             for eachrow in output:
                 row_tab = '\t'.join(str(items) for items in eachrow)
