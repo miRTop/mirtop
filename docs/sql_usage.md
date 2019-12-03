@@ -28,17 +28,17 @@ SQL create usage mode:
 SQL query usage mode:
   -t , --table        Specify table name to use
   -txto , --txtout    Writes the output of the query to a file speficied. Format (-fmt) is a tab-delimited text file by default
-  -col , --columns    Select specific columns from the table to display (Default: all columns), or use with -n option to return n-counts. For information of the available columns see 'show-schema' or 'show-columns'. NOTE: options -e select must be applied!.
-  -n , --count        Returns 'n' counts for the query. Options 'T' for True, if not 'F' (Default: -n F). NOTE: options -e select must be applied! and accepts only one column from -col option.
-  -miR , --miRNA      Specify the miRNA names to query. For multiple miRNAs use comma(,) as separator; or text file (.txt) separated with new line character
+  -col , --columns    Select specific columns from the table to display (Default: all columns), or use with -n option to return n-counts. For information of the available columns see 'show-schema' or 'show-columns'. NOTE: option -e select must be applied!
+  -n , --count        Returns 'n' counts for the query. Options 'T' for True, if not 'F' (Default: -n F). NOTE: option -e select must be applied and accepts only one column from -col option.
+  -miR , --miRNA      Specify the miRNA names to query. For multiple miRNAs use comma(,) as separator; or supply a text file (.txt) separated with a new line character.
   -var , --variant    Specify one or more types of variants to query. Use comma(,) as separator
-                          Choices supports the following:
+                          The following choices are supported:
                               iso_5p                  - indicates the shift at the reference 5' miRNA
                               iso_3p                  - indicates the shift at the reference 3' miRNA
                               iso_add3p               - Number of non-template nucleotides added at 3p
                               iso_add5p               - Number of non-template nucleotides added at 5p
                               iso_snv_seed            - when affected nucleotides are between [2-7]
-                              iso_snv_central_offset  - when affected nucleotides is at position [8]
+                              iso_snv_central_offset  - when affected nucleotide is at position [8]
                               iso_snv_central         - when affected nucleotides are between [9-12]
                               iso_snv_central_supp    - when affected nucleotides are between [13-17]
                               iso_snv                 - anything else
@@ -54,7 +54,7 @@ SQL query usage mode:
                              isomirs-per-mirna        - Displays the count of isomiRs for miRNA (requires -miR)
                              select                   - Allows specific query construction.
                                                         Example: mirtop sql --db tmp_mirtop/SRR333680_revised2.db -qe select -var iso_5p,iso_3p -miR hsa-let-7a-5p,hsa-let-7d-5p -l 30
-                                                        The above expression evaluates to selecting miRNAs in -miR with variants in -var and prints out first 30 rows in --limit
+                                                        The above expression evaluates to selecting miRNAs in -miR with variants in -var and prints out the first 30 rows in --limit.
 
 
 ```
@@ -74,7 +74,7 @@ You can use the example data to create a database file from GFF3.
 ```
 mirtop sql -c --gff examples/annotate/SQL_sample.gff -o examples/annotate/ --db SQL_sample.db
 ```
-NOTE-1: If you are re-creating the database with same name, make sure to delete the existing database in the working directory. As the database from same set of samples will append the gff rows to the existing database and different set of samples throws an error as shown below.
+NOTE-1: If you are re-creating the database with the same name, make sure to delete the existing database in the working directory. As the database from the same set of samples will append the gff rows to the existing database and different set of samples throws an error as shown below.
 
 `sqlite3.OperationalError: table data_sets has xy columns but yz values were supplied`
 Where, xy is the number of columns present in database and yz are the number of column-values sent to append to the database.
@@ -82,9 +82,9 @@ Where, xy is the number of columns present in database and yz are the number of 
 
 ## Querying a Database
 
-Understanding the database structure helps to quickly query and fetch the results.  The following content lists the usefull commands to query based on the availabe options. To start with the available options type: `mirtop sql -h`. 
+Understanding the database structure helps to quickly query and fetch the results.  The following content lists the useful commands to query based on the availabe options. To start with the available options type: `mirtop sql -h`. 
 
-NOTE-2: To query from a database, the argument `mirtop sql -q --db <db_name.db>` must always be specified with the correct name of the database along with absolute path (if required). The query will begin with an expression (-e) that is specified by the User. Passing a suitable query is mandatory like: `mirtop sql -q --db <db_name.db> -e <expression>`. The following expressions allows users to query from the database:
+NOTE-2: To query from a database, the argument `mirtop sql -q --db <db_name.db>` must always be specified with the correct name of the database along with absolute path (if required). The query will begin with an expression (-e) that is specified by the User. Passing a suitable query is mandatory such as: `mirtop sql -q --db <db_name.db> -e <expression>`. The following expressions allows users the ability to query from the database:
 
 * show-tables              - Displays tables in the database (default: mirtop.db)
 * show-schema              - Displays the table schema (requires -t)
@@ -121,7 +121,7 @@ OUTPUT:
 
 
 ### show-schema: 
-Display the schema of a table. The table schema represents the data type of each column and lists available columns such as samples names. Generally this information is essential for developers and can aid to debug any errors during the query operation. show-schema essentially requires to specify a table name for which the schema is intended to be displayed. 
+Display the schema of a table. The table schema represents the data type of each column and lists available columns such as samples names. Generally this information is essential for developers and can aid in debugging any errors during the query operation. show-schema essentially requires one to specify a table name for which the schema is intended to be displayed. 
 
 ```
 mirtop sql -q --db examples/annotate/query_sample.db -e show-schema -t summary
@@ -218,9 +218,9 @@ Serial  Column names    Description
 ```
 
 ### isomirs-per-mirna: 
-This expression, provides summary of the number of the isomiRs for the query miRNA (`-miR`)
+This expression provides a summary of the number of the isomiRs for the query miRNA (`-miR`)
 
-Query miRNA (`-miR` or `--miRNA`) can be a particular miRNA of interest, or list of few miRNAs (separate by comma) or a file of miRNAs (text file). The output can be redirected to a text document with `-txto <text_file.txt>` argument. 
+Query miRNA (`-miR` or `--miRNA`) can be a particular miRNA of interest, or list of a few miRNAs (separated by comma) or a file of miRNAs (.txt file). The output can be redirected to a text document with `-txto <text_file.txt>` argument. 
 
 ```
 mirtop sql -q --db examples/annotate/query_sample.db -e isomirs-per-mirna -miR hsa-let-7a-5p
@@ -246,7 +246,7 @@ This expression represents the SELECT statement used in MySQL database. It offer
 
 * limit (`-l or --limit`): Specify the number of rows to output
 
-The following command use the conventional "SELECT * FROM data\_sets" option to display the contents of the table data\_sets from database query\_sample.db. However using `-l 2 or --limit 2` limits the output to display only the first two rows. If -l is not provided, it prints out all the rows on the terminal (or) print to a file if `-txto fileName.txt` is provided. 
+The following command uses the conventional "SELECT * FROM data\_sets" option to display the contents of the table data\_sets from database query\_sample.db. However using `-l 2 or --limit 2` limits the output to display only the first two rows. If -l is not provided, it prints out all of the rows on the terminal (or) prints to a file if `-txto fileName.txt` is provided. 
 ``` 
 mirtop sql -q --db examples/annotate/query_sample.db -e select --limit 2
 ```
@@ -259,11 +259,11 @@ hsa-let-7i-5p   miRBase22       isomiR  6.0     28.0    .       +       .       
 11/29/2019 03:04:28 INFO It took 0.000 minutes
 ```
 
-NOTE-4: In the above query option, we could limit number of rows to be printed. What about columns? Can we limit them as well? and the answer is Yes. 
+NOTE-4: In the above query option, we could limit the number of rows to be printed. What about columns? Can we limit them as well? and the answer is Yes. 
 
 * columns: Select specific columns from the table to display
 
-The following command use the conventional "SELECT seqID,UID,Read,iso\_5p,iso\_3p,start,end FROM data\_sets LIMIT 2" option to display the contents of the table data\_sets from database query\_sample.db for specific columns. it prints out all the rows on the terminal (or) print to a file if `-txto fileName.txt` is provided. 
+The following command use the conventional "SELECT seqID,UID,Read,iso\_5p,iso\_3p,start,end FROM data\_sets LIMIT 2" option to display the contents of the table data\_sets from database query\_sample.db for specific columns. It prints out all the rows on the terminal (or) prints to a file if `-txto fileName.txt` is provided. 
 ``` 
 mirtop sql -q --db examples/annotate/query_sample.db -e select -l 2 -col seqID,UID,Read,iso_5p,iso_3p,start,end
 ```
@@ -297,7 +297,7 @@ hsa-let-7i-5p   7AwwRIBQ1       TGAGGTAGTAGTTTGTGCTGTTT None    None    6.0     
   * iso_add3p               - Number of non-template nucleotides added at 3p
   * iso_add5p               - Number of non-template nucleotides added at 5p
   * iso_snv_seed            - when affected nucleotides are between [2-7]
-  * iso_snv_central_offset  - when affected nucleotides is at position [8]
+  * iso_snv_central_offset  - when affected nucleotide is at position [8]
   * iso_snv_central         - when affected nucleotides are between [9-12]
   * iso_snv_central_supp    - when affected nucleotides are between [13-17]
   * iso_snv                 - anything else
@@ -318,7 +318,7 @@ hsa-miR-6727-5p miRBase22       isomiR  8.0     24.0    .       +       .       
 hsa-let-7f-5p   miRBase22       isomiR  8.0     27.0    .       +       .       .       NAGGTAGTAGATTGTATAGT    hsa-let-7f-5p   hsa-let-7f-1    iso_snv_central_offset,iso_5p:-1,iso_3p:-1      -1.0 -1.0    None    None    0.0     0.0     0.0     1.0     0.0     miRBase22       N19M    None    None    None    Pass    None    1
 12/02/2019 11:52:39 INFO It took 0.001 minutes
 ```
-* filter: Filter attribute lets to choose data query such that the attribute is 'Pass' for the reads from the miRNA sequencing is OK; 'Reject' if the reads are false positive; 'Reject lowcount'where the miRNA is rejected due to low count in data. This filter decission is made by the aligner tools and is supplied to the GFF3. 
+* filter: Filter attribute lets a user choose data query such that the attribute is 'Pass' for the reads from the miRNA sequencing is OK; 'Reject' if the reads are false positive; 'Reject lowcount'where the miRNA is rejected due to a low count in data. This filter decision is made by the aligner tools and is supplied to the GFF3. 
 
 
 ```
@@ -333,12 +333,12 @@ hsa-miR-6727-5p miRBase22       isomiR  8.0     24.0    .       +       .       
 hsa-let-7f-5p   miRBase22       isomiR  8.0     27.0    .       +       .       .       NAGGTAGTAGATTGTATAGT    hsa-let-7f-5p   hsa-let-7f-1    iso_snv_central_offset,iso_5p:-1,iso_3p:-1      -1.0 -1.0    None    None    0.0     0.0     0.0     1.0     0.0     miRBase22       N19M    None    None    None    Pass    None    1
 12/02/2019 12:33:28 INFO It took 0.001 minutes
 ```
-* count: Count is used to retrieve summary for a custom query. Generally, `select * from data_sets` or `select columns from data_sets` is used to retrieve the information and a WHERE clause is optionally supplied such as `--variants \| --miRNA` etc. This can be leveraged to get the count for a specific query, such that the query `select count(*) from data_sets` or `select count(columns) from data_sets` will be executed along with any optional WHERE clause. Argument `-n T` where T is True else False (Default False).
+* count: Count is used to retrieve a summary for a custom query. Generally, `select * from data_sets` or `select columns from data_sets` is used to retrieve the information and a WHERE clause is optionally supplied such as `--variants \| --miRNA` etc. This can be leveraged to get the count for a specific query, such that the query `select count(*) from data_sets` or `select count(columns) from data_sets` will be executed along with any optional WHERE clause. Argument `-n T` where T is True else False (Default False).
 
 For example: 
-1) How many miRNA isoforms exists for a variant type iso_snv_central_offset and iso_5p 
-2) How many miRNA isoforms exists for a variant type iso_5p and iso_3p 
-3) How many miRNA isoforms exists for a variant type iso_5p and iso_3p for miRNA hsa-miR-142-5p and hsa-miR-372-3p
+1) How many miRNA isoforms exists for a variant type iso_snv_central_offset and iso_5p?
+2) How many miRNA isoforms exists for a variant type iso_5p and iso_3p?
+3) How many miRNA isoforms exists for a variant type iso_5p and iso_3p for miRNA hsa-miR-142-5p and hsa-miR-372-3p?
 
 Query in that order of example is below: 
 ```
