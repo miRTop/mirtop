@@ -476,3 +476,308 @@ class AutomatedAnalysisTest(unittest.TestCase):
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)
+
+
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_create_1_cmd(self):
+        """Run sql command to incorporate GFF to SQLite
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-c",
+                      "../../data/examples/annotate/SQL_sample.gff",
+                      "-o",
+                      "../data/examples/annotate",
+                      "--db",
+                      "SQL_sample.db"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_create_2_cmd(self):
+        """Run sql command to incorporate GFF to SQLite
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-c",
+                      "../../data/examples/annotate/SQL_sample.gff",
+                      "-o",
+                      "../data/examples/annotate"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_showTables_cmd(self):
+        """Run sql command to query from a database to show tables using SQLite
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "show-tables"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_showSchema_cmd(self):
+        """Run sql command to query from a database to show schema using SQLite
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "show-schema", 
+                      "-t",
+                      "summary"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_showColumns_cmd(self):
+        """Run sql command to query from a database to show columns using SQLite
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "show-columns"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_descSummary_cmd(self):
+        """Run sql command to query from a database to display the header of the GFF using SQLite
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "describe-gff"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_statIsomirs_cmd(self):
+        """Run sql command to query from a database to summarize isomirs per miRNA 
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "isomirs-per-mirna",
+                      "-miR",
+                      "hsa-let-7a-5p,hsa-let-7d-5p"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_statIsomirsFile_cmd(self):
+        """Run sql command to query from a database to summarize isomirs per miRNA reading from afile
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "isomirs-per-mirna",
+                      "-miR",
+                      "../../data/examples/annotate/queryOutput_isomirs.txt"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_SelectLimit_cmd(self):
+        """Run sql command to query from database using limit option
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "select",
+                      "--limit",
+                      "2"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_SelectColumns_cmd(self):
+        """Run sql command to query from database using limit option
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "select",
+                      "-l",
+                      "2", 
+                      "-col",
+                      "seqID,UID,Read,iso_5p,iso_3p,start,end"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_SelectMirna_cmd(self):
+        """Run sql command to query from database for specific miRNAs 
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "select",
+                      "-l",
+                      "4", 
+                      "-col",
+                      "seqID,UID,Read,iso_5p,iso_3p,start,end",
+                      "-miR",
+                      "hsa-let-7i-5p"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_SelectiVariant_cmd(self):
+        """Run sql command to query from database for specific variant types  
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "select",
+                      "-l",
+                      "5", 
+                      "-var",
+                      "iso_5p,iso_3p,iso_snv_central_offset"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_SelectFilter_cmd(self):
+        """Run sql command to query from database using filters 
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e",
+                      "select",
+                      "-l",
+                      "5", 
+                      "-var",
+                      "iso_5p,iso_3p,iso_snv_central_offset",
+                      "-f",
+                      "Pass"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_SelectCount_cmd(self):
+        """Run sql command to query from database to fetch counts of the return values  
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e", "select",
+                      "-var", "iso_5p,iso_3p",
+                      "-miR", "hsa-miR-142-5p,hsa-miR-372-3p",
+                      "-n","T"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
+    
+    @attr(complete=True)
+    @attr(cmd_validate=True)
+    @attr(cmd=True)
+    def test_sql_query_SelectTextOut_cmd(self):
+        """Run sql command to query from database and return the output to a text file  
+        """
+        with make_workdir():
+            clcode = ["mirtop",
+                      "sql",
+                      "-q",
+                      "--db",
+                      "../../data/examples/annotate/query_sample.db",
+                      "-e", "select",
+                      "-var", "iso_5p,iso_3p",
+                      "-miR", "hsa-miR-142-5p,hsa-miR-372-3p",
+                      "-n","T",
+                      "-txto","sample_count.txt"]
+            print("")
+            print(" ".join(clcode))
+            subprocess.check_call(clcode)
