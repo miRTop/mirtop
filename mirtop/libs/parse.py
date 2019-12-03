@@ -219,6 +219,7 @@ def _add_subparser_sql(subparsers):
     group2.add_argument("-col", "--columns", metavar='', help="Select specific columns from the table to display (Default: all columns), or use with -n option to return n-counts. For information of the available columns see 'show-schema' or 'show-columns'. NOTE: options -e select must be applied!.")
     group2.add_argument("-n", "--count", metavar='', help="Returns 'n' counts for the query. Options 'T' for True, if not 'F' (Default: -n F). NOTE: options -e select must be applied! and accepts only one column from -col option." )
     group2.add_argument("-miR", "--miRNA", metavar='', help="Specify the miRNA names to query. For multiple miRNAs use comma(,) as separator; or text file (.txt) separated with new line character")
+    group2.add_argument("-pm", "--miRNA_prefix", metavar='', help="Specify the prefix name for miRNAs to query. Example: -pm hsa -miR let-7a-5p results into querying hsa-let-7a-5p")
     group2.add_argument("-var", "--variant", metavar='', help="""Specify one or more types of variants to query. Use comma(,) as separator 
     Choices supports the following:
         iso_5p                  - indicates the shift at the reference 5' miRNA

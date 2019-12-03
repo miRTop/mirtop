@@ -31,6 +31,8 @@ SQL query usage mode:
   -col , --columns    Select specific columns from the table to display (Default: all columns), or use with -n option to return n-counts. For information of the available columns see 'show-schema' or 'show-columns'. NOTE: option -e select must be applied!
   -n , --count        Returns 'n' counts for the query. Options 'T' for True, if not 'F' (Default: -n F). NOTE: option -e select must be applied and accepts only one column from -col option.
   -miR , --miRNA      Specify the miRNA names to query. For multiple miRNAs use comma(,) as separator; or supply a text file (.txt) separated with a new line character.
+  -pm , --miRNA_prefix
+                      Specify the prefix name for miRNAs to query. Example: -pm hsa -miR let-7a-5p results into querying hsa-let-7a-5p.
   -var , --variant    Specify one or more types of variants to query. Use comma(,) as separator
                           The following choices are supported:
                               iso_5p                  - indicates the shift at the reference 5' miRNA
@@ -220,12 +222,14 @@ Serial  Column names    Description
 ### isomirs-per-mirna: 
 This expression provides a summary of the number of the isomiRs for the query miRNA (`-miR`)
 
-Query miRNA (`-miR` or `--miRNA`) can be a particular miRNA of interest, or list of a few miRNAs (separated by comma) or a file of miRNAs (.txt file). The output can be redirected to a text document with `-txto <text_file.txt>` argument. 
+Query miRNA (`-miR` or `--miRNA`) can be a particular miRNA of interest, or list of a few miRNAs (separated by comma) or a file of miRNAs (.txt file). The output can be redirected to a text document with `-txto <text_file.txt>` argument. The users can also chooses the prefix for the miRNAs with `-pm`. For example: A query `-pm hsa -miR let-7a-5p,let-7d-5p` will result into querying the database as `-miR hsa-let-7a-5p,hsa-let-7d-5p`.   
 
 ```
 mirtop sql -q --db examples/annotate/query_sample.db -e isomirs-per-mirna -miR hsa-let-7a-5p
 			(-- OR --)
 mirtop sql -q --db examples/annotate/query_sample.db -e isomirs-per-mirna -miR hsa-let-7a-5p,hsa-let-7d-5p 
+			(-- OR --)
+mirtop sql -q --db examples/annotate/query_sample.db -e isomirs-per-mirna -miR let-7a-5p,let-7d-5p -pm hsa 
 			(-- OR --)
 mirtop sql -q --db examples/annotate/query_sample.db -e isomirs-per-mirna -miR examples/annotate/miRNA_sample_list.txt -txto examples/annotate/queryOutput_isomirs.txt
 ```
@@ -277,7 +281,7 @@ hsa-let-7i-5p   7AwwRIB71       TGAGGTAGTAGTTTGTGCTGTTG None    1.0     6.0     
 ``` 
 * miRNA: Specify one or more miRNA to query. 
 
-The user can specify miRNAs to query from the database. Use comma (miRNA-1,NO-SPACES,miRNA-n) to separate miRNAs while passing as an argument. For large set of query miRNAs use a text-file as input, separated by new line character. 
+The user can specify miRNAs to query from the database. Use comma (miRNA-1,NO-SPACES,miRNA-n) to separate miRNAs while passing as an argument. For large set of query miRNAs use a text-file as input, separated by new line character. If short names are preffered over including the species name every time, then please refer to argument `-pm` or `--miRNA_prefix` to prefix the sepcies name along with the names of miRNAs. 
 ``` 
 mirtop sql -q --db examples/annotate/query_sample.db -e select -l 4 -col seqID,UID,Read,iso_5p,iso_3p,start,end -miR hsa-let-7i-5p
 ```

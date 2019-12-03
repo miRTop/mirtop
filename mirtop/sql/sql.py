@@ -352,10 +352,20 @@ def add_mirnas(args):
         #print("I am called and I am safe here to read from a file")
         with open(args.miRNA, 'r') as miList:
             miR_array = miList.read().splitlines()
-        return(miR_array)
+        if args.miRNA_prefix:
+            element = str(args.miRNA_prefix) + "-"
+            miR_array = [element + s  for s in miR_array]
+            return(miR_array)
+        else:
+            return(miR_array)
     else:
         miR_array=args.miRNA.split(',')
-        return(miR_array)
+        if args.miRNA_prefix:
+            element = str(args.miRNA_prefix) + "-"
+            miR_array = [element + s  for s in miR_array]
+            return(miR_array)
+        else:
+            return(miR_array)
 
 
 def perform_execution(conn, query, args):
