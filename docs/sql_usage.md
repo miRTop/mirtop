@@ -1,6 +1,6 @@
 # SQLite Command Options
 
-The `mirtop sql` package allows users to create and query a SQLite database using GFF3 file format as input. This option creates a database with two tables such as summary and data\_sets. The summary table contains the header portion of the gff file and data\_sets contains the body of the gff containing rest of the information related to miRNAs. 
+The `mirtop sql` package allows users to create and query a SQLite database using GFF3 file format as input. This option creates a database with two tables such as summary and data\_sets. The summary table contains the header portion of the gff file and data\_sets contains the body of the gff containing the rest of the information related to miRNAs. 
 
 Use `mirtop sql -h` to display help information
 
