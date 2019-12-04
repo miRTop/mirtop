@@ -298,8 +298,8 @@ hsa-let-7i-5p   7AwwRIBQ1       TGAGGTAGTAGTTTGTGCTGTTT None    None    6.0     
 
   * iso_5p                  - indicates the shift at the reference 5' miRNA
   * iso_3p                  - indicates the shift at the reference 3' miRNA
-  * iso_add3p               - Number of non-template nucleotides added at 3p
-  * iso_add5p               - Number of non-template nucleotides added at 5p
+  * iso_add3p               - number of non-template nucleotides added at 3p
+  * iso_add5p               - number of non-template nucleotides added at 5p
   * iso_snv_seed            - when affected nucleotides are between [2-7]
   * iso_snv_central_offset  - when affected nucleotide is at position [8]
   * iso_snv_central         - when affected nucleotides are between [9-12]
