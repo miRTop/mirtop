@@ -31,7 +31,7 @@ SQL query usage mode:
   -col , --columns    Select specific columns from the table to display (Default: all columns), or use with -n option to return n-counts. For information of the available columns see 'show-schema' or 'show-columns'. NOTE: option -e select must be applied!
   -n , --count        Returns 'n' counts for the query. Options 'T' for True, if not 'F' (Default: -n F). NOTE: option -e select must be applied and accepts only one column from -col option.
   -miR , --miRNA      Specify the miRNA names to query. For multiple miRNAs use comma(,) as separator; or supply a text file (.txt) separated with a new line character.
-  -pm , --miRNA_prefix
+  -pm , --miRNA_prefix (3 digit species code, ex. hsa)
                       Specify the prefix name for miRNAs to query. Example: -pm hsa -miR let-7a-5p results into querying hsa-let-7a-5p.
   -var , --variant    Specify one or more types of variants to query. Use comma(,) as separator
                           The following choices are supported:
