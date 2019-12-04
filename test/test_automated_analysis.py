@@ -488,9 +488,10 @@ class AutomatedAnalysisTest(unittest.TestCase):
             clcode = ["mirtop",
                       "sql",
                       "-c",
+                      "--gff",
                       "../../data/examples/annotate/SQL_sample.gff",
                       "-o",
-                      "../data/examples/annotate",
+                      "../../data/examples/annotate",
                       "--db",
                       "SQL_sample.db"]
             print("")
@@ -508,9 +509,10 @@ class AutomatedAnalysisTest(unittest.TestCase):
             clcode = ["mirtop",
                       "sql",
                       "-c",
+                      "--gff",
                       "../../data/examples/annotate/SQL_sample.gff",
                       "-o",
-                      "../data/examples/annotate"]
+                      "../../data/examples/annotate"]
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)
@@ -624,7 +626,7 @@ class AutomatedAnalysisTest(unittest.TestCase):
                       "-e",
                       "isomirs-per-mirna",
                       "-miR",
-                      "../../data/examples/annotate/queryOutput_isomirs.txt"]
+                      "../../data/examples/annotate/miRNA_sample_list.txt"]
             print("")
             print(" ".join(clcode))
             subprocess.check_call(clcode)
