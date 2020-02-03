@@ -528,3 +528,21 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.gff.update import update_file
         print("\n")
         update_file("data/examples/versions/version1.0.gff", None)
+
+    @attr(sql=True)
+    def test_sql(self):
+        """testing mirtop_sql in sql.py function"""
+        from mirtop.libs import logger
+        from mirtop.sql import sql
+        import argparse
+        logger.initialize_logger("test SQLite Create", True, True)
+        logger = logger.getLogger(__name__)
+        args = argparse.Namespace()
+        args.create = "True"
+        args.db = "SQL_sample.db"
+        args.gff = 'data/examples/annotate/SQL_sample.gff'
+        args.out = 'data/examples/annotate/'
+        sql.sql_options(args)
+        os.remove(os.path.join(args.out, "SQL_sample.db"))
+        return True
+
