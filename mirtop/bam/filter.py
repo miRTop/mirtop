@@ -74,7 +74,6 @@ def tune(seq, precursor, start, cigar):
     if prob == 0: # if no nt changes detected, remove all
             add = []
             add_position = []
-            print("All removed")
 
     for e in error:
         if e not in add_position:
