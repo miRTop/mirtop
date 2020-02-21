@@ -308,6 +308,7 @@ class FunctionsTest(unittest.TestCase):
         if not res:
             if res[0][0] != 10:
                 raise ValueError("Wrong alignment for test 7 %s" % res)
+
         res = align_from_variants("AGGTAGTAGGATGTATAGAA", mature,
                                   "iso_5p:+2,iso_3p:-2,iso_add3p:2")
         if res:
@@ -546,3 +547,9 @@ class FunctionsTest(unittest.TestCase):
         os.remove(os.path.join(args.out, "SQL_sample.db"))
         return True
 
+    @attr(issue64=True)
+    def test_issue64(self):
+        from mirtop.bam.filter import tune
+        subs, add, cigar = tune("TATCACAGTGGCTGTTCTTTTTT", "CCCCCTATCACAGTGGCTGTTCTTTTTT", 5, None)
+        if add:
+            raise ValueError("Bad annotation in for seqs with 6T/As at the end")

@@ -1,3 +1,8 @@
+- 0.4.24dev
+
+* [fix bad](https://github.com/miRTop/mirtop/issues/64) annotation when 5 or more T/A at the end of the sequence by @DrHogart
+* Add SQL database creation
+
 - 0.4.23
 
 * fix empty stats file [#61](https://github.com/miRTop/mirtop/issues/61) by @leontienvdbent
