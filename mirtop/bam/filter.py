@@ -48,7 +48,7 @@ def tune(seq, precursor, start, cigar):
     for pos in range(0, len(seq)):
         if seq[pos] != mature[pos]:
             error.add(pos)
-
+    logger.debug("TUNE:: errors %s" % (error))
     subs, add = [], []
 
     prob = 0
@@ -64,13 +64,17 @@ def tune(seq, precursor, start, cigar):
             add_position.append(e)
             continue
         if e not in error:
-            if add:
+            if add: # in case nt change and not A/T
                 add.pop()
                 add_position.pop()
-            if prob == 0:
+            if prob == 0: # if no nt changes detected, remove all
                 add = []
                 add_position = []
             break
+    if prob == 0: # if no nt changes detected, remove all
+            add = []
+            add_position = []
+            print("All removed")
 
     for e in error:
         if e not in add_position:
