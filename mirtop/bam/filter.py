@@ -29,6 +29,7 @@ def tune(seq, precursor, start, cigar):
 
             cigar (str): updated cigar
     """
+    
     end = len(seq)
     if start < 0:
         end = end + start
@@ -43,44 +44,49 @@ def tune(seq, precursor, start, cigar):
     if seq.endswith("-"):
         seq = seq[:-1]
     logger.debug("TUNE:: %s %s %s" % (cigar, seq, mature))
+    subs, add = [], []
 
+    if seq == mature:
+        logger.debug("TUNE:: %s %s" % (subs, add))
+        return subs, "".join(add), make_cigar(seq, mature)
+    
     error = set()
     for pos in range(0, len(seq)):
         if seq[pos] != mature[pos]:
             error.add(pos)
-    logger.debug("TUNE:: errors %s" % (error))
-    subs, add = [], []
 
     prob = 0
     add_position = []
-    for e in range(len(seq) - 1, len(seq) - 6, -1):
-        if e in error:
-            prob = 1
-        if prob == 1:
-            add.append(seq[e])
-            add_position.append(e)
-        if e not in error and prob == 0 and seq[e] in ["A", "T"]:
-            add.append(seq[e])
-            add_position.append(e)
-            continue
-        if e not in error:
-            if add: # in case nt change and not A/T
-                add.pop()
-                add_position.pop()
-            if prob == 0: # if no nt changes detected, remove all
-                add = []
-                add_position = []
-            break
-    if prob == 0: # if no nt changes detected, remove all
-            add = []
-            add_position = []
+    positions_to_look = [*range(len(seq) - 1, len(seq) - 6, -1)]
+    is_overlapped = len([value for value in error if value in positions_to_look])
+    if is_overlapped:
+        for e in positions_to_look:
+            if e in error:
+                prob = 1
+            if prob == 1:
+                add.append(seq[e])
+                add_position.append(e)
+            if e not in error and prob == 0 and seq[e] in ["A", "T"]:
+                add.append(seq[e])
+                add_position.append(e)
+                continue
+            if e not in error:
+                if add:
+                    add.pop()
+                    add_position.pop()
+                if prob == 0:
+                    add = []
+                    add_position = []
+                break
 
     for e in error:
         if e not in add_position:
             subs.append([e, seq[e], mature[e]])
-
+    if not error:
+        add = []
+    
     logger.debug("TUNE:: %s %s" % (subs, add))
-
+    
     return subs, "".join(add), make_cigar(seq, mature)
 
 

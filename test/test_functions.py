@@ -313,6 +313,7 @@ class FunctionsTest(unittest.TestCase):
                                   "iso_5p:+2,iso_3p:-2,iso_add3p:2")
         if res:
             raise ValueError("Wrong alignment for test 8 %s" % res)
+        
 
     @attr(alignment=True)
     def test_alignment(self):
@@ -553,3 +554,11 @@ class FunctionsTest(unittest.TestCase):
         subs, add, cigar = tune("TATCACAGTGGCTGTTCTTTTTT", "CCCCCTATCACAGTGGCTGTTCTTTTTT", 5, None)
         if add:
             raise ValueError("Bad annotation in for seqs with 6T/As at the end")
+    @attr(error69=True)
+    def test_error69(self):
+        from mirtop.bam.filter import tune
+        v = tune("CTTATCAGATTGTATTGTAATT", 
+                 "TACATCGGCCATTATAATACAACCTGATAAGTGTTATAGCACTTATCAGATTGTATTGTAATTGTCTGTGTANNNNNNNNNNNN", 
+                 41, [(0, 22)])
+        if v[2] != "22M":
+            raise ValueError("Issue 69 is back. Variantion not detected correctly.")
