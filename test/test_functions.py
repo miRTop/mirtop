@@ -308,10 +308,12 @@ class FunctionsTest(unittest.TestCase):
         if not res:
             if res[0][0] != 10:
                 raise ValueError("Wrong alignment for test 7 %s" % res)
+
         res = align_from_variants("AGGTAGTAGGATGTATAGAA", mature,
                                   "iso_5p:+2,iso_3p:-2,iso_add3p:2")
         if res:
             raise ValueError("Wrong alignment for test 8 %s" % res)
+        
 
     @attr(alignment=True)
     def test_alignment(self):
@@ -528,3 +530,35 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.gff.update import update_file
         print("\n")
         update_file("data/examples/versions/version1.0.gff", None)
+
+    @attr(sql=True)
+    def test_sql(self):
+        """testing mirtop_sql in sql.py function"""
+        from mirtop.libs import logger
+        from mirtop.sql import sql
+        import argparse
+        logger.initialize_logger("test SQLite Create", True, True)
+        logger = logger.getLogger(__name__)
+        args = argparse.Namespace()
+        args.create = "True"
+        args.db = "SQL_sample.db"
+        args.gff = 'data/examples/annotate/SQL_sample.gff'
+        args.out = 'data/examples/annotate/'
+        sql.sql_options(args)
+        os.remove(os.path.join(args.out, "SQL_sample.db"))
+        return True
+
+    @attr(issue64=True)
+    def test_issue64(self):
+        from mirtop.bam.filter import tune
+        subs, add, cigar = tune("TATCACAGTGGCTGTTCTTTTTT", "CCCCCTATCACAGTGGCTGTTCTTTTTT", 5, None)
+        if add:
+            raise ValueError("Bad annotation in for seqs with 6T/As at the end")
+    @attr(error69=True)
+    def test_error69(self):
+        from mirtop.bam.filter import tune
+        v = tune("CTTATCAGATTGTATTGTAATT", 
+                 "TACATCGGCCATTATAATACAACCTGATAAGTGTTATAGCACTTATCAGATTGTATTGTAATTGTCTGTGTANNNNNNNNNNNN", 
+                 41, [(0, 22)])
+        if v[2] != "22M":
+            raise ValueError("Issue 69 is back. Variantion not detected correctly.")

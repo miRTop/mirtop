@@ -1,17 +1,22 @@
-- 0.4.23
+0.4.24
+
+* [fix bad](https://github.com/miRTop/mirtop/issues/64) annotation when 5 or more T/A at the end of the sequence by @DrHogart
+* Add SQL database creation
+
+0.4.23
 
 * fix empty stats file [#61](https://github.com/miRTop/mirtop/issues/61) by @leontienvdbent
 
-- 0.4.22
+0.4.22
 
 * fix when reads map halfway on to the edge
 * fix edge case where limit==variant_size 
 
-- 0.4.21
+0.4.21
 
 * Missing trimming events since 0.4.19
 
-- 0.4.20
+0.4.20
 
 * Support export isomiR rawData output
 * Support genomic coordinates as output in the gff
@@ -19,12 +24,12 @@
 * Implement method to create gff line
 * Improve docs
 
-- 0.4.19
+0.4.19
 
 * Add --version option
 * Fix bug that ignore sequences starting at 0 in bam files 
 
-- 0.4.18
+0.4.18
 
  * Cast map object to list to avoid errors in py3.
  * Support Manatee output.
@@ -52,7 +57,8 @@
  * Add class to parse GFF line as a first move toward isolation
  * Add JSON log for stats command.
 
-- 0.3.17
+0.3.17
+
  * Normalize the read of the tool outputs.
  * Add docs with autodoc plugin.
  * Validator by @Vbarrera.
@@ -78,7 +84,7 @@
  * Improve PROST! importer
  * Fix output for isomiRs package
 
-- 0.2.*
+0.2.*
 
  * Make GTF default output
  * Add function to get SNPs from Variant attribute
@@ -91,7 +97,7 @@
  * Improve isomiR reading from srnabench tool
  * Add PROST to supported tools
 
-- 0.1.7
+0.1.7
 
  * Remove deletion from addition isomiRs
  * Support for srnabench output
@@ -100,14 +106,14 @@
  * Functin to guess database used from GTF file through --mirna parameter
  * Adapt output format to https://github.com/miRTop/incubator/blob/master/format/definition.md
 
-- 0.1.5
+0.1.5
 
  * add function to check correct annotation
  * add test data for SAM parsing
  * add script to simulate isomiRs
  * parse indels from bam file
 
-- 0.1.4
+0.1.4
 
  * fix index BAM file command line
  * add function to accept indels and test unit
