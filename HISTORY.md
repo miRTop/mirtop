@@ -1,3 +1,7 @@
+0.4.25
+
+* [fix outliers samples](https://github.com/nf-core/smrnaseq/issues/137). When there is no identification of reference sequences or isomirs, the multiqc module will fails because it won't find the expected keys. Adding 0 when is the case.
+
 0.4.24
 
 * [fix bad](https://github.com/miRTop/mirtop/issues/64) annotation when 5 or more T/A at the end of the sequence by @DrHogart
