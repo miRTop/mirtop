@@ -103,6 +103,20 @@ def _classify(srna_type, attr, samples):
     return lines
 
 
+def _add_missing(df):
+    # ref_miRNA_mean
+    category = "ref_miRNA_mean"
+    if sum(df['category']==category) == 0:
+        df2 = {'category': category, 'sample': df['sample'].iat[0], 'counts': 0}
+        df = df.append(df2, ignore_index = True)
+    
+    category = "isomiR_sum"
+    if sum(df['category']==category) == 0:
+        df2 = {'category': category, 'sample': df['sample'].iat[0], 'counts': 0}
+        df = df.append(df2, ignore_index = True)
+    
+    return df
+
 def _summary(lines):
     """
     Summarize long table according to thresholds
@@ -113,10 +127,13 @@ def _summary(lines):
     df.counts = df.counts.astype(int)
     df_sum = df.groupby(['category', 'sample'], as_index=False).sum()
     df_sum['category'] = ["%s_sum" % r for r in df_sum['category']]
+    df_sum = _add_missing(df_sum)
     df_count = df.groupby(['category', 'sample'], as_index=False).count()
     df_count['category'] = ["%s_count" % r for r in df_count['category']]
+    df_count = _add_missing(df_count)
     df_mean = df.groupby(['category', 'sample'], as_index=False).mean()
     df_mean['category'] = ["%s_mean" % r for r in df_mean['category']]
+    df_mean = _add_missing(df_mean)
     df = pd.concat([df_sum, df_count, df_mean])
     return df
 
