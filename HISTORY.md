@@ -1,3 +1,7 @@
+0.4.26
+
+* [#73](https://github.com/miRTop/mirtop/issues/73): mislabeled isoforms in 5p or 3p when the difference is one.
+
 0.4.25
 
 * [fix outliers samples](https://github.com/nf-core/smrnaseq/issues/137). When there is no identification of reference sequences or isomirs, the multiqc module will fails because it won't find the expected keys. Adding 0 when is the case.

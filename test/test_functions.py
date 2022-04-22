@@ -208,6 +208,7 @@ class FunctionsTest(unittest.TestCase):
         print(align("TGANTAGTAGNTTGTATNGTT", "TGAGTAGTAGGTTGTATAGTTT")[0])
         print(align("TGANTAGTNGNTTGTATNGTT", "TGAGTATAGGCCTTGTATAGTT")[0])
         print(align("NCANAGTCCAAGNTCATN", "TCATAGTCCAAGGTCATG")[0])
+        print(align("CTATACAATCTATTGCCTTCCC", "CTATACAATCTATTGCCTTCCT")[0])
 
     @attr(reverse=True)
     def test_reverse(self):
@@ -314,6 +315,16 @@ class FunctionsTest(unittest.TestCase):
         if res:
             raise ValueError("Wrong alignment for test 8 %s" % res)
         
+        mature = get_mature_sequence(precursors["hsa-let-7f-1"],
+                                     matures["hsa-let-7f-1"]["hsa-let-7f-1-3p"], nt = 8)
+        if mature != "GAGATAACTATACAATCTATTGCCTTCCCTGANNNN":
+            raise ValueError("Results for hsa-let-7f-1-3p is %s" % mature)
+
+        res = align_from_variants("CTATACAATCTATTGCCTTCCT", mature,
+                                  "iso_3p:-1,iso_add3p:1")
+        if not res:
+            raise ValueError("Wrong alignment for test 0 %s" % res)
+
 
     @attr(alignment=True)
     def test_alignment(self):
@@ -562,3 +573,24 @@ class FunctionsTest(unittest.TestCase):
                  41, [(0, 22)])
         if v[2] != "22M":
             raise ValueError("Issue 69 is back. Variantion not detected correctly.")
+    
+    @attr(issue73=True)
+    def test_issue73(self):
+        from mirtop.mirna import fasta, mapper
+        from mirtop.bam.filter import tune
+        from mirtop.mirna.realign import isomir
+        from mirtop.mirna.annotate import _coord
+        iso = isomir()
+        iso.align = "dummy"
+        from mirtop.mirna import fasta
+        precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa", "hsa")
+        matures = mapper.read_gtf_to_precursor("data/examples/annotate/hsa.gff3")
+        iso.set_pos(62, 22)
+        # logger.debug("READ::From BAM start %s end %s at chrom %s" % (iso.start, iso.end, chrom))
+        
+        iso.subs, iso.add, iso.cigar = tune("CTATACAATCTATTGCCTTCCT", precursors["hsa-let-7f-1"], 62, [(0, 22)])
+        is_iso = _coord("CTATACAATCTATTGCCTTCCT", 62, matures["hsa-let-7f-1"]["hsa-let-7f-1-3p"], precursors["hsa-let-7f-1"], iso)
+        # print([iso.t5, iso.t3, iso.subs, iso.add, iso.cigar])
+        # print(iso.formatGFF())
+        if iso.formatGFF().split(",").sort() != "iso_add3p:1,iso_3p:-1".split(",").sort():
+            raise ValueError("Bad annotation for issue70 %s", iso.formatGFF())

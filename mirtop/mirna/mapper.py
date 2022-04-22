@@ -219,9 +219,9 @@ def _parse_db_mir(db_mir, db, id_dict):
             next
         if precursor[3] == "+":
             start = db_mir[mir][1] - precursor[1]
-            end = db_mir[mir][2] - precursor[1]
+            end = db_mir[mir][2] - precursor[1] + 1
         if precursor[3] == "-":
-            end = precursor[2] - db_mir[mir][1]
+            end = precursor[2] - db_mir[mir][1] + 1
             start = precursor[2] - db_mir[mir][2]
         logger.debug("MAP:: final:%s %s %s" % (mir[1], start, end))
         map_dict[id_dict[parent]][mir[1]] = [start, end, db_mir[mir][3]]
