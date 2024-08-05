@@ -6,6 +6,7 @@ import os.path as op
 import os
 import pysam
 from collections import defaultdict
+from shlex import quote
 
 import pybedtools
 
@@ -321,7 +322,7 @@ def _sam_to_bam(bam_fn):
     if not bam_fn.endswith("bam"):
         bam_out = "%s.bam" % os.path.splitext(bam_fn)[0]
         cmd = "samtools view -Sbh {bam_fn} -o {bam_out}"
-        do.run(cmd.format(**locals()))
+        do.run(cmd.format(bam_fn=quote(bam_fn), bam_out=quote(bam_out)))
         return bam_out
     return bam_fn
 
@@ -330,7 +331,7 @@ def _bam_sort(bam_fn):
     bam_sort_by_n = op.splitext(bam_fn)[0] + "_sort.bam"
     if not file_exists(bam_sort_by_n):
         do.run(("samtools sort -n -o {bam_sort_by_n} {bam_fn}").format(
-            **locals()))
+            bam_sort_by_n=quote(bam_sort_by_n), bam_fn=quote(bam_fn)))
     return bam_sort_by_n
 
 
