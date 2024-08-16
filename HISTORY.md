@@ -1,3 +1,7 @@
+0.4.26
+
+*  Support spaces and special characters in bam files
+
 0.4.25
 
 * [fix outliers samples](https://github.com/nf-core/smrnaseq/issues/137). When there is no identification of reference sequences or isomirs, the multiqc module will fails because it won't find the expected keys. Adding 0 when is the case.
