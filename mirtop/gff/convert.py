@@ -81,11 +81,11 @@ def convert_gff_counts(args):
             if extra == "Invalid":
                 continue
             logger.debug("COUNTS::EXTRA:%s" % extra)
-            cols_variants = [cols_variants] + _expand(extra, True)
-        #import pdb; pdb.set_trace()   
+            cols_variants = cols_variants + _expand(extra, True)
         summary = [UID, Read,  mirna, variant] + cols_variants + expression
         logger.debug(summary)
         all_lines.append(summary)
+    #import pdb; pdb.set_trace()   
     df = pd.DataFrame(all_lines, columns = ['UID', 'Read', 'miRNA', 'Variant'] + variant_header + samples)
     df = df.drop_duplicates()
     df.to_csv(out_file, sep="\t", index=False)
