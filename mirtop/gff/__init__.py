@@ -68,7 +68,7 @@ def reader(args):
     if args.low_memory:
         return None
     merged = merge.merge(out_dts, samples)
-    fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
+    fn_merged_out = op.join(args.out, "%s.%s" % (args.prefix, args.out_format))
     _write(merged, header.create(samples, database, header.make_tools([args.format])), fn_merged_out, args)
 
 

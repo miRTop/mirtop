@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import os.path as op
+import pandas as pd
 
 from mirtop.mirna import fasta, mapper
 from mirtop.mirna.realign import read_id
@@ -25,69 +26,69 @@ def convert_gff_counts(args):
             UID miRNA Variant Sample1 Sample2 ... Sample N
     """
     sep = "\t"
-    variant_header = sep.join(['iso_5p', 'iso_3p',
-                               'iso_add3p', 'iso_snp'])
+    variant_header = ['iso_5p', 'iso_3p',
+                      'iso_add3p', 'iso_snp']
     if args.add_extra:
         precursors = fasta.read_precursor(args.hairpin, args.sps)
         matures = mapper.read_gtf_to_precursor(args.gtf)
-        variant_header = sep.join([variant_header,
-                                   'iso_5p_nt', 'iso_3p_nt',
-                                   'iso_add3p_nt', 'iso_snp_nt'])
+        variant_header = variant_header + ['iso_5p_nt', 'iso_3p_nt', 'iso_add3p_nt', 'iso_snp_nt']
 
     logger.info("INFO Reading GFF file %s", args.gff)
     logger.info("INFO Writing TSV file to directory %s", args.out)
 
     gff_file = open(args.gff, 'r')
     out_file = op.join(args.out, "%s.tsv" % op.splitext(op.basename(args.gff))[0])
+    all_lines = []
     missing_parent = 0
     missing_mirna = 0
     unvalid_uid = 0
-    with open(out_file, 'w') as outh:
-
-        for samples_line in gff_file:
-            if samples_line.startswith("## COLDATA:"):
-                samples = sep.join(samples_line.strip().split("COLDATA:")[1].strip().split(","))
-                header = sep.join(['UID', 'Read', 'miRNA', 'Variant',
-                                   variant_header, samples])
-                print(header, file=outh)
-                break
-
-        for mirna_line in gff_file:
-            gff = feature(mirna_line)
-            attr = gff.attributes
-            UID = attr["UID"]
-            Read = attr["Read"]
-            mirna = attr["Name"]
-            parent = attr["Parent"]
-            variant = attr["Variant"]
-            try:
-                read_id(UID)
-            except KeyError:
-                unvalid_uid += 1
+    #with open(out_file, 'w') as outh:
+    
+    for samples_line in gff_file:
+        if samples_line.startswith("## COLDATA:"):
+            samples = [sep.join(samples_line.strip().split("COLDATA:")[1].strip().split(","))]
+            #header = sep.join(['UID', 'Read', 'miRNA', 'Variant',
+            #                   variant_header, samples])
+            #print(header, file=outh)
+            break
+    
+    for mirna_line in gff_file:
+        gff = feature(mirna_line)
+        attr = gff.attributes
+        UID = attr["UID"]
+        Read = attr["Read"]
+        mirna = attr["Name"]
+        parent = attr["Parent"]
+        variant = attr["Variant"]
+        try:
+            read_id(UID)
+        except KeyError:
+            unvalid_uid += 1
+            continue
+    
+        expression = [sep.join(attr["Expression"].strip().split(","))]
+        cols_variants = _expand(variant)
+        logger.debug("COUNTS::Read:%s" % Read)
+        logger.debug("COUNTS::EXTRA:%s" % variant)
+        if args.add_extra:
+            if parent not in precursors:
+                missing_parent += 1
                 continue
-
-            expression = sep.join(attr["Expression"].strip().split(","))
-            cols_variants = sep.join(_expand(variant))
-            logger.debug("COUNTS::Read:%s" % Read)
-            logger.debug("COUNTS::EXTRA:%s" % variant)
-            if args.add_extra:
-                if parent not in precursors:
-                    missing_parent += 1
-                    continue
-                if mirna not in matures[parent]:
-                    missing_mirna += 1
-                    continue
-                extra = variant_with_nt(mirna_line, precursors, matures)
-                if extra == "Invalid":
-                    continue
-                logger.debug("COUNTS::EXTRA:%s" % extra)
-                cols_variants = sep.join([cols_variants] + _expand(extra, True))
-            summary = sep.join([UID, Read,  mirna, variant,
-                                cols_variants, expression])
-            logger.debug(summary)
-            print(summary, file=outh)
-
-    gff_file.close()
+            if mirna not in matures[parent]:
+                missing_mirna += 1
+                continue
+            extra = variant_with_nt(mirna_line, precursors, matures)
+            if extra == "Invalid":
+                continue
+            logger.debug("COUNTS::EXTRA:%s" % extra)
+            cols_variants = [cols_variants] + _expand(extra, True)
+        #import pdb; pdb.set_trace()   
+        summary = [UID, Read,  mirna, variant] + cols_variants + expression
+        logger.debug(summary)
+        all_lines.append(summary)
+    df = pd.DataFrame(all_lines, columns = ['UID', 'Read', 'miRNA', 'Variant'] + variant_header + samples)
+    df = df.drop_duplicates()
+    df.to_csv(out_file, sep="\t", index=False)
     logger.info("Missing Parents in hairpin file: %s" % missing_parent)
     logger.info("Missing MiRNAs in GFF file: %s" % missing_mirna)
     logger.info("Non valid UID: %s" % unvalid_uid)

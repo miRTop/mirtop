@@ -1,5 +1,5 @@
 import re
-from Bio import pairwise2
+from Bio.Align import PairwiseAligner
 from Bio.Seq import Seq
 from collections import defaultdict
 
@@ -94,7 +94,7 @@ class isomir:
             value.append("iso_3p:%s%s" % (direction, size))
         if not value:
             value = ["NA"]
-        return ",".join(list(set(value)))
+        return ",".join(sorted(list(set(value))))
 
     def format(self, sep="\t"):
         """Create tabular line from variant fields."""
