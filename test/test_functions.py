@@ -10,7 +10,7 @@ import argparse
 import contextlib
 import shutil
 
-from nose.plugins.attrib import attr
+#from nose.plugins.attrib import attr
 
 
 @contextlib.contextmanager
@@ -64,7 +64,7 @@ def annotate(fn, read_file, load=False, create=True, keep_name=False,
 class FunctionsTest(unittest.TestCase):
     """Setup a full automated analysis and run the pipeline.
     """
-    @attr(database=True)
+    #@pytest.mark.database
     def test_database(self):
         from mirtop.mirna import mapper
         args = argparse.Namespace()
@@ -75,7 +75,7 @@ class FunctionsTest(unittest.TestCase):
         if db != "miRBasev21":
             raise ValueError("%s not eq to miRBasev21" % db)
 
-    @attr(read_hairpin=True)
+    #@pytest.mark.read_hairpin
     def test_read_hairpin(self):
         from mirtop.mirna import mapper, fasta
         from mirtop.libs import logger
@@ -96,7 +96,7 @@ class FunctionsTest(unittest.TestCase):
         # read data/aligments/let7-perfect.bam
         return True
 
-    @attr(read_hairpin_mirgenedb=True)
+    ##@attr(read_hairpin_mirgenedb=True)
     def test_read_hairpin_mirgenedb(self):
         from mirtop.mirna import mapper
         from mirtop.libs import logger
@@ -105,7 +105,7 @@ class FunctionsTest(unittest.TestCase):
             "data/db/mirgenedb/hsa.gff")
         print(map_mir)
 
-    @attr(read_mir2chr=True)
+    ##@attr(read_mir2chr=True)
     def test_read_mir2chr(self):
         from mirtop.mirna import mapper
         from mirtop.libs import logger
@@ -114,7 +114,7 @@ class FunctionsTest(unittest.TestCase):
         print(map_mir)
         # print(mapper.read_gtf_chr2mirna2("data/examples/annotate/hsa.gff3"))
 
-    @attr(read_mir2genomic=True)
+    ##@attr(read_mir2genomic=True)
     def test_read_mir2genomic(self):
         from mirtop.mirna import mapper
         from mirtop.libs import logger
@@ -122,7 +122,7 @@ class FunctionsTest(unittest.TestCase):
         map_mir = mapper.read_gtf_to_mirna("data/examples/annotate/hsa.gff3")
         print(map_mir)
 
-    @attr(read_line=True)
+    ##@attr(read_line=True)
     def test_read_line(self):
         """Read GFF/GTF line"""
         from mirtop.gff.body import read_gff_line
@@ -130,7 +130,7 @@ class FunctionsTest(unittest.TestCase):
             for line in inh:
                 print(read_gff_line(line))
 
-    @attr(code=True)
+    ##@attr(code=True)
     def test_code(self):
         """testing code correction function"""
         from mirtop.mirna.realign import make_id, read_id
@@ -153,7 +153,7 @@ class FunctionsTest(unittest.TestCase):
         # if read_id("asD(-"):
         #     raise ValueError("This should be False, Not valid code.")
 
-    @attr(code_convert=True)
+    ##@attr(code_convert=True)
     def test_code_convert(self):
         """testing code correction function"""
         from mirtop.mirna.realign import make_id
@@ -164,7 +164,7 @@ class FunctionsTest(unittest.TestCase):
         if not make_id(read_uid_10("@#%$@2")) == "iso-13-B1NYDX":
             raise ValueError("Update ID is not working.")
 
-    @attr(cigar=True)
+    ##@attr(cigar=True)
     def test_cigar(self):
         """testing cigar correction function"""
         cigar = [[0, 14], [1, 1], [0, 5]]
@@ -188,7 +188,7 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("3MA3M not equal AAATCCC but %s" %
                              cigar2snp("3MA3M", "AAATCCC"))
 
-    @attr(sequence=True)
+    ##@attr(sequence=True)
     def test_is_sequence(self):
         """testing if string is valid sequence"""
         from mirtop.mirna.realign import is_sequence
@@ -197,7 +197,7 @@ class FunctionsTest(unittest.TestCase):
         if is_sequence("AC2TGC"):
             raise ValueError("AC2TGC should return false.")
 
-    @attr(locala=True)
+    ##@attr(locala=True)
     def test_locala(self):
         """testing pairwise alignment"""
         from mirtop.mirna.realign import align
@@ -209,7 +209,7 @@ class FunctionsTest(unittest.TestCase):
         print(align("TGANTAGTNGNTTGTATNGTT", "TGAGTATAGGCCTTGTATAGTT")[0])
         print(align("NCANAGTCCAAGNTCATN", "TCATAGTCCAAGGTCATG")[0])
 
-    @attr(reverse=True)
+    ##@attr(reverse=True)
     def test_reverse(self):
         """Test reverse complement function"""
         from mirtop.mirna.realign import reverse_complement
@@ -218,7 +218,7 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("ATGC complement is not: %s" %
                              reverse_complement("ATGC"))
 
-    @attr(class_gff=True)
+    ##@attr(class_gff=True)
     def test_class(self):
         """Test class to read GFF line"""
         from mirtop.gff.classgff import feature
@@ -231,7 +231,7 @@ class FunctionsTest(unittest.TestCase):
         print(gff.columns)
         print(gff.attributes)
 
-    @attr(merge=True)
+    ##@attr(merge=True)
     def test_merge(self):
         """Test merge functions"""
         from mirtop.gff import merge
@@ -250,7 +250,7 @@ class FunctionsTest(unittest.TestCase):
         if expression != "1,2":
             raise ValueError("This is wrong: %s" % expression)
 
-    @attr(align_mature=True)
+    ##@attr(align_mature=True)
     def test_variant(self):
         """testing get mature sequence"""
         from mirtop.mirna import fasta, mapper
@@ -315,10 +315,10 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Wrong alignment for test 8 %s" % res)
         
 
-    @attr(alignment=True)
+    ##@attr(alignment=True)
     def test_alignment(self):
         """testing alignments function"""
-        from mirtop.bam import bam
+        from mirtop import bam
         from mirtop.gff.classgff import feature
         fns = {"let7-last1D.sam": {56:"iso_add3p:1,iso_snv"},
                "let7-1D.sam": {5:"iso_snv,iso_3p:-5"},
@@ -328,13 +328,13 @@ class FunctionsTest(unittest.TestCase):
                "let7-triming.sam": {5:"iso_3p:+2",4:"iso_5p:-1",6:"iso_5p:+1,iso_3p:-3"}}
         #import pdb; pdb.set_trace()
         for fn in fns:
-            gff = annotate("data/aligments/%s" % fn, bam.read_bam)
+            gff = annotate("data/aligments/%s" % fn, bam.bam.read_bam)
             for pos in gff['hsa-let-7a-1']:
                 f = feature(gff['hsa-let-7a-1'][pos][0][4])
                 if not set(f.attributes['Variant'].split(",")) == set(fns[fn][pos].split(",")):
                     raise ValueError("Error in %s" % fn)
    
-    @attr(alignment_genomic=True)
+    ##@attr(alignment_genomic=True)
     def test_alignment_genomic(self):
         """testing alignments function"""
         from mirtop.bam import bam
@@ -351,7 +351,7 @@ class FunctionsTest(unittest.TestCase):
                                bam.read_bam,
                                gtf="data/db/mirbase/hsa.gff3", genomic=True))
 
-    @attr(keep_name=True)
+    ##@attr(keep_name=True)
     def test_keep_name(self):
         from mirtop.bam import bam
         line = annotate("data/aligments/let7-perfect.sam",
@@ -361,7 +361,7 @@ class FunctionsTest(unittest.TestCase):
         if line["hsa-let-7a-1"][5][0][4].find("seq_perfect_x2") < 0:
             raise ValueError("Keep name failed: %s" % line)
 
-    @attr(seqbuster=True)
+    ##@attr(seqbuster=True)
     def test_seqbuster(self):
         """testing reading seqbuster files function"""
         from mirtop.libs import logger
@@ -375,7 +375,7 @@ class FunctionsTest(unittest.TestCase):
         print("\nno frequency\n")
         annotate("data/examples/seqbuster/seqbuster_nofreq.mirna", seqbuster.read_file)
 
-    @attr(srnabench=True)
+    ##@attr(srnabench=True)
     def test_srnabench(self):
         """testing reading srnabench files function"""
         from mirtop.libs import logger
@@ -384,7 +384,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.importer import srnabench
         annotate("data/examples/srnabench", srnabench.read_file, create=False)
 
-    @attr(optimir=True)
+    ##@attr(optimir=True)
     def test_optimir(self):
         """testing reading optimir files function"""
         from mirtop.libs import logger
@@ -393,7 +393,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.importer import optimir
         annotate("data/examples/optimir/synthetic_100_full.gff3", optimir.read_file, create=False)
 
-    @attr(prost=True)
+    ##@attr(prost=True)
     def test_prost(self):
         """testing reading prost files function"""
         from mirtop.libs import logger
@@ -408,7 +408,7 @@ class FunctionsTest(unittest.TestCase):
             fn, precursors, "miRBasev21", "data/examples/annotate/hsa.gff3")
         annotate("data/example/prost/prost.example.txt", reads, True)
 
-    @attr(gff=True)
+    ##@attr(gff=True)
     def test_gff(self):
         """testing GFF function"""
         from mirtop.libs import logger
@@ -419,7 +419,7 @@ class FunctionsTest(unittest.TestCase):
         annotate(bam_fn, bam.read_bam)
         return True
 
-    @attr(collapse=True)
+    ##@attr(collapse=True)
     def test_collapse(self):
         """testing GFF function"""
         from mirtop.libs import logger
@@ -430,7 +430,7 @@ class FunctionsTest(unittest.TestCase):
         annotate(bam_fn, bam.read_bam)
         return True
 
-    @attr(counts=True)
+    ##@attr(counts=True)
     def test_counts(self):
         """testing convert_gff_counts in convert.py function"""
         from mirtop.libs import logger
@@ -452,7 +452,7 @@ class FunctionsTest(unittest.TestCase):
 
         return True
 
-    @attr(stats=True)
+    ##@attr(stats=True)
     def test_stats(self):
         """testing stats function"""
         from mirtop.gff import stats
@@ -461,7 +461,7 @@ class FunctionsTest(unittest.TestCase):
         stats._dump_log(df, version, None)
         print(df)
 
-    @attr(variant=True)
+    ##@attr(variant=True)
     def test_string_variant(self):
         """testing parsing string variants"""
         from mirtop.gff import body
@@ -477,7 +477,7 @@ class FunctionsTest(unittest.TestCase):
         if (truthv > list(gff.values())) - (list(gff.values()) > truthv):
             raise ValueError("Not found expected Values.")
 
-    @attr(validate=True)
+    ##@attr(validate=True)
     def test_validator(self):
         """test validator functions"""
         from mirtop.gff.validator import _check_file
@@ -493,7 +493,7 @@ class FunctionsTest(unittest.TestCase):
             raise ValueError("Validator did catch an unexpected error in correct_file.gff.") 
 
 
-    @attr(spikeins=True)
+    ###@attr(spikeins=True)
     def test_spikeins(self):
         """Test spikeins reading and annotation"""
         from mirtop.libs import spikeins
@@ -519,19 +519,19 @@ class FunctionsTest(unittest.TestCase):
         fasta_precursor = fasta.read_precursor(file_fasta, None)
         print(fasta_precursor)
 
-    @attr(export_fasta=True)
+    #@attr(export_fasta=True)
     def test_export_fasta(self):
         from mirtop.exporter.fasta import _process
         print("\n")
         _process("data/examples/gff/2samples.gff", None)
 
-    @attr(update=True)
+    #@attr(update=True)
     def test_update(self):
         from mirtop.gff.update import update_file
         print("\n")
         update_file("data/examples/versions/version1.0.gff", None)
 
-    @attr(sql=True)
+    #@attr(sql=True)
     def test_sql(self):
         """testing mirtop_sql in sql.py function"""
         from mirtop.libs import logger
@@ -548,13 +548,13 @@ class FunctionsTest(unittest.TestCase):
         os.remove(os.path.join(args.out, "SQL_sample.db"))
         return True
 
-    @attr(issue64=True)
+    #@attr(issue64=True)
     def test_issue64(self):
         from mirtop.bam.filter import tune
         subs, add, cigar = tune("TATCACAGTGGCTGTTCTTTTTT", "CCCCCTATCACAGTGGCTGTTCTTTTTT", 5, None)
         if add:
             raise ValueError("Bad annotation in for seqs with 6T/As at the end")
-    @attr(error69=True)
+    #@attr(error69=True)
     def test_error69(self):
         from mirtop.bam.filter import tune
         v = tune("CTTATCAGATTGTATTGTAATT", 
