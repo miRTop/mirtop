@@ -3,4 +3,4 @@ dependencies:
   - bioconda::pysam
   - bioconda::pybedtools
   - conda-forge::pandas
-  - bioconda::biopython
+  - conda-forge::biopython=1.83
