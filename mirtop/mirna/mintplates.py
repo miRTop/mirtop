@@ -509,7 +509,7 @@ def encode_sequence(sequence, prefix):
     """
     length = len(sequence)
     # Encode label
-    if prefix is '':
+    if prefix == '':
         final_result = [(str(length) + '-')]
     else:
         final_result = [prefix + "-" + str(length) + "-"]
