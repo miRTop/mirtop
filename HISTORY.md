@@ -1,6 +1,9 @@
-0.4.27
+0.4.28
 
 * fix random order in Variant field [#84](https://github.com/miRTop/mirtop/issues/83)
+
+0.4.27
+
 * fix possible duplication of lines [#80](https://github.com/miRTop/mirtop/issues/80)
 * accept prefix for gff output [#84](https://github.com/miRTop/mirtop/issues/84)
 
