@@ -1,10 +1,6 @@
-from __future__ import print_function
-
 import datetime
 import sys
 import os.path as op
-
-import six
 
 from mirtop.mirna.fasta import read_precursor
 from mirtop.mirna.mapper import read_gtf_to_precursor, read_gtf_to_mirna
@@ -133,14 +129,12 @@ def create_vcf(mirgff3, precursor, gtf, vcffile):
     """
     #Check if the input files exist:
     try:
-        gff3_file = open(mirgff3, "r", encoding="utf-8") if six.PY3 else open(mirgff3, "r")
+        gff3_file = open(mirgff3, "r", encoding="utf-8")
     except IOError:
         print ("Can't read the file", end=mirgff3)
         sys.exit()
     with gff3_file:
         data = gff3_file.read()
-        if six.PY2:
-            data = data.decode("utf-8-sig").encode("utf-8")
 
     gff3_data = data.split("\n")
     vcf_file = open(vcffile, "w")
