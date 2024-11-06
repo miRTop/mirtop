@@ -25,7 +25,7 @@ def convert(args):
     for fn in args.files:
         out_file = op.join(args.out, "%s.vcf" % op.splitext(op.basename(fn))[0])
         logger.info("Reading %s" % fn)
-        create_vcf(fn, args.hairpin, args.gtf, out_file)
+        create_vcf(fn, args.hairpin, args.gtf, out_file, args.database)
         logger.info("VCF generated %s" % out_file)
 
 
@@ -121,7 +121,7 @@ def cigar_2_key(cigar, readseq, refseq, pos, var5p, var3p, parent_ini_pos, paren
     return(key_pos, key_var, ref, alt)
 
 
-def create_vcf(mirgff3, precursor, gtf, vcffile):
+def create_vcf(mirgff3, precursor, gtf, vcffile, database):
     """
     Args:
         'mirgff3(str)': File with mirGFF3 format that will be converted
@@ -178,7 +178,7 @@ def create_vcf(mirgff3, precursor, gtf, vcffile):
     n_noSNP = 0
     no_var = 0
     hairpins = read_precursor(precursor)
-    gff3 = read_gtf_to_precursor(gtf)
+    gff3 = read_gtf_to_precursor(gtf, database)
     gtf_dic = read_gtf_to_mirna(gtf)
     for line in range(0, len(gff3_data)):
         if not gff3_data[line]:

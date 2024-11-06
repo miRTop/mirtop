@@ -20,6 +20,8 @@ def guess_database(args):
 
     TODO: this needs to be generic to other databases.
     """
+    if not hasattr(args, "database"):
+        args.database = None
     return _guess_database_file(args.gtf, args.database)
 
 
