@@ -26,8 +26,9 @@ def main(**kwargs):
                       kwargs['args'].print_debug)
     logger = mylog.getLogger(__name__)
     start = time.time()
-    if (not hasattr(kwargs["args"], "database") and ("sql" not in kwargs and "stats" not in kwargs and "update" not in kwargs)):
-        kwargs["args"].database = mapper.guess_database(kwargs["args"])
+    if not hasattr(kwargs["args"], "database"):
+        if ("sql" not in kwargs and "stats" not in kwargs and "update" not in kwargs and "validate" not in kwargs):
+            kwargs["args"].database = mapper.guess_database(kwargs["args"])
 
     if "gff" in kwargs:
         logger.info("Run annotation")
