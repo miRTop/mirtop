@@ -20,6 +20,8 @@ def guess_database(args):
 
     TODO: this needs to be generic to other databases.
     """
+    if not hasattr(args, "database"):
+        args.database = None
     return _guess_database_file(args.gtf, args.database)
 
 
@@ -143,7 +145,7 @@ def read_gtf_chr2mirna2(gtf):  # to remove
     return db_mir
 
 
-def read_gtf_to_precursor(gtf):
+def read_gtf_to_precursor(gtf,database):
     """
     Load GTF file with precursor positions on genome
     Return dict with key being precursor name and
@@ -161,15 +163,26 @@ def read_gtf_to_precursor(gtf):
     """
     if not gtf:
         return gtf
-    if _guess_database_file(gtf).find("miRBase") > -1:
+    if _guess_database_file(gtf,database).find("miRBase") > -1:
         mapped = read_gtf_to_precursor_mirbase(gtf)
-    elif _guess_database_file(gtf).find("MirGeneDB") > -1:
+    elif _guess_database_file(gtf,database).find("MirGeneDB") > -1:
         mapped = read_gtf_to_precursor_mirgenedb(gtf)
     else:
         logger.info("Database different than miRBase or MirGeneDB")
         logger.info("If you get an error when loading,")
         logger.info("report it to https://github.com/miRTop/mirtop/issues")
-        mapped = read_gtf_to_precursor_mirbase(gtf)
+        try:
+            mapped = read_gtf_to_precursor_mirbase(gtf)
+            return mapped
+        except Exception as e:
+            print(f"Failed to parse with Mirbase: {e}")
+            try:
+                mapped = read_gtf_to_precursor_mirgenedb(gtf)
+                return mapped
+            except Exception as e:
+                print(f"Failed to parse with Mirgenedb: {e}")
+                raise ValueError(f"There is no parser available for the database that you used: {database}")
+
     return mapped
 
 

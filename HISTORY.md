@@ -1,3 +1,7 @@
+0.4.29
+
+* Update handling of --database argument [#90](https://github.com/miRTop/mirtop/issues/90)
+
 0.4.28
 
 * fix random order in Variant field [#84](https://github.com/miRTop/mirtop/issues/83)

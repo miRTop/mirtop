@@ -21,11 +21,14 @@ def reader(args):
         read.reader(args)
         return None
     samples = []
-    database = mapper.guess_database(args)
+    if args.database is None:
+        database = mapper.guess_database(args)
+    else:
+        database = args.database
     args.database = database
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     args.precursors = precursors
-    matures = mapper.read_gtf_to_precursor(args.gtf)
+    matures = mapper.read_gtf_to_precursor(args.gtf,database)
     args.matures = matures
     # TODO check numbers of miRNA and precursors read
     # TODO print message if numbers mismatch
