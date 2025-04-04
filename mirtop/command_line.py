@@ -14,6 +14,7 @@ from mirtop.gff import validator
 from mirtop.libs import spikeins
 from mirtop.gff import update
 from mirtop.sql import sql 
+from mirtop.mirna import mapper
 import mirtop.libs.logger as mylog
 
 import time
@@ -25,6 +26,9 @@ def main(**kwargs):
                       kwargs['args'].print_debug)
     logger = mylog.getLogger(__name__)
     start = time.time()
+    if not hasattr(kwargs["args"], "database"):
+        if ("sql" not in kwargs and "stats" not in kwargs and "update" not in kwargs and "validate" not in kwargs):
+            kwargs["args"].database = mapper.guess_database(kwargs["args"])
 
     if "gff" in kwargs:
         logger.info("Run annotation")
