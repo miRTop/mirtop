@@ -25,7 +25,7 @@ def reader(args):
     args.database = database
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     args.precursors = precursors
-    matures = mapper.read_gtf_to_precursor(args.gtf)
+    matures = mapper.read_gtf_to_precursor(args.gtf, database)
     args.matures = matures
     # TODO check numbers of miRNA and precursors read
     # TODO print message if numbers mismatch
@@ -75,7 +75,8 @@ def reader(args):
 def _write(lines, header, fn, args = None):
     out_handle = open(fn, 'w')
     print(header, file=out_handle)
-    mapper = read_gtf_to_mirna(args.gtf)
+    database = mapper.guess_database(args)
+    mapper = read_gtf_to_mirna(args.gtf, database)
     for m in lines:
         for s in sorted(lines[m].keys()):
             for hit in lines[m][s]:

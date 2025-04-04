@@ -24,6 +24,8 @@ def guess_database(args):
 
 
 def _guess_database_file(gff, database=None):
+    if database:
+        return database
     with open(gff) as in_handle:
         for line in in_handle:
             if not line.startswith("#"):
@@ -286,7 +288,7 @@ def read_gtf_to_precursor_mirgenedb(gtf, format="precursor"):
             if cols[2] == "miRNA":
                 idname_mi = [n.split("=")[1] for n in cols[-1].split(";")
                              if n.startswith("ID")][0]
-                parent = "%s_pre" % idname_mi.split("_")[0]
+                parent = "%s_pre" % idname_mi.replace("_3p", "").replace("_5p", "")
                 db_mir[(parent, name)] = [chrom,
                                           int(start), int(end),
                                           strand, parent]
