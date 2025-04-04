@@ -30,7 +30,7 @@ def convert_gff_counts(args):
                       'iso_add3p', 'iso_snp']
     if args.add_extra:
         precursors = fasta.read_precursor(args.hairpin, args.sps)
-        matures = mapper.read_gtf_to_precursor(args.gtf)
+        matures = mapper.read_gtf_to_precursor(args.gtf, args.database)
         variant_header = variant_header + ['iso_5p_nt', 'iso_3p_nt', 'iso_add3p_nt', 'iso_snp_nt']
 
     logger.info("INFO Reading GFF file %s", args.gff)

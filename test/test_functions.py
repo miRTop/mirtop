@@ -45,7 +45,7 @@ def annotate(fn, read_file, load=False, create=True, keep_name=False,
     args.keep_name = keep_name
     from mirtop.mirna import fasta, mapper
     precursors = fasta.read_precursor(args.hairpin, args.sps)
-    matures = mapper.read_gtf_to_precursor(args.gtf)
+    matures = mapper.read_gtf_to_precursor(args.gtf, args.database)
     args.precursors = precursors
     args.matures = matures
     args.database = mapper.guess_database(args)
@@ -81,7 +81,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = mapper.read_gtf_to_precursor(
-            "data/examples/annotate/hsa.gff3")
+            "data/examples/annotate/hsa.gff3", None)
         print(map_mir)
         if map_mir["hsa-let-7a-1"]["hsa-let-7a-5p"][0] != 5:
             raise ValueError("GFF is not loaded correctly.")
@@ -102,7 +102,7 @@ class FunctionsTest(unittest.TestCase):
         from mirtop.libs import logger
         logger.initialize_logger("test_read_files", True, True)
         map_mir = mapper.read_gtf_to_precursor(
-            "data/db/mirgenedb/hsa.gff")
+            "data/db/mirgenedb/hsa.gff", None)
         print(map_mir)
 
     ##@attr(read_mir2chr=True)
@@ -259,7 +259,7 @@ class FunctionsTest(unittest.TestCase):
         precursors = fasta.read_precursor("data/examples/annotate/hairpin.fa",
                                           "hsa")
         matures = mapper.read_gtf_to_precursor(
-            "data/examples/annotate/hsa.gff3")
+            "data/examples/annotate/hsa.gff3", None)
         res = get_mature_sequence("GAAAATTTTTTTTTTTAAAAG", [5, 15])
         if res != "AAAATTTTTTTTTTTAAAA":
             raise ValueError("Results for GAAAATTTTTTTTTTTAAAAG was %s" % res)
@@ -447,6 +447,7 @@ class FunctionsTest(unittest.TestCase):
         args.gff = 'data/examples/synthetic/let7a-5p.gff'
         args.out = 'data/examples/synthetic'
         args.add_extra = True
+        args.database = None
         convert_gff_counts(args)
         os.remove(os.path.join(args.out, "let7a-5p.tsv"))
 
