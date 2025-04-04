@@ -1,0 +1,7 @@
+dependencies:
+  - python=3.11
+  - bioconda::pysam
+  - bioconda::pybedtools
+  - bioconda::samtools=1.21
+  - conda-forge::pandas
+  - conda-forge::biopython=1.83

@@ -62,7 +62,7 @@ if __name__ == "__main__":
     for mir in fa:
         if mir in bed:
             precursor = bed[mir][mir + "_pre"]
-            print precursor
+            print(precursor)
             mir5p = ""
             mir3p = ""
             for mature in bed[mir]:
@@ -82,7 +82,7 @@ if __name__ == "__main__":
                 if mature.find("3p") > 0:
                     mir3p = "[%s:%s-%s]" % (mature, start, end)
 
-            print >>OUT, ">%s (X) %s %s" % (mir, mir5p, mir3p)
-            print >>OUTP, ">%s\n%s" % (mir, fa[mir])
+            print(">%s (X) %s %s" % (mir, mir5p, mir3p), file=OUT)
+            print(">%s\n%s" % (mir, fa[mir]),file=OUTP)
 OUT.close()
 OUTP.close()
