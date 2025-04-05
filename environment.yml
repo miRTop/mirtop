@@ -4,4 +4,5 @@ dependencies:
   - bioconda::pybedtools
   - bioconda::samtools=1.21
   - conda-forge::pandas
+  - conda-forge::sqlite
   - conda-forge::biopython=1.83
