@@ -1,6 +1,7 @@
 """Read database information"""
 
 from collections import defaultdict
+import re
 
 import mirtop.libs.logger as mylog
 
@@ -290,6 +291,7 @@ def read_gtf_to_precursor_mirgenedb(gtf, format="precursor"):
     db = defaultdict(list)
     db_mir = defaultdict(list)
     id_dict = dict()
+    pattern = r'(_3p\*?|_5p\*?)'
     with open(gtf) as in_handle:
         for line in in_handle:
             if line.startswith("#"):
@@ -305,7 +307,10 @@ def read_gtf_to_precursor_mirgenedb(gtf, format="precursor"):
             if cols[2] == "miRNA":
                 idname_mi = [n.split("=")[1] for n in cols[-1].split(";")
                              if n.startswith("ID")][0]
-                parent = "%s_pre" % idname_mi.replace("_3p", "").replace("_5p", "")
+                # parent = "%s_pre" % idname_mi.replace("_3p.*", "").replace("_5p.*", "")
+                parent = re.sub(pattern, '', idname_mi)
+                parent = "%s_pre" % parent
+                # import pdb; pdb.set_trace()
                 db_mir[(parent, name)] = [chrom,
                                           int(start), int(end),
                                           strand, parent]
