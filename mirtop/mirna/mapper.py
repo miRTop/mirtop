@@ -58,7 +58,7 @@ def get_primary_transcript(database):
         raise ValueError("Only miRBase is supported for this action.")
 
 
-def read_gtf_to_mirna(gtf, database):
+def read_gtf_to_mirna(gtf, database=None):
     """
     Load GTF file with precursor positions on genome.
 
@@ -72,6 +72,8 @@ def read_gtf_to_mirna(gtf, database):
     """
     if not gtf:
         return gtf
+    if not database:
+        database = _guess_database_file(gtf)
     if database.find("miRBase") > -1:
         mapped = read_gtf_to_precursor_mirbase(gtf, format="genomic")
     elif database.find("MirGeneDB") > -1:
@@ -147,7 +149,7 @@ def read_gtf_chr2mirna2(gtf):  # to remove
     return db_mir
 
 
-def read_gtf_to_precursor(gtf, database):
+def read_gtf_to_precursor(gtf, database=None):
     """
     Load GTF file with precursor positions on genome
     Return dict with key being precursor name and
@@ -165,6 +167,8 @@ def read_gtf_to_precursor(gtf, database):
     """
     if not gtf:
         return gtf
+    if not database:
+        database = _guess_database_file(gtf)
     if database.find("miRBase") > -1:
         mapped = read_gtf_to_precursor_mirbase(gtf)
     elif database.find("MirGeneDB") > -1:
