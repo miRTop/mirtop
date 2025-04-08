@@ -3,5 +3,6 @@ pybedtools
 pandas
 biopython
 pyyaml
+pybedtools
 six
 pytest
