@@ -1,6 +1,7 @@
 """Read database information"""
 
 from collections import defaultdict
+import re
 
 import mirtop.libs.logger as mylog
 
@@ -20,10 +21,14 @@ def guess_database(args):
 
     TODO: this needs to be generic to other databases.
     """
+    if not hasattr(args, "database"):
+        args.database = None
     return _guess_database_file(args.gtf, args.database)
 
 
 def _guess_database_file(gff, database=None):
+    if database:
+        return database
     with open(gff) as in_handle:
         for line in in_handle:
             if not line.startswith("#"):
@@ -54,7 +59,7 @@ def get_primary_transcript(database):
         raise ValueError("Only miRBase is supported for this action.")
 
 
-def read_gtf_to_mirna(gtf):
+def read_gtf_to_mirna(gtf, database=None):
     """
     Load GTF file with precursor positions on genome.
 
@@ -68,9 +73,11 @@ def read_gtf_to_mirna(gtf):
     """
     if not gtf:
         return gtf
-    if _guess_database_file(gtf).find("miRBase") > -1:
+    if not database:
+        database = _guess_database_file(gtf)
+    if database.find("miRBase") > -1:
         mapped = read_gtf_to_precursor_mirbase(gtf, format="genomic")
-    elif _guess_database_file(gtf).find("MirGeneDB") > -1:
+    elif database.find("MirGeneDB") > -1:
         mapped = read_gtf_to_precursor_mirgenedb(gtf, format="genomic")
     else:
         logger.info("Database different than miRBase or MirGeneDB")
@@ -143,7 +150,7 @@ def read_gtf_chr2mirna2(gtf):  # to remove
     return db_mir
 
 
-def read_gtf_to_precursor(gtf):
+def read_gtf_to_precursor(gtf, database=None):
     """
     Load GTF file with precursor positions on genome
     Return dict with key being precursor name and
@@ -161,15 +168,28 @@ def read_gtf_to_precursor(gtf):
     """
     if not gtf:
         return gtf
-    if _guess_database_file(gtf).find("miRBase") > -1:
+    if not database:
+        database = _guess_database_file(gtf)
+    if database.find("miRBase") > -1:
         mapped = read_gtf_to_precursor_mirbase(gtf)
-    elif _guess_database_file(gtf).find("MirGeneDB") > -1:
+    elif database.find("MirGeneDB") > -1:
         mapped = read_gtf_to_precursor_mirgenedb(gtf)
     else:
         logger.info("Database different than miRBase or MirGeneDB")
         logger.info("If you get an error when loading,")
         logger.info("report it to https://github.com/miRTop/mirtop/issues")
-        mapped = read_gtf_to_precursor_mirbase(gtf)
+        try:
+            mapped = read_gtf_to_precursor_mirbase(gtf)
+            return mapped
+        except Exception as e:
+            print(f"Failed to parse with Mirbase: {e}")
+            try:
+                mapped = read_gtf_to_precursor_mirgenedb(gtf)
+                return mapped
+            except Exception as e:
+                print(f"Failed to parse with Mirgenedb: {e}")
+                raise ValueError(f"There is no parser available for the database that you used: {database}")
+
     return mapped
 
 
@@ -271,6 +291,7 @@ def read_gtf_to_precursor_mirgenedb(gtf, format="precursor"):
     db = defaultdict(list)
     db_mir = defaultdict(list)
     id_dict = dict()
+    pattern = r'(_3p\*?|_5p\*?)'
     with open(gtf) as in_handle:
         for line in in_handle:
             if line.startswith("#"):
@@ -286,7 +307,10 @@ def read_gtf_to_precursor_mirgenedb(gtf, format="precursor"):
             if cols[2] == "miRNA":
                 idname_mi = [n.split("=")[1] for n in cols[-1].split(";")
                              if n.startswith("ID")][0]
-                parent = "%s_pre" % idname_mi.split("_")[0]
+                # parent = "%s_pre" % idname_mi.replace("_3p.*", "").replace("_5p.*", "")
+                parent = re.sub(pattern, '', idname_mi)
+                parent = "%s_pre" % parent
+                # import pdb; pdb.set_trace()
                 db_mir[(parent, name)] = [chrom,
                                           int(start), int(end),
                                           strand, parent]

@@ -38,7 +38,7 @@ def convert(args):
 def _convert_file(gff, args):
     sep = "\t"
     precursors = fasta.read_precursor(args.hairpin, args.sps)
-    matures = mapper.read_gtf_to_precursor(args.gtf)
+    matures = mapper.read_gtf_to_precursor(args.gtf, args.database)
     variant_header = sep.join(['mism', 'add', 't5', 't3'])
 
     gff_file = open(gff, 'r')

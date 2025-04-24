@@ -107,13 +107,13 @@ def _add_missing(df):
     # ref_miRNA_mean
     category = "ref_miRNA_mean"
     if sum(df['category']==category) == 0:
-        df2 = {'category': category, 'sample': df['sample'].iat[0], 'counts': 0}
-        df = df.append(df2, ignore_index = True)
+        df2 = pd.DataFrame({'category': category, 'sample': df['sample'].iat[0], 'counts': 0}, index=[0])
+        df = pd.concat([df, df2], ignore_index = True)
     
     category = "isomiR_sum"
     if sum(df['category']==category) == 0:
-        df2 = {'category': category, 'sample': df['sample'].iat[0], 'counts': 0}
-        df = df.append(df2, ignore_index = True)
+        df2 =  pd.DataFrame({'category': category, 'sample': df['sample'].iat[0], 'counts': 0}, index=[0])
+        df = pd.concat([df, df2], ignore_index = True)
     
     return df
 

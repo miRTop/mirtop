@@ -21,11 +21,14 @@ def reader(args):
         read.reader(args)
         return None
     samples = []
-    database = mapper.guess_database(args)
+    if args.database is None:
+        database = mapper.guess_database(args)
+    else:
+        database = args.database
     args.database = database
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     args.precursors = precursors
-    matures = mapper.read_gtf_to_precursor(args.gtf)
+    matures = mapper.read_gtf_to_precursor(args.gtf, database)
     args.matures = matures
     # TODO check numbers of miRNA and precursors read
     # TODO print message if numbers mismatch
@@ -68,20 +71,21 @@ def reader(args):
     if args.low_memory:
         return None
     merged = merge.merge(out_dts, samples)
-    fn_merged_out = op.join(args.out, "mirtop.%s" % args.out_format)
+    fn_merged_out = op.join(args.out, "%s.%s" % (args.prefix, args.out_format))
     _write(merged, header.create(samples, database, header.make_tools([args.format])), fn_merged_out, args)
 
 
 def _write(lines, header, fn, args = None):
     out_handle = open(fn, 'w')
     print(header, file=out_handle)
-    mapper = read_gtf_to_mirna(args.gtf)
+    database = mapper.guess_database(args)
+    dbmapper = read_gtf_to_mirna(args.gtf, database)
     for m in lines:
         for s in sorted(lines[m].keys()):
             for hit in lines[m][s]:
                 # TODO: convert to genomic if args.out_genomic
                 if args and args.out_genomic:
-                    lifted = body.lift_to_genome(hit[4], mapper)
+                    lifted = body.lift_to_genome(hit[4], dbmapper)
                     print(lifted, file=out_handle)
                 else:
                     print(hit[4], file=out_handle)

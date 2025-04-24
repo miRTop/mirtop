@@ -41,7 +41,7 @@ def read_file(fn, hairpins, database, mirna_gtf):
     reads = defaultdict(hits)
     sample = os.path.splitext(os.path.basename(fn))[0]
     genomics = mapper.read_gtf_to_mirna(mirna_gtf)
-    matures = mapper.read_gtf_to_precursor(mirna_gtf)
+    matures = mapper.read_gtf_to_precursor(mirna_gtf, database)
     non_mirna = 0
     non_chromosome_mirna = 0
     outside_mirna = 0

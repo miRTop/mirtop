@@ -20,7 +20,7 @@ def reader(args):
     args.database = database
     precursors = fasta.read_precursor(args.hairpin, args.sps)
     args.precursors = precursors
-    matures = mapper.read_gtf_to_precursor(args.gtf)
+    matures = mapper.read_gtf_to_precursor(args.gtf, args.database)
     args.matures = matures
     # TODO check numbers of miRNA and precursors read
     # TODO print message if numbers mismatch

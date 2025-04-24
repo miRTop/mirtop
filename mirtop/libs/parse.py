@@ -82,6 +82,8 @@ def _add_subparser_gff(subparsers):
     parser.add_argument("files", nargs="*", help="Bam files.")
     parser.add_argument("-o", "--out", dest="out", required=1,
                         help="dir of output files")
+    parser.add_argument("--prefix", dest="prefix", required=0,
+                        default="mirtop", help="prefix for output file")
     parser.add_argument("--sps",
                         help="species")
     parser.add_argument("--keep-name", action="store_true",

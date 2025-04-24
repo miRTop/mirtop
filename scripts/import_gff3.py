@@ -11,7 +11,7 @@ def loadfile(filename,verbose=True):
         
     try:
         if verbose==True:
-            print 'Loading', filename
+            print('Loading', filename)
         # obtaning sample names and number from 3rd line in header
         num_header_lines=0
         with open(filename) as f:
@@ -26,12 +26,12 @@ def loadfile(filename,verbose=True):
                     num_header_lines+=1
         sample_number = len(sample_names)
         if verbose==True:
-            print '--------------------------------------'
-            print sample_number,' samples in the file'
-            print '--------------------------------------'
+            print('--------------------------------------')
+            print(sample_number,' samples in the file')
+            print('--------------------------------------')
             for elem in sample_names:
-                print elem
-            print '--------------------------------------'
+                print(elem)
+            print('--------------------------------------')
         
         
         
@@ -59,11 +59,11 @@ def loadfile(filename,verbose=True):
         num_attr = len(attr_names)                         #number of attributes
         #expression_colindex=attr_names.index ('Expression')  #position of the expression column in the attr column 
         if verbose==True:
-            print num_attr,' attributes in the file '
-            print '--------------------------------------'
+            print(num_attr,' attributes in the file ')
+            print('--------------------------------------')
             for attr in attr_names:
-                print attr
-            print '--------------------------------------'
+                print(attr)
+            print('--------------------------------------')
         
         # joining rows of attributes without the descriptor
         for row in range(atr_data.shape[0]):
@@ -113,7 +113,7 @@ def loadfile(filename,verbose=True):
                     data.at[row.Index,var]=np.nan    
         return data
     except:
-        print 'Error loading the file'
+        print('Error loading the file')
 
 
 """
@@ -137,7 +137,7 @@ def load_check_gff3(filename):
                     data_1=rowfile.split('\t')
                     break
         if coldata_found==False:
-            print 'No COLDATA, bad header'
+            print('No COLDATA, bad header')
             return False
         
         #Number of columns without breaking down attributes column 
@@ -155,33 +155,33 @@ def load_check_gff3(filename):
         for attr in list_attr:    
             if attr not in possible_attr:
                 Error=True
-                print attr,'is not a possible attribute'
+                print(attr,'is not a possible attribute')
                 break  
         if Error:
-            print 'File format error'            
+            print('File format error')
             return False      
         # If not format error, loading content
         try:
             dataframe=loadfile(filename,True)
         except:
-            print 'Error loading file'
+            print('Error loading file')
             return False
-        print 'Checking content'
+        print('Checking content')
         for i in range(dataframe.shape[0]):
             # Labels in type column
             if dataframe.loc[i, 'type'] not in ['ref_miRNA', 'isomiR']:
                 Error = True
-                print'line', i, 'pip install Markdownbad type error'
+                print('line', i, 'pip install Markdownbad type error')
     
             # start<end
             if dataframe.loc[i, 'start'] >= dataframe.loc[i, 'end']:
                 Error = True
-                print 'line', i, 'start >=end error'
+                print('line', i, 'start >=end error')
     
             # Strand + or -
             if dataframe.loc[i, 'strand'] not in ['+', '-']:
                 Error = True
-                print 'line', i, 'bad strand error'
+                print('line', i, 'bad strand error')
             # Variant checking
             possible_variant=['iso_5p','iso_3p','iso_add','iso_snp_seed','iso_snp_central_offset','iso_snp_central',
                   'iso_central_supp','iso_snp_central_supp','iso_snp']
@@ -191,36 +191,36 @@ def load_check_gff3(filename):
             if len(variant_i)==1 and variant_i[0]!='NA':
                 if variant_i[0].split(':')[0] not in possible_variant:
                     Error = True
-                    print 'Variant error', variant_i[0].split(':')[0], 'line', i
+                    print('Variant error', variant_i[0].split(':')[0], 'line', i)
             elif variant_i[0]!='NA':
                 for var in range(len(variant_i)):
                     if variant_i[var].split(':')[0] not in possible_variant:
                         Error = True
-                        print 'Variant error', variant_i[0].split(':')[0], 'line', i
+                        print('Variant error', variant_i[0].split(':')[0], 'line', i)
 
         #Checking expression data
         expression_cols=[col for col in dataframe.columns if 'Expression_' in col]         
         for col in expression_cols:
             for i in range(dataframe.shape[0]):
                 if not dataframe.loc[i,col].isdigit():
-                    print dataframe.loc[i,col].isdigit()
-                    print 'Expression count error line',i
+                    print(dataframe.loc[i,col].isdigit())
+                    print('Expression count error line',i)
                     Error= True
             dataframe[col]=dataframe[col].astype(int) #setting the datatype of counts
             dataframe[col]=dataframe[col].replace(0,np.nan) #Setting 0 reads to NaN
         if 'Filter' in dataframe.columns:         
             for i in range(dataframe.shape[0]):
                 if dataframe.loc[i, 'Filter']!='Pass':
-                    print 'Warning non-pass filter in line',i                   
+                    print('Warning non-pass filter in line',i)
         if Error:
-            print 'File format error'
+            print('File format error')
             return False
 
-        print '--------------------------------------'
-        print dataframe.dtypes
-        print '--------------------------------------'
-        print 'Format ok'
+        print('--------------------------------------')
+        print(dataframe.dtypes)
+        print('--------------------------------------')
+        print('Format ok')
         return dataframe
     except:
-        print 'Error checking the file'
+        print('Error checking the file')
         return False
