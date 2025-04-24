@@ -1,3 +1,14 @@
+0.4.31 (under development)
+
+* Add 1 instead of 0 when there is no count information in the read name [477](https://github.com/nf-core/smrnaseq/issues/477)
+
+0.4.30
+
+* sort values before print by @lpantano in #89
+* Added handling for custom databases by @nschcolnicov in #92
+* fix mirgenedb parser by @lpantano in #93
+
+
 0.4.29
 
 * Update handling of --database argument [#90](https://github.com/miRTop/mirtop/issues/90)
