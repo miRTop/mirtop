@@ -342,7 +342,7 @@ def _get_freq(name):
     try:
         counts = int(name.split("_x")[1])
     except:
-        return 0
+        return 1
     return counts
 
 
